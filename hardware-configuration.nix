@@ -9,12 +9,24 @@
     ];
 
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
-  boot.initrd.kernelModules = [ "dm-snapshot" ];
+  boot.initrd.kernelModules = [ "dm-snapshot" "amdgpu" ];
   boot.kernelModules = ["kvm-amd" "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd" ];
+  boot.kernel.sysctl = {
+    "kernel.sysrq" = 1;
+  };
   boot.extraModulePackages = [ ];
-  boot.kernelParams = [ "amd_iommu=on" "iommu=pt" "vfio-pci.ids=10de:1f07,10de:10f9,10de:1ada,10de:1adb" ];
+  boot.kernelParams = [ "amd_iommu=on" "iommu=pt" "amdgpu.runpm=0" "vfio-pci.ids=10de:1f07,10de:10f9,10de:1ada,10de:1adb" ];
   boot.blacklistedKernelModules = [ "nouveau" "nvidia"];
-  hardware.graphics.enable = true;
+
+    hardware.graphics.extraPackages = with pkgs; [
+      amdvlk
+    ];
+
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
+
 
 
   fileSystems."/" =
@@ -36,13 +48,11 @@
   # (the default) this is the recommended approach. When using systemd-networkd it's
   # still possible to use this option, but it's recommended to use it in conjunction
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
-  networking.useDHCP = lib.mkDefault true;
   networking.interfaces.enp6s0.useDHCP = lib.mkDefault true;
+  #networking.useDHCP = lib.mkDefault true;
   # networking.interfaces.enp7s0.useDHCP = lib.mkDefault true;
   # networking.interfaces.wlp5s0.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }
-
-
