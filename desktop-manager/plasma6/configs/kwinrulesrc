@@ -1,0 +1,13 @@
+[69b7886c-216f-4de6-a12c-60e971387830]
+Description=Window settings for konsole
+clientmachine=localhost
+noborder=true
+noborderrule=2
+title=1Password : zsh — Konsole
+types=1
+wmclass=konsole
+wmclassmatch=1
+
+[General]
+count=1
+rules=69b7886c-216f-4de6-a12c-60e971387830

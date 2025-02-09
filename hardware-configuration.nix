@@ -5,22 +5,16 @@
 
 {
   imports =
-    [ (modulesPath + "/installer/scan/not-detected.nix")
+    [
+    (modulesPath + "/installer/scan/not-detected.nix")
+    ./graphics/nvidia-only.nix
     ];
 
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
-  boot.initrd.kernelModules = [ "dm-snapshot" "amdgpu" ];
-  boot.kernelModules = ["kvm-amd" "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd" ];
   boot.kernel.sysctl = {
     "kernel.sysrq" = 1;
   };
   boot.extraModulePackages = [ ];
-  boot.kernelParams = [ "amd_iommu=on" "iommu=pt" "amdgpu.runpm=0" "vfio-pci.ids=10de:1f07,10de:10f9,10de:1ada,10de:1adb" ];
-  boot.blacklistedKernelModules = [ "nouveau" "nvidia"];
-
-    hardware.graphics.extraPackages = with pkgs; [
-      amdvlk
-    ];
 
   hardware.graphics = {
     enable = true;

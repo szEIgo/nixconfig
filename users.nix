@@ -8,4 +8,6 @@
      ];
    };
 
+ users.defaultUserShell = pkgs.zsh;
+
 }

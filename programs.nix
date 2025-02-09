@@ -4,6 +4,10 @@
    nix.settings.experimental-features = [ "nix-command" "flakes" ];
    nixpkgs.config.allowUnfree = true;
    environment.systemPackages = with pkgs; [
+     zsh
+     zsh-history
+     librewolf
+     keychain
      vim
      btop
      wget
@@ -13,15 +17,23 @@
      pciutils
      nmap
      kmod
+     haskellPackages.Xauth
      xorg.xauth
      kwin
      plasma-browser-integration
      konsole
      oxygen
      git
+     amdgpu_top
+     xwayland-satellite
    ];
    hardware.steam-hardware.enable = true;
    programs = {
+         partition-manager.enable = true;
+         zsh = {
+	     enable = true;
+         };
+
          xwayland.enable = true;
          steam = {
              enable = true;
