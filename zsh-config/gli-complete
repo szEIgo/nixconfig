@@ -1,0 +1,42 @@
+[200~# Create a function to provide command completions
+_manage_completions() {
+  local cur prev words
+
+  cur="${COMP_WORDS[COMP_CWORD]}"   # Current word
+  prev="${COMP_WORDS[COMP_CWORD-1]}" # Previous word
+  words="${COMP_WORDS[@]}"           # All words in the command so far
+
+  local command_list
+  local subcommands
+
+  # If no argument, complete the main commands like 'manage', 'orchestrate', etc.
+  if [[ ${COMP_CWORD} -eq 1 ]]; then
+    # Retrieve the main commands, running 'manage -h' to get the available commands
+    command_list=$(manage -h | grep -oE '^\s+\S+' | sed 's/^\s*//')
+
+    COMPREPLY=($(compgen -W "$command_list" -- "$cur"))
+  elif [[ ${COMP_CWORD} -eq 2 ]]; then
+    # Now handle subcommands like 'manage orchestrate -h', 'manage ansible -h', etc.
+    case "$prev" in
+      manage)
+        # Get the subcommands for 'manage' by calling 'manage <command> -h'
+        subcommands=$(manage "$words" -h 2>/dev/null | grep -oE '^\s+\S+' | sed 's/^\s*//')
+
+        COMPREPLY=($(compgen -W "$subcommands" -- "$cur"))
+        ;;
+      *)
+        COMPREPLY=()
+        ;;
+    esac
+  fi
+}
+
+# Register the function for completion
+if [[ $SHELL == *"bash"* ]]; then
+  # Bash
+  complete -F _manage_completions manage
+elif [[ $SHELL == *"zsh"* ]]; then
+  # Zsh
+  compctl -K _manage_completions manage
+fi
+
