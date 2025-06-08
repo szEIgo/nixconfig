@@ -11,11 +11,9 @@
           '';
         };
 
-
-        #printing.enable = true;
-         # pipewire = {
-         #   enable = true;
-         #   pulse.enable = true;
-         # };
+        displayManager = {
+                    sddm.enable = true;
+                    sddm.wayland.enable = true;
+        };
     };
 }

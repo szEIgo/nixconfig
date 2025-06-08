@@ -14,15 +14,23 @@
 
    services.openssh = {
      enable = true;
+     listenAddresses = [
+     	{ addr = "0.0.0.0"; port = 22; }
+     ];
      settings = {
        PermitRootLogin = "prohibit-password";
        X11Forwarding = true;
+       Macs = [
+    	"hmac-sha2-512"
+    	"hmac-sha2-256"
+    	"hmac-sha1"
+       ];
     };
    };
    users.users."joni".openssh.authorizedKeys.keyFiles = [
-      /etc/nixos/remote/authorized_keys
+      ./authorized_keys
    ];
    users.users.root.openssh.authorizedKeys.keyFiles = [
-     /etc/nixos/remote/authorized_keys
+     ./authorized_keys
    ];
 }

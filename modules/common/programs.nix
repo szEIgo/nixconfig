@@ -3,6 +3,7 @@
 
    nix.settings.experimental-features = [ "nix-command" "flakes" ];
    nixpkgs.config.allowUnfree = true;
+ 
    environment.systemPackages = with pkgs; [
      zsh
      zsh-history
@@ -19,22 +20,25 @@
      kmod
      haskellPackages.Xauth
      xorg.xauth
-     kwin
-     plasma-browser-integration
-     konsole
-     oxygen
-     git
+     #kwin
+     #oxygen
      amdgpu_top
      xwayland-satellite
+     vscodium
+     ripgrep
+     jq
    ];
+
+
+
+
    hardware.steam-hardware.enable = true;
    programs = {
          partition-manager.enable = true;
-         zsh = {
-	     enable = true;
-         };
-
          xwayland.enable = true;
+         zsh.enable = true;
+
+
          steam = {
              enable = true;
              gamescopeSession.enable = true;

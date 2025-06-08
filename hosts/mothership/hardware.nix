@@ -7,7 +7,7 @@
   imports =
     [
     (modulesPath + "/installer/scan/not-detected.nix")
-    ./graphics/nvidia-only.nix
+    ./devices/network.nix
     ];
 
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
@@ -42,7 +42,7 @@
   # (the default) this is the recommended approach. When using systemd-networkd it's
   # still possible to use this option, but it's recommended to use it in conjunction
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
-  networking.interfaces.enp6s0.useDHCP = lib.mkDefault true;
+
   #networking.useDHCP = lib.mkDefault true;
   # networking.interfaces.enp7s0.useDHCP = lib.mkDefault true;
   # networking.interfaces.wlp5s0.useDHCP = lib.mkDefault true;
