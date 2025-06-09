@@ -5,14 +5,12 @@
   ...
 }: {
 
-  imports = [
-    ./zsh.nix
-  ];
 
   nix.settings.experimental-features = ["nix-command" "flakes"];
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [
+    zoxide
     zsh
     eza
     bat
@@ -29,6 +27,8 @@
     vscodium
     ripgrep
     jq
+    zsh-powerlevel10k
+    oh-my-zsh
   ];
 
 }
