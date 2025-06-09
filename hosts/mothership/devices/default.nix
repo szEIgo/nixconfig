@@ -1,18 +1,21 @@
-{ config, lib, pkgs, ... }:
 {
-  boot.kernelModules = ["kvm-amd" ];
-  boot.kernelParams = [ "amd_iommu=on" "iommu=pt" "amdgpu.runpm=0" ];
-  boot.blacklistedKernelModules = [ "vfio" "nouveau" ];
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
+  boot.kernelModules = ["kvm-amd"];
+  boot.kernelParams = ["amd_iommu=on" "iommu=pt" "amdgpu.runpm=0" "modprobe.blacklist=nouveau" "rd.driver.blacklist=nouveau" ];
+  boot.blacklistedKernelModules = ["vfio" "nouveau"];
 
-  boot.initrd.kernelModules = [ "dm-snapshot" "amdgpu"];
+  boot.initrd.kernelModules = ["dm-snapshot" "amdgpu"];
 
   hardware.graphics.extraPackages = with pkgs; [
     amdvlk
   ];
 
-
   hardware.nvidia = {
-    #modesetting.enable = true;
+    modesetting.enable = true;
     package = config.boot.kernelPackages.nvidiaPackages.latest;
     open = true;
     powerManagement.enable = false;
@@ -20,14 +23,11 @@
   };
   services = {
     xserver = {
-        enable = true;
-        #videoDrivers = ["nvidia"];
-        videoDrivers = ["amdgpu"];
-        deviceSection = ''
-              Option "TearFree" "true"
-            '';
+      enable = true;  
+      videoDrivers = ["amdgpu" "nvidia"];
+      deviceSection = ''
+        Option "TearFree" "true"
+      '';
     };
   };
-
-
 }

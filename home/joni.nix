@@ -1,8 +1,11 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, plasmaEnabled ? false, ... }: {
 
-{
-  home.username = "joni";
-  home.homeDirectory = "/home/joni";
+  
+  home.file = lib.mkIf plasmaEnabled {
+   # ".config/kdeglobals".source = ./configs/kdeglobals;
+   # ".config/kwinrc".source = ./configs/kwinrulesrc;
+   .config/.gitconfig.source = ./configs/gitconfig;
+  };
 
   home.packages = [
     pkgs.firefox
@@ -14,6 +17,5 @@
   programs.zsh.enable = true;
   programs.git.enable = true;
 
-  # Home Manager required
-  home.stateVersion = "24.05";
+  home.stateVersion = "25.05";
 }

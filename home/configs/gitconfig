@@ -1,0 +1,8 @@
+[user]
+	name = joni
+	email = jonathan@szigethy.dk
+[core]
+	editor = vim
+	autocrlf = input
+[color]
+	ui = true
