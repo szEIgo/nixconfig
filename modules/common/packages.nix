@@ -14,6 +14,8 @@
 
   environment.systemPackages = with pkgs; [
     zsh
+    eza
+    bat
     age
     zsh-history
     librewolf
