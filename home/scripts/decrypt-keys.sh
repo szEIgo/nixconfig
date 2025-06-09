@@ -2,29 +2,41 @@
 
 set -euo pipefail
 
-read -s -p "Enter passphrase for decrypting secrets: " PASSPHRASE
-echo
+MASTER_KEY_ENC="../../secrets/id_mothership.age"
+MASTER_KEY_DEC="/tmp/id_mothership"
 
-export AGE_PASSPHRASE="$PASSPHRASE"
-
-SECRET_DIR="/etc/nixos/secrets"
-DEST_DIR="/home/joni/.ssh"
+SECRET_DIR="../../secrets"
+DEST_DIR="~/.ssh"
 
 mkdir -p "$DEST_DIR"
 
+
+age --decrypt -o "$MASTER_KEY_DEC" "$MASTER_KEY_ENC"
+chown $USER "$MASTER_KEY_DEC" 
+chmod 600 "$MASTER_KEY_DEC"
+
 for encfile in "$SECRET_DIR"/*.age; do
-  [ -e "$encfile" ] || continue  # Skip if no .age files
+  [ "$encfile" = "$MASTER_KEY_ENC" ] && continue
+
+  [ -e "$encfile" ] || continue
 
   filename="$(basename "${encfile%.age}")"
   outfile="$DEST_DIR/$filename"
 
-  echo "🔓 Decrypting $(basename "$encfile") → $outfile"
+  echo "Decrypting $(basename "$encfile") → $outfile"
 
-  age --decrypt -o "$outfile" "$encfile"
+  age --identity "$MASTER_KEY_DEC" --decrypt -o "$outfile" "$encfile"
+  chown $USER "$outfile" 
   chmod 600 "$outfile"
 done
 
-unset AGE_PASSPHRASE
 
-echo "✅ All .age secrets decrypted to $DEST_DIR"
+shred -u "$MASTER_KEY_DEC"
 
+for pubFile in "$SECRET_DIR"/*.pub; do
+  [ -e "$pubFile" ] || continue
+  cp "$pubFile" "$DEST_DIR/$(basename "$pubFile")"
+  chmod 644 "$DEST_DIR/$(basename "$pubFile")"
+  echo "Copied $(basename "$pubFile") → $DEST_DIR"
+done
+echo "All SSH keys should be decrypted to $DEST_DIR"
