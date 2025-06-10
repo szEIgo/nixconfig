@@ -27,8 +27,13 @@
     vscodium
     ripgrep
     jq
-    zsh-powerlevel10k
-    oh-my-zsh
+    sbt
+    scala
+    rustc
+    cargo
+    rustfmt
   ];
+  
+  programs.zsh.enable = true;
 
 }

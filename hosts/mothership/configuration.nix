@@ -10,12 +10,14 @@
     ./devices/default.nix
     ../../modules/common/locales.nix
     ../../modules/common/users.nix
+    ../../modules/common/zfs.nix
     ../../modules/common/virtualization.nix
     ../../modules/common/services.nix
     ../../modules/gaming/steam.nix
     ../../remote/ssh.nix
     ../../modules/desktop/plasma.nix
     ../../modules/desktop/hyprland.nix
+
     
   ];
   boot.loader.systemd-boot.configurationLimit = 5;
@@ -23,9 +25,8 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelPackages = pkgs.linuxPackages_6_14;
 
-  programs.zsh.enable = true;
-  environment.shells = with pkgs; [zsh];
-  environment.shellAliases = {};
+  
+  users.defaultUserShell = pkgs.zsh;
 
   networking.hostName = "mothership";
 

@@ -2,122 +2,92 @@
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-ssh_session() {
-	if [ -z "$SSH_AUTH_SOCK" ]; then
-	  eval $(ssh-agent -s)
-	fi
+# Nix store paths
+export ZSH="/nix/store/kkxliym9nljiwi6izsrsvhmcywxy3dcj-oh-my-zsh-2025-04-29/share/oh-my-zsh"
+POWERLEVEL10K="/nix/store/9inn4ixr0zhdxci7jd3qc72jbaxx48d5-powerlevel10k-1.20.14/share/zsh-powerlevel10k"
 
-	if ! ssh-add -l &>/dev/null; then
-    	  ssh-add ~/.ssh/id_ecdsa &>/dev/null
-	fi
-}
-
-
-cat () {
- bat --style plain --pager never "$@"
-}
-
-# Add Cargo and custom paths
-export PATH="$HOME/.cargo/bin:$PATH"
-export ZSH="$HOME/.oh-my-zsh"
-
-
-
+# History settings
 HISTSIZE="10000"
 SAVEHIST="10000"
-
 HISTFILE="$HOME/.zsh_history"
 mkdir -p "$(dirname "$HISTFILE")"
 
 setopt HIST_FCNTL_LOCK
-unsetopt APPEND_HISTORY
 setopt HIST_IGNORE_DUPS
-unsetopt HIST_IGNORE_ALL_DUPS
-unsetopt HIST_SAVE_NO_DUPS
-unsetopt HIST_FIND_NO_DUPS
 setopt HIST_IGNORE_SPACE
-unsetopt HIST_EXPIRE_DUPS_FIRST
 setopt SHARE_HISTORY
-unsetopt EXTENDED_HISTORY
 HIST_STAMPS="mm/dd/yyyy"
-# Share history
-setopt SHARE_HISTORY
-fpath=(~/.zsh/completion $fpath)
 
-# Zsh plugins
-#plugins=(git argocd aws battery brew catimg docker colorize colored-man-pages cp history iterm2 kubectl podman postgres qrcode redis-cli rust scala spring sudo terraform xcode zoxide)
+# Load Oh-My-Zsh
+ZSH_THEME="powerlevel10k/powerlevel10k"
+ZSH_CUSTOM="$ZSH/custom"
+plugins=(git)
+source "$ZSH/oh-my-zsh.sh"
 
-# Zsh theme
-#ZSH_THEME="powerlevel10k/powerlevel10k"
+# Source Powerlevel10k config if exists
+[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
+fpath=("$POWERLEVEL10K" $fpath)
 
-# SSH Keychain management - Ensure the key is added automatically on startup
-eval `keychain --eval --quiet --quick --noask  --timeout 240 ~/.ssh/id_ecdsa`
+# SSH Agent auto-load
+ssh_session() {
+  if [ -z "$SSH_AUTH_SOCK" ]; then
+    eval $(ssh-agent -s)
+  fi
 
-# Finder function to open Finder from terminal
-finder() {
-  if [ -z "$1" ]; then
-    # If no argument is passed, open Finder in the current directory
-    open -a "Finder" .
-  else
-    # If a path is provided, open Finder at that path
-    open -a "Finder" "$1"
+  if ! ssh-add -l &>/dev/null; then
+    ssh-add ~/.ssh/id_ecdsa &>/dev/null
   fi
 }
-dolphin () {
-   finder "$*"
-}
 
-ssh () {
-  ssh_session
-  command ssh -X -CY -o ServerAliveInterval=120 $*
-}
-scp () {
-   ssh_session
-   command scp -C -v -r -o StrictHostKeyChecking=no $*
-}
-git () {
-   ssh_session
-   command git $*
-}
-
-
-# Source Oh-My-Zsh
-source $ZSH/oh-my-zsh.sh
-
-# Set architecture flags
-export ARCHFLAGS="-arch $(uname -m)"
-
-
-
-# Load Powerlevel10k theme if available
-#[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-# SDKMAN setup
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-source $HOME/.sdkman/bin/sdkman-init.sh
-
+# Aliases and functions
 alias l='eza --icons'
 alias la='eza --icons -a'
 alias ll='eza --icons -lah'
 alias ls='eza --icons --color=auto'
 
-#remote
+cat() { bat --style plain --pager never "$@"; }
+
+# SDKMAN setup
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+
+# SSH keychain
+eval "$(keychain --eval --quiet --quick --noask --timeout 240 ~/.ssh/id_ecdsa)"
+
+# SSH aliases and overrides
+finder() { open -a "Finder" "${1:-.}"; }
+dolphin() { finder "$@"; }
+
+ssh() {
+  ssh_session
+  command ssh -X -CY -o ServerAliveInterval=120 "$@"
+}
+
+scp() {
+  ssh_session
+  command scp -C -v -r -o StrictHostKeyChecking=no "$@"
+}
+
+git() {
+  ssh_session
+  command git "$@"
+}
+
 alias sw_debian='ssh -J bastion@51.158.121.209:61000 root@172.16.16.5'
 alias sw_ubuntu='ssh -J bastion@51.15.132.29:61000 root@172.16.4.2'
 
+# Keybindings
 bindkey "^[[3~" delete-char
 bindkey "^[[5~" beginning-of-buffer-or-history
 bindkey "^[[6~" end-of-buffer-or-history
 bindkey -M emacs '^[[3;5~' kill-word
 bindkey '^H' backward-kill-word
-bindkey  "^[[3~"  delete-char
 bindkey "^[[1;5C" forward-word
 bindkey "^[[1;5D" backward-word
 bindkey "^[[1;3C" forward-word
 bindkey "^[[1;3D" backward-word
-bindkey '^[[1~' beginning-of-line
-bindkey '^[[4~' end-of-line
+bindkey "^[[1~" beginning-of-line
+bindkey "^[[4~" end-of-line
 
-
-
+# Architecture flags
+export ARCHFLAGS="-arch $(uname -m)"

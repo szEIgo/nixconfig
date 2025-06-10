@@ -18,6 +18,7 @@
     kdePackages.yakuake
     xwayland-satellite
     kmod
+    zfs
   ];
   
   programs = {
