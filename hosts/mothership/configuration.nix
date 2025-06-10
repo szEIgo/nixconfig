@@ -24,11 +24,14 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelPackages = pkgs.linuxPackages_6_14;
+  boot.initrd.luks.enable = true;
 
   
   users.defaultUserShell = pkgs.zsh;
 
   networking.hostName = "mothership";
+  networking.hostId = "6d539f2f";
+
 
   specialisation = {
     nvidia.configuration = {

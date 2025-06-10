@@ -16,9 +16,9 @@
     neovim
     git
     htop
+    zsh-powerlevel10k
+    oh-my-zsh
   ];
-
   programs.git.enable = true;
-
   home.stateVersion = "25.05";
 }
