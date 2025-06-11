@@ -14,19 +14,18 @@ let
             collectConfigsRecursively fullPath
           else
             [{
-              name = lib.removePrefix "./" (toString fullPath);
+              name = toString fullPath;
               value = { source = fullPath; };
             }]
       ) entries;
     in builtins.concatLists mapped;
 
-  # Adjust this path to where you store your Plasma configs
   plasmaDir = ./configs/plasma6;
 
   plasmaFiles = collectConfigsRecursively plasmaDir;
 
   plasmaAttrs = builtins.listToAttrs (map (entry: {
-    name = ".config/" + lib.removePrefix "configs/plasma6/" entry.name;
+    name = ".config/" + lib.removePrefix (toString plasmaDir + "/") entry.name;
     inherit (entry) value;
   }) plasmaFiles);
 
