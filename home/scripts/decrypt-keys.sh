@@ -6,7 +6,7 @@ MASTER_KEY_ENC="../../secrets/id_mothership.age"
 MASTER_KEY_DEC="/tmp/id_mothership"
 
 SECRET_DIR="../../secrets"
-DEST_DIR="~/.ssh"
+DEST_DIR="/home/joni/.ssh"
 
 mkdir -p "$DEST_DIR"
 

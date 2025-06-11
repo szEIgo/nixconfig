@@ -6,7 +6,7 @@
 
   home.file = lib.mkMerge [
     {
-      ".config/.gitconfig".source = ./configs/gitconfig;
+      "./.gitconfig".source = ./configs/gitconfig;
       ".zshrc".source = ./configs/zshrc;
     }
   ];
