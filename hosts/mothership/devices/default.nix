@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: {
-  boot.kernelModules = ["kvm-amd"];
+  boot.kernelModules = ["kvm-amd" "dm-crypt"];
   boot.kernelParams = ["amd_iommu=on" "iommu=pt" "amdgpu.runpm=0" "modprobe.blacklist=nouveau" "rd.driver.blacklist=nouveau" ];
   boot.blacklistedKernelModules = ["vfio" "nouveau"];
 

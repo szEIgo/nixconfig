@@ -1,4 +1,4 @@
-{ lib, config, ... }:
+{ lib, config, plasmaEnabled ? false, ... }:
 
 let
   inherit (lib) attrValues hasPrefix hasSuffix mapAttrsToList;
@@ -31,7 +31,7 @@ let
   }) plasmaFiles);
 
 in {
-  config = lib.mkIf config.plasmaEnabled {
+  config = lib.mkIf plasmaEnabled {
     home.file = plasmaAttrs;
   };
 }

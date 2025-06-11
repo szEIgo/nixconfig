@@ -19,6 +19,7 @@
     xwayland-satellite
     kmod
     zfs
+    cryptsetup
   ];
   
   programs = {

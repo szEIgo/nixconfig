@@ -26,6 +26,7 @@
   boot.supportedFilesystems = [ "zfs" ];
   boot.zfs.requestEncryptionCredentials = true;
   boot.initrd.luks.devices."cryptroot".device = "/dev/disk/by-uuid/2191f348-040d-42e3-9caf-c43b86f9a6df";
+  
   boot.kernelPackages = pkgs.linuxPackages_6_14;
 
 
