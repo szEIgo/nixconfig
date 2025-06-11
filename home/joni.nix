@@ -1,13 +1,13 @@
 { config, lib, pkgs, plasmaEnabled ? false, ... }: {
   
+  imports = [
+    ./plasma6.nix
+  ];
+
   home.file = lib.mkMerge [
-    (lib.mkIf plasmaEnabled {
-      # ".config/kdeglobals".source = ./configs/kdeglobals;
-      # ".config/kwinrc".source = ./configs/kwinrulesrc;
-    })
     {
-      ".config/.gitconfig".source = ./configs/gitconfig; 
-      ".zshrc".source = ./configs/zshrc; 
+      ".config/.gitconfig".source = ./configs/gitconfig;
+      ".zshrc".source = ./configs/zshrc;
     }
   ];
 

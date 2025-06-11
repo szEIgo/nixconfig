@@ -24,8 +24,8 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.supportedFilesystems = [ "zfs" ];
-  boot.zfs.requestEncryptionCredential = true;
-  boot.initrd.luks.devices."cryptroot".device = "/dev/nvme0n1p2";
+  boot.zfs.requestEncryptionCredentials = true;
+  boot.initrd.luks.devices."cryptroot".device = "/dev/disk/by-uuid/2191f348-040d-42e3-9caf-c43b86f9a6df";
   boot.kernelPackages = pkgs.linuxPackages_6_14;
 
 
