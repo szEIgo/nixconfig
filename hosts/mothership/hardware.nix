@@ -25,19 +25,24 @@
   };
 
   fileSystems."/" = {
-    device = "/dev/disk/by-uuid/a7c25dc6-d1dc-4a0d-bc84-b2969899d4e6";
-    fsType = "ext4";
+    device = "rpool/nixos/root";
+    fsType = "zfs";
   };
-
+  fileSystems."/nix" = {
+      device = "rpool/nixos/nix";
+      fsType = "zfs";
+  };
+  fileSystems."/home" = {
+    device = "rpool/nixos/home";
+    fsType = "zfs";
+  };
   fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/944B-9A41";
+    device = "/dev/disk/by-uuid/8B9A-049B";
     fsType = "vfat";
-    options = ["fmask=0077" "dmask=0077"];
+    options = ["fmask=0022" "dmask=0022"];
   };
 
-  swapDevices = [
-    {device = "/dev/disk/by-uuid/380f344c-1262-4a83-915d-fd28b43031ed";}
-  ];
+  swapDevices = [ ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's

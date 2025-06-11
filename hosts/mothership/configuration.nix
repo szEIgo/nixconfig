@@ -23,8 +23,11 @@
   boot.loader.systemd-boot.configurationLimit = 5;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.supportedFilesystems = [ "zfs" ];
+  boot.zfs.requestEncryptionCredential = true;
+  boot.initrd.luks.devices."cryptroot".device = "/dev/nvme0n1p2";
   boot.kernelPackages = pkgs.linuxPackages_6_14;
-  boot.initrd.luks.enable = true;
+
 
   
   users.defaultUserShell = pkgs.zsh;
