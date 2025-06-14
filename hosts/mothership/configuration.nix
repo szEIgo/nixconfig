@@ -11,7 +11,7 @@
     ../../modules/common/locales.nix
     ../../modules/common/users.nix
     ../../modules/common/zfs.nix
-    ../../modules/common/virtualization.nix
+    ../../modules/virtualisation/libvirt.nix
     ../../modules/common/services.nix
     ../../modules/gaming/steam.nix
     ../../remote/ssh.nix

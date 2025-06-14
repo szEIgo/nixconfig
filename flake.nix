@@ -17,7 +17,6 @@
         modules = [
           ./hosts/mothership/configuration.nix
           ./hosts/mothership/hardware.nix
-
           home-manager.nixosModules.home-manager
           {
             home-manager.useUserPackages = true;

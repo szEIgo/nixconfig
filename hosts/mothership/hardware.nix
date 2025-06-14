@@ -41,6 +41,10 @@
     fsType = "vfat";
     options = ["fmask=0022" "dmask=0022"];
   };
+  fileSystems."/var/lib/docker" = {
+    device = "rpool/docker";
+    fsType = "zfs";
+  };
 
   swapDevices = [ ];
 
