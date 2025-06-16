@@ -8,10 +8,10 @@ in {
   };
 
   users.users.joni = {
-    extraGroups = [ libvirtGroup ];
+    extraGroups = [ libvirtGroup, "kvm" ];
   };
 
-  virtualisation.libvirtd = {
+  virtualisation.libvirt = {
     enable = true;
 
     qemu = {
