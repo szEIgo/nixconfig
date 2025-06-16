@@ -23,7 +23,7 @@
   boot.loader.systemd-boot.configurationLimit = 5;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.supportedFilesystems = [ "zfs" ];
+  boot.supportedFilesystems = [ "zfs" "ntfs"];
   boot.zfs.requestEncryptionCredentials = true;
   boot.initrd.luks.devices."cryptroot".device = "/dev/disk/by-uuid/2191f348-040d-42e3-9caf-c43b86f9a6df";
   
