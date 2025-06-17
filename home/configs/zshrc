@@ -2,13 +2,14 @@
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-# Nix store paths
-export ZSH="/nix/store/kkxliym9nljiwi6izsrsvhmcywxy3dcj-oh-my-zsh-2025-04-29/share/oh-my-zsh"
-POWERLEVEL10K="/nix/store/9inn4ixr0zhdxci7jd3qc72jbaxx48d5-powerlevel10k-1.20.14/share/zsh-powerlevel10k"
+# Use Nix-installed Oh My Zsh
+export ZSH="$(nix eval --raw nixpkgs#oh-my-zsh)/share/oh-my-zsh"
+ZSH_CUSTOM="$ZSH/custom"
+plugins=(git)
 
 # History settings
-HISTSIZE="10000"
-SAVEHIST="10000"
+HISTSIZE=10000
+SAVEHIST=10000
 HISTFILE="$HOME/.zsh_history"
 mkdir -p "$(dirname "$HISTFILE")"
 
@@ -18,15 +19,14 @@ setopt HIST_IGNORE_SPACE
 setopt SHARE_HISTORY
 HIST_STAMPS="mm/dd/yyyy"
 
-# Load Oh-My-Zsh
-ZSH_THEME="powerlevel10k/powerlevel10k"
-ZSH_CUSTOM="$ZSH/custom"
-plugins=(git)
+# Load Oh My Zsh
 source "$ZSH/oh-my-zsh.sh"
 
-# Source Powerlevel10k config if exists
+# Manually source Powerlevel10k theme
+source "$(nix eval --raw nixpkgs#zsh-powerlevel10k)/share/zsh-powerlevel10k/powerlevel10k.zsh-theme"
+
+# Optional: load Powerlevel10k config
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
-fpath=("$POWERLEVEL10K" $fpath)
 
 # SSH Agent auto-load
 ssh_session() {
@@ -53,6 +53,9 @@ export SDKMAN_DIR="$HOME/.sdkman"
 
 # SSH keychain
 eval "$(keychain --eval --quiet --quick --noask --timeout 240 ~/.ssh/id_ecdsa)"
+
+# Zoxide
+eval "$(zoxide init zsh)"
 
 # SSH aliases and overrides
 finder() { open -a "Finder" "${1:-.}"; }

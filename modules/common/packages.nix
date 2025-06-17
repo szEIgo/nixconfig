@@ -32,6 +32,13 @@
     rustc
     cargo
     rustfmt
+    ncdu
+    tree
+    dust
+    tmux
+    byobu
+    helix	
+    
   ];
   
   programs.zsh.enable = true;

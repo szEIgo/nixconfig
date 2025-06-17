@@ -2,16 +2,64 @@
 # ZFS Maintenance & Management Guide
 ### Pool & Dataset Naming Overview
 ```
-nvmePool/          # NVMe RAID1 pool with system datasets & cache
-  root/            # Root dataset (for nix, var, home etc)
-  vmdata/          # VM disk images and snapshots
-  cache/           # L2ARC and SLOG devices attached here
+rpool/                   # Main system pool
+  docker/                # Docker storage
+  nixos/                 # NixOS system datasets
+    home/                # User home
+    nix/                 # Nix store
+    root/                # Root FS
+  vm-pools/              # VM images (multiple datasets)
 
-hddPool/           # HDD RAIDZ pool for bulk storage (games, backups)
-  games/           # Games dataset (base installs)
-  vmshared/        # Clones for VM-specific game copies
-  backups/         # Backup datasets
+slowPool/                # HDD-based RAIDZ storage
+  files/                 # General file storage (mounted)
+  game-storage/          # Games (classics, large games)
+    baldursgate3/        # Sub-dataset for BG3
+    classics/            # Sub-dataset for classic games
 ```
+
+
+## Mounting & Importing Pools
+
+### After Reboot: Load Pools
+```
+zpool import -a          # Imports all available pools
+zfs mount -a             # Mounts all datasets with mountpoints
+zfs load-key -a          # Load keys for all encrypted datasets
+zpool import -a          # Then import pools
+zfs mount -a             # Mount datasets
+zfs load-key rpool/nixos/home
+zfs mount rpool/nixos/home
+
+
+```
+
+## Create a snapshot
+```
+zfs snapshot slowPool/game-storage/baldursgate3@base
+zfs clone slowPool/game-storage/baldursgate3@base rpool/vm-pools/baldursgate3_vm1
+
+```
+##  Rollback or Remove Clones
+```
+zfs rollback rpool/vm-pools/baldursgate3_vm1@base
+zfs destroy rpool/vm-pools/baldursgate3_vm1
+```
+
+## Status & Inspection
+```
+zpool status
+zpool list
+zfs list
+zfs get all rpool/nixos/home
+
+```
+
+## Scrub Pools (Check Data Integrity)
+```
+zpool scrub rpool
+zpool scrub slowPool
+```
+
 ## Pool Creation & Basic Setup
 
 ### Create NVMe RAID1 pool (example: adata + kingston)
@@ -21,7 +69,7 @@ zpool create -f nvmePool mirror /dev/nvme0n1 /dev/nvme1n1 \
 ```
 
 ### Create HDD RAIDZ pool (example: 2 or more HDDs)
-``` zpool create -f hddPool raidz1 /dev/sdX /dev/sdY /dev/sdZ \
+``` zpool create -f slowPool raidz1 /dev/sdX /dev/sdY /dev/sdZ \
   ashift=12 
   ```
 
@@ -44,9 +92,9 @@ zfs create nvmePool/root/nix
 zfs create nvmePool/root/home
 zfs create nvmePool/root/var
 zfs create nvmePool/vmdata
-zfs create hddPool/games
-zfs create hddPool/vmshared
-zfs create hddPool/backups
+zfs create slowPool/games
+zfs create slowPool/vmshared
+zfs create slowPool/backups
 ```
 
 ## Mounting
@@ -62,24 +110,24 @@ zfs mount nvmePool/root
 
 ### Snapshot base game dataset
 ```
-zfs snapshot hddPool/games/gameX@base
+zfs snapshot slowPool/games/gameX@base
 ```
 
 ### Create VM clone from snapshot (independent writable copy)
 
 ```
-zfs clone hddPool/games/gameX@base hddPool/vmshared/gameX_vm1
-zfs clone hddPool/games/gameX@base hddPool/vmshared/gameX_vm2
+zfs clone slowPool/games/gameX@base slowPool/vmshared/gameX_vm1
+zfs clone slowPool/games/gameX@base slowPool/vmshared/gameX_vm2
 ```
 ## Rolling Back or Deleting Clones
 
 ###  Rollback clone to snapshot
 ```
-zfs rollback hddPool/vmshared/gameX_vm1@base
+zfs rollback slowPool/vmshared/gameX_vm1@base
 ```
 ### Destroy clone (after unmounting)
 ```
-zfs destroy hddPool/vmshared/gameX_vm1
+zfs destroy slowPool/vmshared/gameX_vm1
 ```
 ### Set Dataset Properties
 
@@ -89,19 +137,19 @@ zfs set compression=lz4 nvmePool/root
 ```
 ### Enable deduplication (heavy on RAM, use only if enough RAM)
 ```
-zfs set dedup=on hddPool/games
+zfs set dedup=on slowPool/games
 ```
 ### Set readonly (for shared readonly datasets)
 ```
-zfs set readonly=on hddPool/games/gameX
+zfs set readonly=on slowPool/games/gameX
 ```
 ### Export & Import Pools (For Maintenance)
 ```
 zpool export nvmePool
-zpool export hddPool
+zpool export slowPool
 
 zpool import nvmePool
-zpool import hddPool
+zpool import slowPool
 ```
 ### Check Pool & Dataset Status
 ```
