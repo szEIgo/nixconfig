@@ -8,6 +8,7 @@
     {
       "./.gitconfig".source = ./configs/gitconfig;
       ".zshrc".source = ./configs/zshrc;
+      ".powerlevel10k.source" = ./configs/p10k.zsh;
     }
   ];
 
