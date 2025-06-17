@@ -5,7 +5,7 @@
   ...
 }: {
   boot.kernelModules = ["kvm-amd" "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd"];
-  boot.kernelParams = ["amd_iommu=on" "iommu=pt" "vfio-pci.ids=1002:ab38,1002:731f"];
+  boot.kernelParams = ["amd_iommu=on" "iommu=pt" "vfio-pci.ids=1002:ab38,1002:731f,10ec:8125"];
   boot.blacklistedKernelModules = ["amdgpu" "amd"];
 
   boot.initrd.kernelModules = ["dm-snapshot" "nvidia"];
