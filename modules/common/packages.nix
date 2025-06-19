@@ -38,7 +38,11 @@
     tmux
     byobu
     helix	
-    
+    copyq
+    parted
+    usbutils
+    gptfdisk
+    woeusb-ng
   ];
   
   programs.zsh.enable = true;
