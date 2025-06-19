@@ -44,6 +44,7 @@ alias l='eza --icons'
 alias la='eza --icons -a'
 alias ll='eza --icons -lah'
 alias ls='eza --icons --color=auto'
+alias docker="podman"
 
 cat() { bat --style plain --pager never "$@"; }
 
