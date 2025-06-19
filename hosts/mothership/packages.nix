@@ -20,6 +20,7 @@
     kmod
     zfs
     cryptsetup
+    moonlight-qt
   ];
   
   programs = {
