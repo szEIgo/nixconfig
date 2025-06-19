@@ -22,6 +22,9 @@
     cryptsetup
     moonlight-qt
     podman
+    podman-tui
+    podman-compose
+    dive
   ];
   
   programs = {

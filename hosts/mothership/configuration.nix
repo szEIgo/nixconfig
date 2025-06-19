@@ -33,6 +33,7 @@
 
   
   users.defaultUserShell = pkgs.zsh;
+  virtualisation.containers.enable = true;
 
   networking.hostName = "mothership";
   networking.hostId = "6d539f2f";
