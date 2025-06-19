@@ -6,7 +6,7 @@
 }: {
   users.users.joni = {
     isNormalUser = true;
-    extraGroups = ["wheel" "libvirtd"];
+    extraGroups = ["wheel" "libvirtd" "podman"];
     shell = pkgs.zsh;
   };
 

@@ -12,6 +12,7 @@
     ../../modules/common/users.nix
     ../../modules/common/zfs.nix
     ../../modules/virtualization/libvirt.nix
+    ../../modules/virtualization/podman.nix
     ../../modules/common/services.nix
     ../../modules/gaming/steam.nix
     ../../remote/ssh.nix

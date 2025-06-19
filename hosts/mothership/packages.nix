@@ -21,6 +21,7 @@
     zfs
     cryptsetup
     moonlight-qt
+    podman
   ];
   
   programs = {

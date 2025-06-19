@@ -7,10 +7,6 @@ in {
     libvirtd = {};
   };
 
-  users.users.joni = {
-    extraGroups = [ libvirtGroup ];
-  };
-
   virtualisation.libvirtd = {
     enable = true;
 
