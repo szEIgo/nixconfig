@@ -26,7 +26,7 @@
     haskellPackages.Xauth
     vscodium
     ripgrep
-    jqhome
+    jq
     sbt
     scala
     rustc
