@@ -45,7 +45,7 @@ alias la='eza --icons -a'
 alias ll='eza --icons -lah'
 alias ls='eza --icons --color=auto'
 alias docker="podman"
-
+alias vim="hx"
 cat() { bat --style plain --pager never "$@"; }
 
 # SDKMAN setup
@@ -55,8 +55,6 @@ export SDKMAN_DIR="$HOME/.sdkman"
 # SSH keychain
 eval "$(keychain --eval --quiet --quick --noask --timeout 240 ~/.ssh/id_ecdsa)"
 
-# Zoxide
-eval "$(zoxide init zsh)"
 
 # SSH aliases and overrides
 finder() { open -a "Finder" "${1:-.}"; }

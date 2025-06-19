@@ -12,9 +12,4 @@
     extraPackages = with pkgs; [ podman-compose ];
 
   };
-
-  fileSystems."/var/lib/docker" = {
-    device = "rpool/docker";
-    fsType = "zfs";
-  };
 }

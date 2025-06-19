@@ -1,12 +1,6 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}: {
+{ config, lib, pkgs, ... }: {
 
-
-  nix.settings.experimental-features = ["nix-command" "flakes"];
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [
@@ -37,14 +31,15 @@
     dust
     tmux
     byobu
-    helix	
+    helix
     copyq
     parted
     usbutils
     gptfdisk
     woeusb-ng
+    fd
   ];
-  
+
   programs.zsh.enable = true;
 
 }
