@@ -16,6 +16,7 @@
     xorg.xauth
     amdgpu_top
     kdePackages.yakuake
+    kdePackages.kdeconnect-kde
     xwayland-satellite
     kmod
     zfs
@@ -30,6 +31,7 @@
   programs = {
     partition-manager.enable = true;
     xwayland.enable = true;
+    kdeconnect.enable = true;
 
     gnupg.agent = {
       enable = true;

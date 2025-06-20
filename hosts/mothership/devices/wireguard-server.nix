@@ -1,42 +1,49 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}: {
+{ config, pkgs, lib, ... }:
 
-  # enable NAT
-  networking.nat.enable = true;
-  networking.nat.externalInterface = "enp6s0";
-  networking.nat.internalInterfaces = [ "wg0" ];
-  networking.firewall = {
-    allowedUDPPorts = [ 5664 ];
+{
+  networking = {
+    useNetworkd = true;
+    firewall = {
+      allowedUDPPorts = [ 5664 53 ];
+      allowedTCPPorts = [ 53 ];
+      allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
+      allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];
+      trustedInterfaces = [ "wg0" ];
+    };
   };
 
-  networking.wireguard.enable = true;
-  networking.wireguard.interfaces = {
-    wg0 = {
-      ips = [ "10.100.0.1/24" ];
+  systemd.network = {
+    enable = true;
 
-      listenPort = 5664;
-
-      postSetup = ''
-        ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s 10.100.0.0/24 -o enp6s0 -j MASQUERADE
-      '';
-
-      postShutdown = ''
-        ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s 10.100.0.0/24 -o enp6s0 -j MASQUERADE
-      '';
-     
-      privateKeyFile = "/etc/secrets/mothership-wg-private.key";
-
-      peers = [
-        { # John Doe
-          publicKey = "{john doe's public key}";
-          allowedIPs = [ "10.100.0.3/32" ];
+    netdevs."50-wg0" = {
+      netdevConfig = {
+        Kind = "wireguard";
+        Name = "wg0";
+        MTUBytes = "1300";
+      };
+      wireguardConfig = {
+        PrivateKeyFile = "/etc/secrets/mothership_wg_private.key";
+        ListenPort = 5664;
+        RouteTable = "main";
+      };
+      wireguardPeers = [
+        {
+          PublicKey = "8Ep60nleomY9Yp2fYKDCwR1YeGyTdkeh+o2DjVnJVGU=";
+          AllowedIPs = [ "10.100.0.3/32" ];
         }
       ];
     };
+
+    # Configure network settings for wg0
+    networks."50-wg0" = {
+      matchConfig.Name = "wg0";
+      address = [ "10.100.0.1/24" ];
+      networkConfig = {
+        DHCP = "ipv4";
+      };
+      linkConfig.RequiredForOnline = "routable";
+    };
   };
-  ...
+
+  systemd.services.systemd-networkd.environment.SYSTEMD_LOG_LEVEL = "debug";
 }

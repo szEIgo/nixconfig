@@ -6,6 +6,8 @@
 }: {
 
   networking = {
+    networkmanager.enable = false;
+    useNetworkd = true;
     useDHCP = false;
     interfaces.enp6s0 = {
       useDHCP = true;
@@ -34,4 +36,7 @@
     nameservers = ["1.1.1.1" "8.8.8.8"];
 
   };
+
+    services.resolved.enable = true;
+
 }
