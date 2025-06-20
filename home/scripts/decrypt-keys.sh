@@ -26,7 +26,7 @@ for encfile in "$SECRET_DIR"/*.age; do
   filename="$(basename "${encfile%.age}")"
 
   # Determine target dir
-  if [[ "$filename" == id_* ]]; then
+  if [[ "$filename" == id_* || "$filename" == "mothership" ]]; then
     dest="$SSH_DEST/$filename"
     echo "🔓 Decrypting SSH key $filename → $dest"
     age --identity "$MASTER_KEY_DEC" --decrypt -o "$dest" "$encfile"
