@@ -38,6 +38,8 @@
     gptfdisk
     woeusb-ng
     fd
+    kubectl
+    wireguard-tools
   ];
 
   programs.zsh.enable = true;

@@ -4,6 +4,7 @@
   pkgs,
   ...
 }: {
+
   networking = {
     useDHCP = false;
     interfaces.enp6s0 = {
@@ -31,5 +32,6 @@
       interface = "enp6s0";
     };
     nameservers = ["1.1.1.1" "8.8.8.8"];
+
   };
 }

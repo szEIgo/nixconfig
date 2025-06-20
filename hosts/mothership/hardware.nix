@@ -16,6 +16,7 @@
   boot.initrd.availableKernelModules = ["nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod"];
   boot.kernel.sysctl = {
     "kernel.sysrq" = 1;
+    "net.ipv4.ip_forward" = true;
   };
   boot.extraModulePackages = [];
 

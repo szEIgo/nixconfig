@@ -1,9 +1,4 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}: {
+{ config, lib, pkgs, ... }: {
   services = {
     logind = {
       extraConfig = ''
@@ -18,5 +13,7 @@
       sddm.enable = true;
       sddm.wayland.enable = true;
     };
+
+
   };
 }
