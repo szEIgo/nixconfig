@@ -30,7 +30,12 @@
         {
           PublicKey = "8Ep60nleomY9Yp2fYKDCwR1YeGyTdkeh+o2DjVnJVGU=";
           AllowedIPs = [ "10.100.0.3/32" ];
-        }
+        },
+	{
+	  PublicKey = ""qNhTIq7VOu9/TPXAtgbIbPoxRfCimti+3xcaxicdiBY=";
+          AllowedIPs = [ "10.100.0.4/32" ];
+	}
+	
       ];
     };
 
