@@ -1,42 +1,26 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}: {
+{ config, lib, pkgs, ... }:
 
-  networking = {
-    networkmanager.enable = false;
-    useNetworkd = true;
-    useDHCP = false;
-    interfaces.enp6s0 = {
-      useDHCP = true;
-      ipv4.addresses = [
+{
+  systemd.network = {
+    enable = true;
+
+    networks."enp6s0" = {
+      matchConfig.Name = "enp6s0";
+      address = [ "192.168.2.62/24" ];
+
+      routes = [
         {
-          address = "192.168.2.62";
-          prefixLength = 24;
+          Gateway = "192.168.2.1";
         }
       ];
+      linkConfig.RequiredForOnline = "routable";
     };
-
-    #interfaces.enp7s0 = {
-    #  useDHCP = false;
-    #  ipv4.addresses = [
-    #    {
-    #      address = "192.168.2.63";
-    #      prefixLength = 24;
-    #    }
-    #  ];
-    #};
-
-    defaultGateway = {
-      address = "192.168.2.1";
-      interface = "enp6s0";
-    };
-    nameservers = ["1.1.1.1" "8.8.8.8"];
-
   };
 
-    services.resolved.enable = true;
-
+  services.resolved = {
+    enable = true;
+  };
+  services.resolved.extraConfig = ''
+    DNSStubListener=no
+  '';
 }

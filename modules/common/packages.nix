@@ -40,6 +40,8 @@
     fd
     kubectl
     wireguard-tools
+    atop
+    netdata
   ];
 
   programs.zsh.enable = true;
