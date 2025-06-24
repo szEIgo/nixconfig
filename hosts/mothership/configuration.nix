@@ -1,22 +1,26 @@
-{ config, lib, pkgs, ... }: {
-  imports = [
-    ./hardware.nix
-    ./packages.nix
-    ./devices/default.nix
-    ./devices/wireguard-server.nix
-    ../../modules/common/locales.nix
-    ../../modules/common/users.nix
-    ../../modules/common/zfs.nix
-    ../../modules/virtualization/libvirt.nix
-    ../../modules/virtualization/podman.nix
+{ config, lib, pkgs, ... }: let
+  isHeadless = builtins.elem "headless" config.system.nixos.tags;
+in {
+  imports =
+    [
+      ./hardware.nix
+      ./packages.nix
+      ./devices/default.nix
+      ./devices/wireguard-server.nix
+      ../../modules/common/locales.nix
+      ../../modules/common/users.nix
+      ../../modules/common/zfs.nix
+      ../../modules/virtualization/libvirt.nix
+      ../../modules/virtualization/podman.nix
 
-    ../../modules/common/services.nix
-    ../../modules/gaming/steam.nix
-    ../../remote/ssh.nix
-    ../../modules/desktop/plasma.nix
-    ../../modules/desktop/hyprland.nix
+      ../../modules/common/services.nix
+      ../../remote/ssh.nix
+    ]
+    ++ lib.optional (!isHeadless) ../../modules/desktop/plasma.nix
+    ++ lib.optional (!isHeadless) ../../modules/desktop/hyprland.nix
+    ++ lib.optional (!isHeadless) ../../modules/gaming/steam.nix;
 
-  ];
+
   boot.loader.systemd-boot.configurationLimit = 5;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -57,7 +61,7 @@
     };
   };
 
-  services.xserver.enable = true;
+  services.xserver.enable = !isHeadless;
   zramSwap.enable = true;
   zramSwap.algorithm = "zstd";
 
