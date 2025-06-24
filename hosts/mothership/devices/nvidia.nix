@@ -12,20 +12,18 @@
   boot.blacklistedKernelModules = [ "amdgpu" "radeon" ];
   boot.initrd.kernelModules = [ "dm-snapshot" "nvidia" ];
 
-  hardware.
-
   # Configure NVIDIA driver
-  hardware {
-    nvidia = {
+ hardware.nvidia = {
     package = config.boot.kernelPackages.nvidiaPackages.latest;
     open = true;
     modesetting.enable = true;
     powerManagement.enable = false;
-    };
-    graphics = lib.mkForce {
-      enable = true;
-      enable32Bit = true;
-    }
+  };
+
+  hardware.graphics = lib.mkForce {
+    enable = true;
+    enable32Bit = true;
+    extraPackages = [];
   };
 
   # Configure X server for NVIDIA only
@@ -37,7 +35,4 @@
       Option "AllowEmptyInitialConfiguration" "true"
     '';
   };
-
-  # Use mkForce to ensure no AMD packages are loaded
-  hardware.graphics.extraPackages = lib.mkForce [];
 }
