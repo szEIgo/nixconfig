@@ -1,43 +1,35 @@
 { config, lib, pkgs, ... }: {
-  # Kernel modules for virtualization and VFIO
-  boot.kernelModules = [
-    "kvm-amd"
-    "vfio"
-    "vfio_iommu_type1"
-    "vfio_pci"
-    "vfio_virqfd"
-  ];
-
-  # IOMMU and VFIO kernel parameters
+  boot.kernelModules = [ "kvm-amd" "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd" ];
+  
+  # Bind AMD GPU to vfio-pci
   boot.kernelParams = [
     "amd_iommu=on"
     "iommu=pt"
-    "vfio-pci.ids=1002:ab38,1002:731f,10ec:8125"
+    "vfio-pci.ids=1002:ab38,1002:731f,10ec:8125" # Update with your AMD IDs
   ];
 
-  # Blacklist AMD GPU drivers
-  boot.blacklistedKernelModules = [
-    "amdgpu"
-    "radeon"
-  ];
+  # Blacklist AMD drivers
+  boot.blacklistedKernelModules = [ "amdgpu" "radeon" ];
+  boot.initrd.kernelModules = [ "dm-snapshot" "nvidia" ];
 
-  # Required initrd modules
-  boot.initrd.kernelModules = [
-    "dm-snapshot"
-    "nvidia"
-  ];
+  hardware.
 
-  # NVIDIA driver configuration
-  hardware.nvidia = {
+  # Configure NVIDIA driver
+  hardware {
+    nvidia = {
     package = config.boot.kernelPackages.nvidiaPackages.latest;
     open = true;
     modesetting.enable = true;
     powerManagement.enable = false;
-    powerManagement.finegrained = false;
+    };
+    graphics = lib.mkForce {
+      enable = true;
+      enable32Bit = true;
+    }
   };
 
-  # X11 settings to use NVIDIA
-  services.xserver = {
+  # Configure X server for NVIDIA only
+  services.xserver = lib.mkForce {
     enable = true;
     videoDrivers = [ "nvidia" ];
     deviceSection = ''
@@ -46,6 +38,6 @@
     '';
   };
 
-  # Avoid loading any non-NVIDIA graphics packages
-  hardware.graphics.extraPackages = lib.mkForce [ ];
+  # Use mkForce to ensure no AMD packages are loaded
+  hardware.graphics.extraPackages = lib.mkForce [];
 }

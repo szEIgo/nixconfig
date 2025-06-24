@@ -43,10 +43,8 @@
               # It's not typically needed on the server's peer config.
           }
           {
-            wireguardPeerConfig = {
               PublicKey = "qNhTIq7VOu9/TPXAtgbIbPoxRfCimti+3xcaxicdiBY=";
               AllowedIPs = [ "192.168.10.3/32" ];
-            };
           }
         ];
       };

@@ -1,41 +1,28 @@
 { config, lib, pkgs, ... }: {
-  # Kernel modules for AMD and VFIO (to pass through NVIDIA)
-  boot.kernelModules = [
-    "kvm-amd"
-    "vfio"
-    "vfio_iommu_type1"
-    "vfio_pci"
-    "vfio_virqfd"
-    "dm-crypt"
-  ];
 
-  # Kernel parameters for IOMMU and VFIO (NVIDIA passed through)
+  boot.kernelModules = [ "kvm-amd" "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd" "dm-crypt" ];
+  
+  # Bind NVIDIA GPU and its components to vfio-pci at boot
   boot.kernelParams = [
     "amd_iommu=on"
     "iommu=pt"
     "amdgpu.runpm=0"
-    "vfio-pci.ids=10de:1f07,10de:10f9,10de:1ada,10de:1adb,10ec:8125"
+    "vfio-pci.ids=10de:1f07,10de:10f9,10de:1ada,10de:1adb,10ec:8125" # Update with your IDs
   ];
 
-  # Blacklist NVIDIA-related modules
-  boot.blacklistedKernelModules = [
-    "nvidia"
-    "nouveau"
-  ];
+  hardware.graphics = lib.mkForce {
+    enable = true;
+    enable32Bit = true;
+    extraPackages = with pkgs; [ amdvlk ];
+  };
 
-  # Initrd modules needed
-  boot.initrd.kernelModules = [
-    "dm-snapshot"
-    "amdgpu"
-  ];
+  # Explicitly blacklist NVIDIA drivers from the host
+  boot.blacklistedKernelModules = [ "nvidia" "nouveau" ];
+  boot.initrd.kernelModules = [ "dm-snapshot" "amdgpu" ];
 
-  # AMD GPU driver and Vulkan support
-  hardware.graphics.extraPackages = with pkgs; [
-    amdvlk
-  ];
 
-  # X11 configuration for AMD GPU
-  services.xserver = {
+  # Configure X server for AMD only
+  services.xserver = lib.mkForce {
     enable = true;
     videoDrivers = [ "amdgpu" ];
     deviceSection = ''

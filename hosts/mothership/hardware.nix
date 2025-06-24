@@ -20,11 +20,6 @@
   };
   boot.extraModulePackages = [];
 
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
-  };
-
   fileSystems."/" = {
     device = "rpool/nixos/root";
     fsType = "zfs";
