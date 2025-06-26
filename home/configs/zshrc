@@ -7,6 +7,7 @@ export ZSH="$(nix eval --raw nixpkgs#oh-my-zsh)/share/oh-my-zsh"
 ZSH_CUSTOM="$ZSH/custom"
 plugins=(git)
 
+
 # History settings
 HISTSIZE=10000
 SAVEHIST=10000
@@ -93,3 +94,4 @@ bindkey "^[[4~" end-of-line
 
 # Architecture flags
 export ARCHFLAGS="-arch $(uname -m)"
+eval "$(zoxide init zsh)"
