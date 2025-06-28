@@ -2,3 +2,6 @@
 .history
 *.lock
 flake.lock
+.idea
+.vscode
+.codium
