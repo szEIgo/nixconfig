@@ -37,29 +37,6 @@ in {
       mode = "0600";
     };
 
-    id_ecdsa_pub = {
-      file = ./id_ecdsa.pub;
-      path = "${sshDest}/id_ecdsa.pub";
-      owner = "joni";
-      group = "joni";
-      mode = "0644";
-    };
-
-    mothership_pub = {
-      file = ./mothership.pub;
-      path = "${sshDest}/mothership.pub";
-      owner = "joni";
-      group = "joni";
-      mode = "0644";
-    };
-
-    wg_pub = {
-      file = ./mothership_wg_public.key;
-      path = "${wgDest}/mothership_wg_public.key";
-      owner = "root";
-      group = "root";
-      mode = "0644";
-    };
   };
 
   age.identityPaths = [ "/run/agenix/master.id_mothership" ];

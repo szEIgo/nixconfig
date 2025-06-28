@@ -5,11 +5,11 @@ in {
   programs.zsh = {
     enable = true;
 
-    programs.oh-my-zsh.enable = true;
-    programs.oh-my-zsh.theme =
-      ""; # empty if you want to use powerlevel10k instead
-    programs.oh-my-zsh.plugins =
-      [ "git" "sudo" "terraform" "systemadmin" "vi-mode" ];
+    oh-my-zsh = {
+      enable = true;
+      theme = "";
+      plugins = [ "git" "sudo" "terraform" "systemadmin" "vi-mode" ];
+    };
 
     shellAliases = {
       l = "eza --icons";
@@ -24,16 +24,10 @@ in {
 
     enableCompletion = true;
 
-    initExtra = ''
+    initContent = ''
       # Locale
       export LANG=en_US.UTF-8
       export LC_ALL=en_US.UTF-8
-
-      # History
-      HISTSIZE=10000
-      SAVEHIST=10000
-      HISTFILE="$HOME/.zsh_history"
-      mkdir -p "$(dirname "$HISTFILE")"
 
       setopt HIST_FCNTL_LOCK
       setopt HIST_IGNORE_DUPS
@@ -103,13 +97,8 @@ in {
       export ARCHFLAGS="-arch $(uname -m)"
 
       # Zoxide
-      source "${pkgs.zoxide}/share/zoxide/init.zsh"
+      # source "${pkgs.zoxide}/share/zoxide/init.zsh"
     '';
-  };
-
-  programs.zoxide = {
-    enable = true;
-    enableZshIntegration = false; # We do it manually above
   };
 
   programs.keychain.enable = true;

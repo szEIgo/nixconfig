@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ ! -f /run/agenix/master.id_mothership ]]; then
+  echo "🔐 Enter passphrase to decrypt id_mothership:"
+  age --decrypt -o /run/agenix/master.id_mothership ./secrets/id_mothership.age
+  chmod 600 /run/agenix/master.id_mothership
+fi
+
+sudo nixos-rebuild switch --flake .#mothership
