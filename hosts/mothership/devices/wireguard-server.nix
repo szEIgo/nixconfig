@@ -35,17 +35,21 @@
         # --- CORRECTED PEERS SECTION ---
         wireguardPeers = [
           {
-              PublicKey = "8Ep60nleomY9Yp2fYKDCwR1YeGyTdkeh+o2DjVnJVGU=";
-              # Only list the IP this client is allowed to have.
-              # Use /32 for a single IP address.
-              AllowedIPs = [ "192.168.10.2/32" ];
-              # PersistentKeepalive is a client-side setting to keep NAT open.
-              # It's not typically needed on the server's peer config.
+            PublicKey = "8Ep60nleomY9Yp2fYKDCwR1YeGyTdkeh+o2DjVnJVGU=";
+            # Only list the IP this client is allowed to have.
+            # Use /32 for a single IP address.
+            AllowedIPs = [ "192.168.10.2/32" ];
+            # PersistentKeepalive is a client-side setting to keep NAT open.
+            # It's not typically needed on the server's peer config.
           }
           {
-              PublicKey = "qNhTIq7VOu9/TPXAtgbIbPoxRfCimti+3xcaxicdiBY=";
-              AllowedIPs = [ "192.168.10.3/32" ];
+            PublicKey = "qNhTIq7VOu9/TPXAtgbIbPoxRfCimti+3xcaxicdiBY=";
+            AllowedIPs = [ "192.168.10.3/32" ];
           }
+          #          {
+          #            PublicKey = "fromWin11";
+          #            AllowedIps = [ "192.168.10.4/32" ];
+          #          }
         ];
       };
     };

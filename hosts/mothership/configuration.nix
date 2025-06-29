@@ -77,6 +77,7 @@
         ../../modules/desktop/plasma.nix
         ../../modules/common/services.nix
         ./devices/dualGpu.nix
+        ./devices/sunshine.nix
       ];
     };
 
@@ -86,6 +87,8 @@
         ./devices/amd.nix
         ../../modules/desktop/plasma.nix
         ../../modules/common/services.nix
+        ./devices/sunshine.nix
+        ./devices/dummydisplay.nix
       ];
     };
 
