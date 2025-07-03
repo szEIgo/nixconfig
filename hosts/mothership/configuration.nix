@@ -88,11 +88,11 @@
         ./devices/amd.nix
         ../../modules/desktop/plasma.nix
         ../../modules/common/services.nix
+        ../../modules/rke2/rke2-server.nix
         ./devices/sunshine.nix
         #./devices/dummydisplay.nix
         ./devices/wireguard-server.nix
         ./../modules/gaming/steam.nix
-
       ];
     };
 
