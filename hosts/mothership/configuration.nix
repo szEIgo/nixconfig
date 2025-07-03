@@ -84,11 +84,12 @@
       system.nixos.tags = [ "amd" "vfio" "desktop" ];
       imports = [
         ./devices/amd.nix
+        ./devices/sunshine.nix
+        ./devices/wireguard-server.nix
         ../../modules/desktop/current.nix
         ../../modules/rke2/rke2-server.nix
-        ./devices/sunshine.nix
-        #./devices/dummydisplay.nix
-        ./devices/wireguard-server.nix
+        #./devices/dummydisplay.nix only works for X
+        
       ];
     };
 
