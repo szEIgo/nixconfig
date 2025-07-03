@@ -37,7 +37,7 @@ for encfile in "$SECRET_DIR"/*.age; do
     echo "🔓 Decrypting WireGuard key $filename → $dest (as root)"
     sudo age --identity "$MASTER_KEY_DEC" --decrypt -o "$dest" "$encfile"
     sudo chmod 600 "$dest"
-    sudo chown root:root "$dest"
+    sudo chown systemd-network:systemd-network "$dest"
   else
     echo "⚠️ Unknown .age file type: $filename, skipping"
   fi

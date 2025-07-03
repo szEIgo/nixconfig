@@ -1,9 +1,6 @@
 { config, lib, pkgs, ... }: {
 
-  environment.systemPackages = with pkgs; [
-    xorg.xorgserver
-    xorg.xf86videoDummy
-  ];
+  environment.systemPackages = with pkgs; [ xorg.xf86videodummy ];
 
   # Optional: script to launch dummy X server manually or via systemd
   systemd.services.dummy-xserver = {
@@ -13,12 +10,11 @@
     serviceConfig = {
       ExecStart =
         "${pkgs.xorg.xorgserver}/bin/X :1 -config /etc/dummy-xorg.conf -noreset";
-      StandardOutput = "journal";
       Restart = "on-failure";
+      StandardOutput = "journal";
     };
   };
 
-  # Write dummy X config to /etc/dummy-xorg.conf
   environment.etc."dummy-xorg.conf".text = ''
     Section "Device"
         Identifier "DummyDevice"
@@ -30,7 +26,7 @@
         Identifier "DummyMonitor"
         HorizSync 28.0-80.0
         VertRefresh 48.0-75.0
-        Modeline "1920x1080" 148.50 1920 2008 2052 2200 1080 1084 1089 1125 +hsync +vsync
+        Modeline "2048x1332" 230.00  2048 2184 2400 2752  1332 1335 1345 1393 -hsync +vsync
     EndSection
 
     Section "Screen"
@@ -40,7 +36,7 @@
         DefaultDepth 24
         SubSection "Display"
             Depth 24
-            Modes "1920x1080"
+            Modes "2048x1332"
         EndSubSection
     EndSection
 
@@ -49,4 +45,5 @@
         Screen "DummyScreen"
     EndSection
   '';
+
 }

@@ -46,10 +46,10 @@
             PublicKey = "qNhTIq7VOu9/TPXAtgbIbPoxRfCimti+3xcaxicdiBY=";
             AllowedIPs = [ "192.168.10.3/32" ];
           }
-          #          {
-          #            PublicKey = "fromWin11";
-          #            AllowedIps = [ "192.168.10.4/32" ];
-          #          }
+          {
+            PublicKey = "EIqIrG24MjrNtmmYgLkebTH7Cl1MJ99vTqVcjdsppiM=";
+            AllowedIPs = [ "192.168.10.4/24" ];
+          }
         ];
       };
     };

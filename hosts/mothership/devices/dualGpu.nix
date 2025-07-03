@@ -1,30 +1,31 @@
+# /etc/nixos/devices/dualGpu.nix
 { config, lib, pkgs, ... }: {
-
-  boot.kernelModules = ["kvm-amd" "dm-crypt"];
-  boot.kernelParams = [
+  # FORCE these lists to override the base configuration
+  boot.kernelModules = lib.mkForce ["kvm-amd" "dm-crypt"];
+  boot.kernelParams = lib.mkForce [
     "amd_iommu=on" 
     "iommu=pt" 
     "amdgpu.runpm=0" 
-    # Ensure nouveau is blacklisted if you're using the proprietary NVIDIA driver
     "modprobe.blacklist=nouveau" 
     "rd.driver.blacklist=nouveau"
   ];
-  boot.blacklistedKernelModules = ["vfio" "nouveau"];
-  boot.initrd.kernelModules = ["dm-snapshot" "amdgpu" "nvidia"]; # Add nvidia here
+  boot.blacklistedKernelModules = lib.mkForce ["vfio" "nouveau"];
 
-  hardware.graphics = {
+  # This can be left as-is
+  boot.initrd.kernelModules = ["dm-snapshot" "amdgpu" "nvidia"];
+
+  # Use mkForce for clarity and to override the base headless config
+  hardware.graphics = lib.mkForce {
     enable = true;
     enable32Bit = true;
+    extraPackages = with pkgs; [ amdvlk ];
   };
-
-  # Load graphics packages for both
-  hardware.graphics.extraPackages = with pkgs; [ amdvlk ];
 
   # Configure NVIDIA driver
   hardware.nvidia = {
     modesetting.enable = true;
     package = config.boot.kernelPackages.nvidiaPackages.latest;
-    open = true; # Use open-source kernel modules
+    open = true;
     powerManagement.enable = false;
   };
 

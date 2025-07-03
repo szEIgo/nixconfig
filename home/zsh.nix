@@ -2,13 +2,39 @@
 
 let sshKey = "~/.ssh/id_ecdsa";
 in {
+
+  programs.zellij = {
+    enable = true;
+    enableZshIntegration = true;
+    settings = {
+      default_layout = "compact";
+      default_shell = "zsh";
+    };
+
+  };
   programs.zsh = {
     enable = true;
 
     oh-my-zsh = {
       enable = true;
       theme = "";
-      plugins = [ "git" "sudo" "terraform" "systemadmin" "vi-mode" ];
+      plugins = [
+        "git"
+        "sudo"
+        "terraform"
+        "systemadmin"
+        "vi-mode"
+        "terraform"
+        "scala"
+        "rust"
+        "redis-cli"
+        "cp"
+        "history"
+        "kubectl"
+        "podman"
+        "colorize"
+        "aws"
+      ];
     };
 
     shellAliases = {

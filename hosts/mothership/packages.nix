@@ -1,13 +1,5 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}: {
-  imports = [
-    ../../modules/common/packages.nix
-  ];
-  
+{ config, lib, pkgs, ... }: {
+  imports = [ ../../modules/common/packages.nix ];
 
   environment.systemPackages = with pkgs; [
     virt-manager
@@ -26,8 +18,10 @@
     podman-tui
     podman-compose
     dive
+    yazi
+    zellij
   ];
-  
+
   programs = {
     partition-manager.enable = true;
     xwayland.enable = true;

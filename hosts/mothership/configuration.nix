@@ -19,6 +19,7 @@
     "vfio_virqfd"
     "dm-crypt"
     "vendor-reset"
+    "wireguard"
   ];
 
   boot.kernelParams = [
@@ -88,7 +89,10 @@
         ../../modules/desktop/plasma.nix
         ../../modules/common/services.nix
         ./devices/sunshine.nix
-        ./devices/dummydisplay.nix
+        #./devices/dummydisplay.nix
+        ./devices/wireguard-server.nix
+        ./../modules/gaming/steam.nix
+
       ];
     };
 
