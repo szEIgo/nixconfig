@@ -75,10 +75,8 @@
     dualGpu.configuration = {
       system.nixos.tags = [ "dualGpu" "desktop" ];
       imports = [
-        ../../modules/desktop/plasma.nix
-        ../../modules/common/services.nix
+        ../../modules/desktop/current.nix
         ./devices/dualGpu.nix
-        ./devices/sunshine.nix
       ];
     };
 
@@ -86,13 +84,11 @@
       system.nixos.tags = [ "amd" "vfio" "desktop" ];
       imports = [
         ./devices/amd.nix
-        ../../modules/desktop/plasma.nix
-        ../../modules/common/services.nix
+        ../../modules/desktop/current.nix
         ../../modules/rke2/rke2-server.nix
         ./devices/sunshine.nix
         #./devices/dummydisplay.nix
         ./devices/wireguard-server.nix
-        ./../modules/gaming/steam.nix
       ];
     };
 
@@ -100,8 +96,7 @@
       system.nixos.tags = [ "nvidia" "vfio" "desktop" ];
       imports = [
         ./devices/nvidia.nix
-        ../../modules/desktop/plasma.nix
-        ../../modules/common/services.nix
+        ../../modules/desktop/current.nix
       ];
     };
   };
