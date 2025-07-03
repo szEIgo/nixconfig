@@ -9,6 +9,8 @@
     "./.config/git/config".source = ./configs/gitconfig;
     #    ".zshrc".source = ./configs/zshrc;
     ".powerlevel10k".source = ./configs/p10k.zsh;
+    "./.config/zellij/config.kdl".source = ./configs/zellij/config.kdl;
+    "./.config/zellij/plugins/keybinds.kdl".source = ./configs/zellij/keybinds.kdl;
   }];
 
   home.packages = with pkgs; [
@@ -18,6 +20,7 @@
     htop
     zsh-powerlevel10k
     oh-my-zsh
+    k9s
   ];
   programs.git.enable = true;
   programs.zoxide.enable = true;

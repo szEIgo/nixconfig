@@ -1,0 +1,78 @@
+// ~/.config/zellij/config.kdl
+
+// General settings
+set pane_frames true
+set default_mode "normal"
+set mouse_mode true
+set simplified_ui false
+set ui pane_titles true
+set scrollback_lines_to_search 10000
+
+// Display keybinds at the bottom (status-bar plugin does this)
+plugin "status-bar"
+
+plugin "tab-bar"
+
+// Show current layout visually (Ctrl + g default)
+plugin "pane-resize"
+
+// Optional: Show system info or key hints plugin (customizable)
+plugin location="file:~/.config/zellij/plugins/keybinds.kdl"
+
+// Layout (basic split with tab-bar and status-bar)
+layout {
+  pane size=1 borderless=true {
+    plugin "tab-bar"
+  }
+  pane {
+    plugin "status-bar"
+  }
+}
+
+// Keybinds (some simple, beginner-friendly bindings)
+keybinds normal {
+  bind "Ctrl q" {
+    ToggleFloatingPanes
+  }
+
+  bind "Ctrl h" {
+    MoveFocusLeft
+  }
+  bind "Ctrl l" {
+    MoveFocusRight
+  }
+  bind "Ctrl j" {
+    MoveFocusDown
+  }
+  bind "Ctrl k" {
+    MoveFocusUp
+  }
+
+  bind "Ctrl n" {
+    NewPane
+  }
+
+  bind "Ctrl w" {
+    CloseFocus
+  }
+
+  bind "Ctrl t" {
+    NewTab
+  }
+
+  bind "Ctrl g" {
+    TogglePaneFrames
+  }
+
+  bind "Ctrl p" {
+    ToggleCommandPalette
+  }
+}
+
+// Optional: Better resizing and command palette bindings
+keybinds resize {
+  bind "h" { ResizeLeft }
+  bind "l" { ResizeRight }
+  bind "k" { ResizeUp }
+  bind "j" { ResizeDown }
+}
