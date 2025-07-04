@@ -3,3 +3,6 @@
 *.lock
 flake.lock
 all-configs.txt
+.vscode
+.history
+.idea

@@ -15,7 +15,7 @@
   ];
 
   environment.etcBackupExtension = ".bak";
-  system.stateVersion = "25.05"; # Updated to match your flake
+  system.stateVersion = "24.05"; # Updated to match your flake
   nix.extraOptions = ''
     experimental-features = nix-command flakes
   '';
