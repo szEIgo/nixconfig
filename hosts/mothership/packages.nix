@@ -18,8 +18,13 @@
     podman-tui
     podman-compose
     dive
+    ghostty
     yazi
     zellij
+    k9s
+    openssl
+    kubernetes-helm
+    nushell
   ];
 
   programs = {

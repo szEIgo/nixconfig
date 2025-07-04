@@ -20,7 +20,6 @@
     htop
     zsh-powerlevel10k
     oh-my-zsh
-    k9s
   ];
   programs.git.enable = true;
   programs.zoxide.enable = true;
