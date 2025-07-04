@@ -1,0 +1,9 @@
+# ./nixos/modules/services/podman.nix
+{ pkgs, ... }: {
+  virtualisation.podman = {
+    enable = true;
+    dockerCompat = true;
+    defaultNetwork.settings.dns_enabled = true;
+  };
+  environment.systemPackages = with pkgs; [ podman-compose ];
+}
