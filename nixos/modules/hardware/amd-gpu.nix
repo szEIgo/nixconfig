@@ -1,4 +1,4 @@
-´# ./nixos/modules/hardware/amd-gpu.nix
+# ./nixos/modules/hardware/amd-gpu.nix
 { lib, pkgs, ... }: {
   # Override settings from the headless default
   boot.kernelParams = lib.mkForce [
