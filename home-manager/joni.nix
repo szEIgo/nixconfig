@@ -27,10 +27,12 @@
     fd
     jq
     zoxide
+    fzf
   ];
 
   # Link dotfiles from the central dotfiles directory
-  home.file.".gitconfig".source = "${root}/home-manager/dotfiles/git/.gitconfig";
+  home.file.".gitconfig".source =
+    "${root}/home-manager/dotfiles/git/.gitconfig";
   home.file.".p10k.zsh".source = "${root}/home-manager/dotfiles/p10k/.p10k.zsh";
 
   programs.git.enable = true; # Manages .gitconfig through options if you prefer
