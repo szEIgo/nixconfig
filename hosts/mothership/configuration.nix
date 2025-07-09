@@ -91,7 +91,7 @@
         ./devices/sunshine.nix
         #./devices/dummydisplay.nix
         ./devices/wireguard-server.nix
-        ./../modules/gaming/steam.nix
+        ../../modules/gaming/steam.nix
 
       ];
     };

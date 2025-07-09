@@ -47,7 +47,7 @@
             AllowedIPs = [ "192.168.10.3/32" ];
           }
           {
-            PublicKey = "EIqIrG24MjrNtmmYgLkebTH7Cl1MJ99vTqVcjdsppiM=";
+            PublicKey = "SOV6U1SR328Up+dP2t+04ErNiIDuD0qkCfa6+ffTrkU=";
             AllowedIPs = [ "192.168.10.4/24" ];
           }
         ];
