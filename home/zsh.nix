@@ -7,6 +7,7 @@ in {
     enable = true;
     enableZshIntegration = true;
     settings = {
+      show_startup_tips = false;
       default_layout = "compact";
       default_shell = "zsh";
     };

@@ -17,9 +17,10 @@
   };
 
   environment.systemPackages = with pkgs; [
-    bluedevil
+    kdePackages.bluedevil # ✅ Corrected for Qt6 / Plasma 6
     bluez
     bluez-tools
     wireplumber
   ];
 }
+
