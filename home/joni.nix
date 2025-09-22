@@ -8,14 +8,10 @@
     ".powerlevel10k".source = ./configs/p10k.zsh;
   }];
 
-  home.packages = with pkgs; [
-    firefox
-    neovim
-    git
-    htop
-    zsh-powerlevel10k
-    oh-my-zsh
-  ];
+  home.packages = with pkgs;
+    [ firefox neovim git htop zsh-powerlevel10k oh-my-zsh ]
+    ++ import ./fonts.nix { pkgs = pkgs; };
+
   programs.git.enable = true;
   programs.zoxide.enable = true;
   programs.zoxide.enableZshIntegration = true;

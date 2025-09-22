@@ -5,7 +5,7 @@
     firewall = {
       # This is correct
       allowedTCPPorts = [ 22 47989 47990 ];
-      allowedUDPPorts = [ 5664 47998 47999 48000 48002 48010 ];
+      allowedUDPPorts = [ 5664 47998 47999 48000 48002 48010 51821 ];
       trustedInterfaces =
         [ "wg0" "enp6s0" ]; # Keeping enp6s0 here can be a security risk
     };
@@ -29,7 +29,7 @@
         wireguardConfig = {
           PrivateKeyFile =
             "/etc/secrets/mothership_wg_private.key"; # Or config.age.secrets...
-          ListenPort = 5664;
+          ListenPort = 51821;
         };
 
         # --- CORRECTED PEERS SECTION ---
@@ -48,7 +48,7 @@
           }
           {
             PublicKey = "SOV6U1SR328Up+dP2t+04ErNiIDuD0qkCfa6+ffTrkU=";
-            AllowedIPs = [ "192.168.10.4/24" ];
+            AllowedIPs = [ "192.168.10.4/32" ];
           }
         ];
       };

@@ -20,6 +20,7 @@
     dive
     yazi
     zellij
+    #    linuxKernel.packages.linux_6_16.nvidia_x11
   ];
 
   programs = {

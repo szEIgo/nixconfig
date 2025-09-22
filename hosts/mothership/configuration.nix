@@ -50,7 +50,8 @@
   boot.initrd.luks.devices."cryptroot".device =
     "/dev/disk/by-uuid/2191f348-040d-42e3-9caf-c43b86f9a6df";
 
-  boot.kernelPackages = pkgs.linuxPackages_6_14;
+  boot.kernelPackages = pkgs.linuxPackages;
+  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
   boot.crashDump.enable = true;
   boot.kernel.sysctl."kernel.watchdog" = 1;
 

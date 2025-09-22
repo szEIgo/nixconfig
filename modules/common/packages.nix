@@ -4,6 +4,8 @@
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [
+    android-tools
+    qtscrcpy
     fzf
     zoxide
     zsh
@@ -43,6 +45,9 @@
     wireguard-tools
     atop
     netdata
+    plantuml
+    jdk
+    graphviz
   ];
 
   programs.zsh.enable = true;
