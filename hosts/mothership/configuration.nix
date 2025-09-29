@@ -8,6 +8,7 @@
     ../../modules/common/zfs.nix
     ../../modules/virtualization/libvirt.nix
     ../../modules/virtualization/podman.nix
+    ../../modules/virtualization/kubernetes.nix
     ../../remote/ssh.nix
   ];
   boot.extraModulePackages = [ config.boot.kernelPackages.vendor-reset ];

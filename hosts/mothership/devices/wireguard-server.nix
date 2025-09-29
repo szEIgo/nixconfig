@@ -24,23 +24,18 @@
         netdevConfig = {
           Kind = "wireguard";
           Name = "wg0";
-          MTUBytes = "1420"; # A standard safe MTU for WireGuard
+          MTUBytes = "1420";
         };
         wireguardConfig = {
           PrivateKeyFile =
-            "/etc/secrets/mothership_wg_private.key"; # Or config.age.secrets...
+            "/etc/secrets/mothership_wg_private.key"; 
           ListenPort = 51821;
         };
 
-        # --- CORRECTED PEERS SECTION ---
         wireguardPeers = [
           {
             PublicKey = "8Ep60nleomY9Yp2fYKDCwR1YeGyTdkeh+o2DjVnJVGU=";
-            # Only list the IP this client is allowed to have.
-            # Use /32 for a single IP address.
             AllowedIPs = [ "192.168.10.2/32" ];
-            # PersistentKeepalive is a client-side setting to keep NAT open.
-            # It's not typically needed on the server's peer config.
           }
           {
             PublicKey = "qNhTIq7VOu9/TPXAtgbIbPoxRfCimti+3xcaxicdiBY=";
@@ -56,9 +51,7 @@
 
     networks."wg0" = {
       matchConfig.Name = "wg0";
-      # The server's own IP on the tunnel.
       address = [ "192.168.10.1/24" ];
-      # This ensures networkd waits for the interface to be ready.
       linkConfig.RequiredForOnline = "routable";
     };
   };

@@ -5,5 +5,9 @@
     shell = pkgs.zsh;
   };
 
+  systemd.tmpfiles.rules = [
+    "d /mnt/files 0755 joni  joni  -"
+  ];
+
   users.defaultUserShell = pkgs.zsh;
 }
