@@ -5,7 +5,7 @@
 
   services.kubernetes = {
     enable = true;
-    package = pkgs.kubernetes_1_33; 
+    package = pkgs.kubernetes; 
     masterAddress = "127.0.0.1";
     apiserverAddress = "https://127.0.0.1:6443";
 
