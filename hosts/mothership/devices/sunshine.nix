@@ -8,7 +8,7 @@ in {
     sunshine
     libva
     libva-utils
-    vaapiVdpau
+    libva-vdpau-driver    
     libvdpau-va-gl
   ];
 
@@ -54,6 +54,6 @@ in {
   };
   hardware.graphics = lib.mkForce {
     enable = true;
-    extraPackages = with pkgs; [ vaapiVdpau libvdpau-va-gl mesa ];
+    extraPackages = with pkgs; [ libva-vdpau-driver libvdpau-va-gl mesa ];
   };
 }

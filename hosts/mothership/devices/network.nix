@@ -1,26 +1,21 @@
-{ config, lib, pkgs, ... }:
-
+# In your network.nix file
 {
   systemd.network = {
-    enable = true;
-
+      enable = true;
     networks."enp6s0" = {
       matchConfig.Name = "enp6s0";
-      address = [ "192.168.2.62/24" ];
-
-      routes = [
-        {
-          Gateway = "192.168.2.1";
-        }
-      ];
+      address = [ "192.168.2.62/24" ]; 
+      networkConfig = {
+        DNS = [ "1.1.1.1" "8.8.8.8" ];
+      };
+      routes = [{ Gateway = "192.168.2.1"; }];
       linkConfig.RequiredForOnline = "routable";
     };
   };
-
-  services.resolved = {
-    enable = true;
-  };
-  services.resolved.extraConfig = ''
-    DNSStubListener=no
-  '';
+    services.resolved = {
+      enable = true;
+      extraConfig = ''
+        DNSStubListener=no
+      '';
+    };
 }

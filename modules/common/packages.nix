@@ -12,7 +12,6 @@
     eza
     bat
     age
-    zsh-history
     librewolf
     keychain
     vim

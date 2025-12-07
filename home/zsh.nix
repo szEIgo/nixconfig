@@ -47,6 +47,7 @@ in {
       vim = "hx";
       sw_debian = "ssh -J bastion@51.158.121.209:61000 root@172.16.16.5";
       sw_ubuntu = "ssh -J bastion@51.15.132.29:61000 root@172.16.4.2";
+      k = "sudo KUBECONFIG=/etc/kubernetes/kubeconfig-admin.yaml kubectl";
     };
 
     enableCompletion = true;

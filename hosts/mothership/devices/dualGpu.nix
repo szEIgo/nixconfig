@@ -18,7 +18,6 @@
   hardware.graphics = lib.mkForce {
     enable = true;
     enable32Bit = true;
-    extraPackages = with pkgs; [ amdvlk ];
   };
 
   # Configure NVIDIA driver

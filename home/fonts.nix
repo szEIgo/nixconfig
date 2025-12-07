@@ -18,7 +18,7 @@ with pkgs;
   source-sans
   liberation_ttf
   dejavu_fonts
-  ubuntu_font_family
+  ubuntu-classic
   recursive
   inter
 ]

@@ -9,7 +9,7 @@
 
   boot.initrd.availableKernelModules =
     [ "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
-  boot.kernel.sysctl = {
+  boot.kernel.sysctl = lib.mkForce {
     "kernel.sysrq" = 1;
     "net.ipv4.ip_forward" = true;
     "vm.nr_hugepages" = 8192;
@@ -35,6 +35,8 @@
   };
 
   swapDevices = [ ];
+
+  
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's

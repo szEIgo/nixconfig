@@ -2,8 +2,8 @@
   description = "Jonis Flaked NixConfig for Mothership / Macbook / Android";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
-    home-manager.url = "github:nix-community/home-manager/release-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    home-manager.url = "github:nix-community/home-manager/release-25.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
 
@@ -39,7 +39,7 @@
           {
             home.username = "joni";
             home.homeDirectory = "/Users/joni";
-            home.stateVersion = "25.05";
+            home.stateVersion = "25.11";
           }
         ];
       };
