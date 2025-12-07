@@ -12,7 +12,16 @@
     [ firefox neovim git htop zsh-powerlevel10k oh-my-zsh ]
     ++ import ./fonts.nix { pkgs = pkgs; };
 
-  programs.git.enable = true;
+   programs.git = {
+    enable = true;
+    user = {
+      name  = "Jonathan Szigethy";
+      email = "jonathan@szigethy.dk";
+    };
+    config = {
+      push = { autoSetupRemote = true; };
+    };
+  };
   programs.zoxide.enable = true;
   programs.zoxide.enableZshIntegration = true;
   programs.fzf.enable = true;

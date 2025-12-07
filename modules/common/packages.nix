@@ -4,6 +4,8 @@
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [
+    gh
+    sops
     android-tools
     qtscrcpy
     fzf

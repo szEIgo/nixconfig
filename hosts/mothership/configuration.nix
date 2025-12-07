@@ -4,7 +4,6 @@
     ./packages.nix
     ./devices/wireguard-server.nix
     ../../modules/common/locales.nix
-    ../../modules/common/pineentry.nix
     ../../modules/common/users.nix
     ../../modules/common/zfs.nix
     ../../modules/virtualization/libvirt.nix

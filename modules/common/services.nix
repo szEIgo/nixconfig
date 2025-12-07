@@ -2,13 +2,12 @@
   services = {
     logind = {
       settings.Login = {
-        HandlePowerKey             = "ignore";
-        HandleLidSwitch            = "ignore";
+        HandlePowerKey = "ignore";
+        HandleLidSwitch = "ignore";
         HandleLidSwitchExternalPower = "ignore";
-        IdleAction                 = "ignore";
+        IdleAction = "ignore";
       };
     };
-
     displayManager = {
       sddm.enable = true;
       sddm.wayland.enable = true;
