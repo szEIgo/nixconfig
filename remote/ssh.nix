@@ -1,10 +1,13 @@
 { config, lib, pkgs, ... }:
 
 let
-  joniKey =
-    "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAHDfzNmhnlqZCZagsLq/GkTwTiMOGWE6VXhRuXI6aOgG8N1G49ux54s1VCAT94z/TutAkKI5w8Vl7jBI3Ph3CZwVAG6s8HlB513ap2lTESX+Hyw6aKa69YXbJIsMTD264pLzmSvBR0VuNzLXz/k7IeUm73Q8K6aR5yBWniJYZpJvLgdSQ== joni@mac";
-  phoneKey =
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBbHtBkZdzkuvWjEHmO+licbiOmfV4OYKiCmCeE1G9u3 nix-on-droid@localhost";
+  authorizedKeysFile = ./authorized_keys;
+
+  authorizedKeys = lib.lists.filter (key: key != "") (
+    lib.strings.splitString "
+" (builtins.readFile authorizedKeysFile)
+  );
+
 in {
   programs = {
     ssh = {
@@ -33,7 +36,7 @@ in {
   };
 
   users.users = {
-    joni.openssh.authorizedKeys.keys = [ joniKey phoneKey ];
-    root.openssh.authorizedKeys.keys = [ joniKey phoneKey ];
+    joni.openssh.authorizedKeys.keys = authorizedKeys;
+    root.openssh.authorizedKeys.keys = authorizedKeys;
   };
 }
