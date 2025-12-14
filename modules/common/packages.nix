@@ -4,6 +4,7 @@
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [
+    fluxcd
     gh
     sops
     android-tools
