@@ -39,7 +39,7 @@
         openssl
         curl
         expat
-      ]
+      ];
     };
 
     gnupg.agent = {
