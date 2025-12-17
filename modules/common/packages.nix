@@ -35,7 +35,6 @@
     tree
     dust
     tmux
-    byobu
     helix
     copyq
     parted

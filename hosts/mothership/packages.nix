@@ -2,6 +2,7 @@
   imports = [ ../../modules/common/packages.nix ];
 
   environment.systemPackages = with pkgs; [
+    openvscode-server
     virt-manager
     qemu
     libvirt
@@ -27,6 +28,19 @@
     partition-manager.enable = true;
     xwayland.enable = true;
     kdeconnect.enable = true;
+    nix-ld = {
+      enable = true;
+      libraries = with pkgs; [
+        stdenv.cc.cc
+        zlib
+        fuse3
+        icu
+        nss
+        openssl
+        curl
+        expat
+      ]
+    };
 
     gnupg.agent = {
       enable = true;
