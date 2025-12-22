@@ -4,6 +4,7 @@
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [
+    gnumake
     fluxcd
     gh
     sops
@@ -23,7 +24,8 @@
     pciutils
     nmap
     haskellPackages.Xauth
-    vscodium
+    #    vscodium
+    vscode
     ripgrep
     jq
     sbt
