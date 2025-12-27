@@ -2,13 +2,6 @@
 { config, lib, pkgs, ... }: {
   # FORCE these lists to override the base configuration
   boot.kernelModules = lib.mkForce ["kvm-amd" "dm-crypt"];
-  boot.kernelParams = lib.mkForce [
-    "amd_iommu=on" 
-    "iommu=pt" 
-    "amdgpu.runpm=0" 
-    "modprobe.blacklist=nouveau" 
-    "rd.driver.blacklist=nouveau"
-  ];
   boot.blacklistedKernelModules = lib.mkForce ["vfio" "nouveau"];
 
   # This can be left as-is
@@ -31,14 +24,14 @@
   # Disable X server; rely on Wayland/Hyprland
   services.xserver = lib.mkForce { enable = false; };
 
-  # Virtual EDID for headless streaming (adjust CONNECTOR as needed)
+  # Single consolidated kernelParams including virtual EDID
   boot.kernelParams = lib.mkForce [
     "amd_iommu=on" 
     "iommu=pt" 
     "amdgpu.runpm=0" 
     "modprobe.blacklist=nouveau" 
     "rd.driver.blacklist=nouveau"
-    "drm.edid_firmware=HDMI-A-1:edid/virtual-1080p.bin"
-    "video=HDMI-A-1:1920x1080R@60e"
+ #   "drm.edid_firmware=HDMI-A-1:edid/virtual-2048x1332.bin"
+ #   "video=HDMI-A-1:2048x1332R@60e"
   ];
 }

@@ -1,12 +1,12 @@
 { pkgs, ... }:
 let
   edidFirmware = pkgs.stdenv.mkDerivation {
-    name = "virtual-edid";
-    src = ./edid/virtual-1080p.bin;
+    name = "virtual-edid-2048x1332";
+    src = ./edid/virtual-2048x1332.bin;
     dontUnpack = true;
     installPhase = ''
       mkdir -p $out/lib/firmware/edid
-      cp $src $out/lib/firmware/edid/virtual-1080p.bin
+      cp $src $out/lib/firmware/edid/virtual-2048x1332.bin
     '';
   };
 in {

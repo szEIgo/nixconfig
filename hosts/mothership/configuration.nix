@@ -81,7 +81,7 @@
         ../../modules/desktop/hyprland.nix
         ../../modules/common/services.nix
         ./devices/dualGpu.nix
-        ./devices/edid.nix
+        #./devices/edid.nix
         ./devices/sunshine.nix
       ];
     };
@@ -92,7 +92,7 @@
         ./devices/amd.nix
         ../../modules/desktop/hyprland.nix
         ../../modules/common/services.nix
-        ./devices/edid.nix
+       # ./devices/edid.nix
         ./devices/sunshine.nix
         ../../modules/gaming/steam.nix
 
@@ -105,7 +105,7 @@
         ./devices/nvidia.nix
         ../../modules/desktop/hyprland.nix
         ../../modules/common/services.nix
-        ./devices/edid.nix
+   #     ./devices/edid.nix
       ];
     };
   };
