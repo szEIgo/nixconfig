@@ -12,22 +12,14 @@ in {
     libvdpau-va-gl
   ];
 
-  services.sunshine = {
-    enable = true;
-    autoStart = true;
-    capSysAdmin = true;
-    openFirewall = true;
-  };
-
-  systemd.services.sunshine = {
+  # Use a user service so Sunshine starts with the Wayland session
+  systemd.user.services.sunshine = {
     description = "Sunshine Game Streaming Server";
-    after = [ "network.target" "graphical.target" ];
-    wantedBy = [ "multi-user.target" ];
-
+    after = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
     serviceConfig = {
       ExecStart = "${pkgs.sunshine}/bin/sunshine";
       Restart = "on-failure";
-      User = username;
       WorkingDirectory = "/home/${username}";
       Environment = "XDG_RUNTIME_DIR=/run/user/${toString uid}";
     };
@@ -52,6 +44,7 @@ in {
       8010
     ];
   };
+
   hardware.graphics = lib.mkForce {
     enable = true;
     extraPackages = with pkgs; [ libva-vdpau-driver libvdpau-va-gl mesa ];

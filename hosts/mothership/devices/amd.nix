@@ -20,12 +20,16 @@
   boot.initrd.kernelModules = [ "dm-snapshot" "amdgpu" ];
 
 
-  # Configure X server for AMD only
-  services.xserver = lib.mkForce {
-    enable = true;
-    videoDrivers = [ "amdgpu" ];
-    deviceSection = ''
-      Option "TearFree" "true"
-    '';
-  };
+  # Disable X server; use Wayland/Hyprland
+  services.xserver = lib.mkForce { enable = false; };
+
+  # Virtual EDID for headless streaming (adjust CONNECTOR as needed)
+  boot.kernelParams = lib.mkForce [
+    "amd_iommu=on"
+    "iommu=pt"
+    "amdgpu.runpm=0"
+    "vfio-pci.ids=10de:1f07,10de:10f9,10de:1ada,10de:1adb,10ec:8125"
+    "drm.edid_firmware=HDMI-A-1:edid/virtual-1080p.bin"
+    "video=HDMI-A-1:1920x1080R@60e"
+  ];
 }

@@ -1,6 +1,6 @@
 { config, lib, pkgs, plasmaEnabled ? false, ... }: {
 
-  imports = [ ./plasma6.nix ./zsh.nix ];
+  imports = [ ./hyprland.nix ./zsh.nix ];
 
   home.file = lib.mkMerge [{
     "./.gitconfig".source = ./configs/gitconfig;

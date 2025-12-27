@@ -16,7 +16,7 @@
     eza
     bat
     age
-    librewolf
+    # librewolf removed; using firefox via Home Manager
     keychain
     vim
     btop

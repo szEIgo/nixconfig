@@ -22,7 +22,10 @@
     yazi
     zellij
     k9s
+    wayvnc
+    tigervnc
   ];
+  networking.firewall.allowedTCPPorts = [ 5900 ];
 
   programs = {
     partition-manager.enable = true;

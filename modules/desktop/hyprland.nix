@@ -9,7 +9,27 @@
     xwayland.enable = true;
   };
 
-  environment.systemPackages = [
-    pkgs.kitty
+  programs.gamemode.enable = true;
+
+  services.pipewire = {
+    enable = true;
+    pulse.enable = true;
+  };
+
+  services.printing.enable = true;
+
+  environment.systemPackages = with pkgs; [
+    kitty
+    wofi
+    waybar
+    mako
+    wl-clipboard
+    clipman
+    playerctl
+    pamixer
+    grim
+    slurp
+    gamescope
+    gamemode
   ];
 }

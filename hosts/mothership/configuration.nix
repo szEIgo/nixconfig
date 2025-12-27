@@ -10,6 +10,7 @@
     ../../modules/virtualization/podman.nix
     ../../modules/virtualization/k3s.nix
     ../../remote/ssh.nix
+    ./devices/wireguard-server.nix
   ];
   boot.extraModulePackages = [ config.boot.kernelPackages.vendor-reset ];
   boot.kernelModules = [
@@ -77,9 +78,10 @@
     dualGpu.configuration = {
       system.nixos.tags = [ "dualGpu" "desktop" ];
       imports = [
-        ../../modules/desktop/plasma.nix
+        ../../modules/desktop/hyprland.nix
         ../../modules/common/services.nix
         ./devices/dualGpu.nix
+        ./devices/edid.nix
         ./devices/sunshine.nix
       ];
     };
@@ -88,11 +90,10 @@
       system.nixos.tags = [ "amd" "vfio" "desktop" ];
       imports = [
         ./devices/amd.nix
-        ../../modules/desktop/plasma.nix
+        ../../modules/desktop/hyprland.nix
         ../../modules/common/services.nix
+        ./devices/edid.nix
         ./devices/sunshine.nix
-        #./devices/dummydisplay.nix
-        ./devices/wireguard-server.nix
         ../../modules/gaming/steam.nix
 
       ];
@@ -102,8 +103,9 @@
       system.nixos.tags = [ "nvidia" "vfio" "desktop" ];
       imports = [
         ./devices/nvidia.nix
-        ../../modules/desktop/plasma.nix
+        ../../modules/desktop/hyprland.nix
         ../../modules/common/services.nix
+        ./devices/edid.nix
       ];
     };
   };

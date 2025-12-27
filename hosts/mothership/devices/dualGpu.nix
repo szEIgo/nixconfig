@@ -28,12 +28,17 @@
     powerManagement.enable = false;
   };
 
-  # Tell X server to use both drivers
-  services.xserver = lib.mkForce {
-    enable = true;
-    videoDrivers = ["amdgpu" "nvidia"];
-    deviceSection = ''
-      Option "TearFree" "true"
-    '';
-  };
+  # Disable X server; rely on Wayland/Hyprland
+  services.xserver = lib.mkForce { enable = false; };
+
+  # Virtual EDID for headless streaming (adjust CONNECTOR as needed)
+  boot.kernelParams = lib.mkForce [
+    "amd_iommu=on" 
+    "iommu=pt" 
+    "amdgpu.runpm=0" 
+    "modprobe.blacklist=nouveau" 
+    "rd.driver.blacklist=nouveau"
+    "drm.edid_firmware=HDMI-A-1:edid/virtual-1080p.bin"
+    "video=HDMI-A-1:1920x1080R@60e"
+  ];
 }
