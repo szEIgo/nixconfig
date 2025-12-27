@@ -32,4 +32,13 @@
     gamescope
     gamemode
   ];
+
+    # Enable XDG portals for Wayland apps and Hyprland
+    xdg.portal = {
+      enable = true;
+      extraPortals = [
+        pkgs.xdg-desktop-portal-hyprland
+        pkgs.xdg-desktop-portal-gtk
+      ];
+    };
 }

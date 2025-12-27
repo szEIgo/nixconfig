@@ -13,6 +13,10 @@
       env = GDK_BACKEND,wayland
       env = QT_QPA_PLATFORM,wayland
 
+      input {
+        kb_layout = dk
+      }
+
       # Basic bindings
       $mod = SUPER
       bind = $mod, RETURN, exec, kitty

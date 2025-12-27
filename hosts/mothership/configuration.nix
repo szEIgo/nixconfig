@@ -70,6 +70,9 @@
     XDG_STATE_HOME = "$HOME/.local/state";
   };
 
+  # Required when Home Manager is installed via NixOS module with useUserPackages
+  environment.pathsToLink = [ "/share/applications" "/share/xdg-desktop-portal" ];
+
   zramSwap.enable = true;
   zramSwap.algorithm = "zstd";
   security.polkit.enable = true;

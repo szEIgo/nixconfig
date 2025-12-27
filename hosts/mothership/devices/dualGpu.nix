@@ -4,8 +4,8 @@
   boot.kernelModules = lib.mkForce ["kvm-amd" "dm-crypt"];
   boot.blacklistedKernelModules = lib.mkForce ["vfio" "nouveau"];
 
-  # This can be left as-is
-  boot.initrd.kernelModules = ["dm-snapshot" "amdgpu" "nvidia"];
+  # Do not require NVIDIA in initrd to avoid modules-shrunk modprobe failures
+  boot.initrd.kernelModules = ["dm-snapshot" "amdgpu"];
 
   # Use mkForce for clarity and to override the base headless config
   hardware.graphics = lib.mkForce {
@@ -21,16 +21,20 @@
     powerManagement.enable = false;
   };
 
-  # Disable X server; rely on Wayland/Hyprland
-  services.xserver = lib.mkForce { enable = false; };
+  # Disable X server; still select drivers for packaging
+  services.xserver = lib.mkForce {
+    enable = false;
+    videoDrivers = [ "amdgpu" "nvidia" ];
+  };
 
-  # Single consolidated kernelParams including virtual EDID
+  # Single consolidated kernelParams including NVIDIA DRM modeset for Wayland
   boot.kernelParams = lib.mkForce [
     "amd_iommu=on" 
     "iommu=pt" 
     "amdgpu.runpm=0" 
     "modprobe.blacklist=nouveau" 
     "rd.driver.blacklist=nouveau"
+    "nvidia_drm.modeset=1"
  #   "drm.edid_firmware=HDMI-A-1:edid/virtual-2048x1332.bin"
  #   "video=HDMI-A-1:2048x1332R@60e"
   ];
