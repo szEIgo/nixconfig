@@ -1,24 +1,24 @@
 { config, lib, pkgs, plasmaEnabled ? false, ... }: {
 
-  imports = [ ./hyprland.nix ./zsh.nix ];
+  imports = [ ./hyprland.nix ./omarchy-theme.nix ./zsh.nix ];
 
-  home.file = lib.mkMerge [{
+  home.file = {
     "./.gitconfig".source = ./configs/gitconfig;
-    #    ".zshrc".source = ./configs/zshrc;
+    # ".zshrc".source = ./configs/zshrc;
     ".powerlevel10k".source = ./configs/p10k.zsh;
-  }];
+  };
 
   home.packages = with pkgs;
     [ firefox neovim git htop zsh-powerlevel10k oh-my-zsh ]
     ++ import ./fonts.nix { pkgs = pkgs; };
 
-
-  programs.git = {
-   enable = true;
+  programs.git.enable = true;
+  programs.zoxide = {
+    enable = true;
+    enableZshIntegration = true;
   };
-  programs.zoxide.enable = true;
-  programs.zoxide.enableZshIntegration = true;
   programs.fzf.enable = true;
+
   programs.helix = {
     enable = true;
     settings = {

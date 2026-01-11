@@ -5,6 +5,8 @@
 
   environment.systemPackages = with pkgs; [
     gnumake
+    net-tools
+    kustomize
     fluxcd
     gh
     sops

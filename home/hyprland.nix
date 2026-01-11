@@ -4,9 +4,54 @@
     enable = true;
     package = pkgs.hyprland;
     xwayland.enable = true;
-    settings = { }; # leave empty if using extraConfig
+    systemd = {
+      enable = true;
+      variables = [
+        "DISPLAY"
+        "WAYLAND_DISPLAY"
+        "XDG_CURRENT_DESKTOP"
+        "XDG_SESSION_TYPE"
+        "XDG_RUNTIME_DIR"
+      ];
+    };
+    settings = { };
     extraConfig = ''
       monitor=,preferred,auto,1
+      $mod = SUPER
+      general {
+        gaps_in = 8
+        gaps_out = 12
+        border_size = 2
+        col.active_border = rgb(89b4fa)
+        col.inactive_border = rgb(313244)
+      }
+
+      decoration {
+        rounding = 8
+        blur {
+          enabled = true
+          size = 6
+          passes = 2
+        }
+        shadow {
+          enabled = true
+          range = 12
+          color = rgba(0,0,0,0.5)
+        }
+      }
+
+      animations {
+        enabled = yes
+        animation = windows, 1, 7, default
+        animation = windowsOut, 1, 7, default
+        animation = border, 1, 10, default
+        animation = fade, 1, 7, default
+        animation = workspaces, 1, 6, default
+      }
+
+      # Mouse: Super+Left drag to move; Super+Right drag to resize
+      bindm = $mod, mouse:272, movewindow
+      bindm = $mod, mouse:273, resizewindow
 
       env = XDG_CURRENT_DESKTOP,Hyprland
       env = XDG_SESSION_TYPE,wayland
@@ -18,7 +63,6 @@
       }
 
       # Basic bindings
-      $mod = SUPER
       bind = $mod, RETURN, exec, kitty
       bind = $mod, D, exec, wofi --show drun
       bind = $mod, Q, killactive
@@ -61,11 +105,24 @@
       exec-once = waybar
       exec-once = mako
       exec-once = clipman store --no-persist &
+      # Wallpaper (set a real image path and enable hyprpaper below)
+      # exec-once = hyprpaper
+
+      # virtual-desktops plugin removed
     '';
   };
 
   programs.waybar.enable = true;
   programs.wofi.enable = true;
+
+  services.hyprpaper = {
+    enable = true;
+    settings = {
+      # Replace with a real image path under your home
+      # preload = ["/home/joni/Pictures/wallpaper.jpg"];
+      # wallpaper = ",/home/joni/Pictures/wallpaper.jpg";
+    };
+  };
 
   services.mako.enable = true;
   services.clipman.enable = true;

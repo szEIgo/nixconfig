@@ -9,6 +9,7 @@
     xwayland.enable = true;
   };
 
+
   programs.gamemode.enable = true;
 
   services.pipewire = {
@@ -21,7 +22,7 @@
   environment.systemPackages = with pkgs; [
     kitty
     wofi
-    waybar
+    waybar 
     mako
     wl-clipboard
     clipman
@@ -33,7 +34,6 @@
     gamemode
   ];
 
-    # Enable XDG portals for Wayland apps and Hyprland
     xdg.portal = {
       enable = true;
       extraPortals = [

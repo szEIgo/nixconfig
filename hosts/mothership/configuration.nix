@@ -77,6 +77,11 @@
   zramSwap.algorithm = "zstd";
   security.polkit.enable = true;
 
+  # Provide the dconf D-Bus service required by Home Manager's dconf module
+  services.dbus.enable = true;
+  services.dbus.packages = [ pkgs.dconf ];
+  programs.dconf.enable = true;
+
   specialisation = {
     dualGpu.configuration = {
       system.nixos.tags = [ "dualGpu" "desktop" ];
