@@ -38,7 +38,12 @@
   ];
 
   boot.blacklistedKernelModules = [ "nouveau" "nvidia" "amdgpu" ];
-  boot.initrd.kernelModules = [ "dm-snapshot" ];
+  boot.initrd.kernelModules = [
+  "dm-snapshot"
+  "vfio"
+  "vfio_pci"
+  "vfio_iommu_type1"
+  ];
 
   services.xserver = lib.mkDefault {
     enable = false;
