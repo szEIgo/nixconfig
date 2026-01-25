@@ -27,21 +27,27 @@
   boot.kernelParams = [
     "amd_iommu=on"
     "iommu=pt"
+    "rd.driver.pre=vfio-pci"
     # Bind BOTH GPUs to vfio-pci by default
     "vfio-pci.ids=10de:1f07,10de:10f9,10de:1ada,10de:1adb,1002:ab38,1002:731f,10ec:8125"
     "video=efifb:off"
+    "modprobe.blacklist=nouveau"
+    "rd.driver.blacklist=nouveau"
+    "amdgpu.runpm=0"
     "amdgpu.aspm=0"
   ];
 
   boot.blacklistedKernelModules = [ "nouveau" "nvidia" "amdgpu" ];
   boot.initrd.kernelModules = [ "dm-snapshot" ];
 
-  services.xserver.enable = false;
+  services.xserver = lib.mkDefault {
+    enable = false;
+  };
 
   hardware.graphics = lib.mkDefault {
     enable = false;
     enable32Bit = false;
-    extraPackages = [ ];
+    extraPackages = [];
   };
 
   boot.loader.systemd-boot.enable = true;
@@ -89,7 +95,6 @@
         ../../modules/desktop/hyprland.nix
         ../../modules/common/services.nix
         ./devices/dualGpu.nix
-        #./devices/edid.nix
         ./devices/sunshine.nix
       ];
     };
@@ -100,7 +105,6 @@
         ./devices/amd.nix
         ../../modules/desktop/hyprland.nix
         ../../modules/common/services.nix
-       # ./devices/edid.nix
         ./devices/sunshine.nix
         ../../modules/gaming/steam.nix
 
@@ -113,7 +117,6 @@
         ./devices/nvidia.nix
         ../../modules/desktop/hyprland.nix
         ../../modules/common/services.nix
-   #     ./devices/edid.nix
       ];
     };
   };

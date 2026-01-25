@@ -31,7 +31,7 @@
       name = "JetBrainsMono Nerd Font";
       size = 11;
     };
-    theme = "One Half Dark";
+    themeFile = "One Half Dark";
     settings = {
       enable_audio_bell = false;
       background_opacity = "0.95";

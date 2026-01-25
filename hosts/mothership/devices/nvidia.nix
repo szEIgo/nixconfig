@@ -6,12 +6,16 @@
   boot.kernelParams = lib.mkForce [
     "amd_iommu=on"
     "iommu=pt"
+    "rd.driver.pre=vfio-pci"
     "vfio-pci.ids=1002:ab38,1002:731f,10ec:8125"
     "nvidia_drm.modeset=1"
+    # Ensure nouveau is prevented from loading for the proprietary driver
+    "modprobe.blacklist=nouveau"
+    "rd.driver.blacklist=nouveau"
 #  "drm.edid_firmware=HDMI-A-1:edid/virtual-2048x1332.bin"
 #    "video=HDMI-A-1:2048x1332R@60e"
   ];
-  boot.blacklistedKernelModules = lib.mkForce [ "amdgpu" "radeon" ];
+  boot.blacklistedKernelModules = lib.mkForce [ "amdgpu" "radeon" "nouveau" ];
   
   # Avoid requiring NVIDIA in initrd; load later if present
   boot.initrd.kernelModules = [ "dm-snapshot" ];
@@ -36,5 +40,6 @@
     enable = false;
     videoDrivers = [ "nvidia" ];
   };
+
 
 }

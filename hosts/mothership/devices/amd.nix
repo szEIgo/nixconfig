@@ -6,10 +6,11 @@
   boot.kernelParams = lib.mkForce [
     "amd_iommu=on"
     "iommu=pt"
+    "rd.driver.pre=vfio-pci"
     "amdgpu.runpm=0"
     "vfio-pci.ids=10de:1f07,10de:10f9,10de:1ada,10de:1adb,10ec:8125"
-#    "drm.edid_firmware=HDMI-A-1:edid/virtual-2048x1332.bin"
-#    "video=HDMI-A-1:2048x1332R@60e"
+    "modprobe.blacklist=nouveau"
+    "rd.driver.blacklist=nouveau"
   ];
 
   hardware.graphics = lib.mkForce {

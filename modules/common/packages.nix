@@ -18,15 +18,12 @@
     eza
     bat
     age
-    # librewolf removed; using firefox via Home Manager
-    keychain
     vim
     btop
     wget
     pciutils
     nmap
     haskellPackages.Xauth
-    #    vscodium
     vscode
     ripgrep
     jq
