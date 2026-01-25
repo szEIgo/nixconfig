@@ -1,11 +1,15 @@
 { config, lib, pkgs, ... }: {
   boot.kernelModules = [ "kvm-amd" "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd" "dm-crypt" ];
+  boot.extraModulePackages = [ config.boot.kernelPackages.vendor-reset ];
   
   # Bind BOTH GPUs to vfio-pci
   boot.kernelParams = [
     "amd_iommu=on"
     "iommu=pt"
     "amdgpu.runpm=0"
+    "amdgpu.aspm=0"
+    "video=efifb:off"
+    "rd.driver.pre=vfio-pci"
     "vfio-pci.ids=10de:1f07,10de:10f9,10de:1ada,10de:1adb,1002:ab38,1002:731f,10ec:8125" # All GPU IDs
   ];
 
