@@ -37,17 +37,22 @@
     "amdgpu.aspm=0"
   ];
 
-  boot.blacklistedKernelModules = [ "nouveau" "nvidia" "amdgpu" ];
+  boot.blacklistedKernelModules = [ "nouveau" "nvidia" "amdgpu" "nvidia_drm" "nvidia_modeset" ];
   boot.initrd.kernelModules = [
-  "dm-snapshot"
-  "vfio"
-  "vfio_pci"
-  "vfio_iommu_type1"
+    "dm-snapshot"
   ];
 
   services.xserver = lib.mkDefault {
     enable = false;
   };
+
+  # Prevent the kernel from auto-loading host USB drivers (xhci/nouveau)
+  # for specific NVIDIA devices so vfio can bind them in userspace.
+  services.udev.extraRules = ''
+    ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{device}=="0x1ada", \
+    ATTR{driver_override}="vfio-pci"
+  '';
+
 
   hardware.graphics = lib.mkDefault {
     enable = false;

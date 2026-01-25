@@ -120,7 +120,7 @@
     settings = {
       # Replace with a real image path under your home
       # preload = ["/home/joni/Pictures/wallpaper.jpg"];
-      # wallpaper = ",/home/joni/Pictures/wallpaper.jpg";
+      #wallpaper = ",/home/joni/Pictures/wallpaper.jpg";
     };
   };
 
