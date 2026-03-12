@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }: {
   users.users.joni = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "libvirtd" "podman" "input" "video" "seat" ];
+    extraGroups = [ "wheel" "libvirtd" "kvm" "podman" "input" "video" "seat" ];
     shell = pkgs.zsh;
   };
 

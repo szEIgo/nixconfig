@@ -27,6 +27,7 @@
   boot.kernelParams = [
     "amd_iommu=on"
     "iommu=pt"
+    "pcie_acs_override=downstream,multifunction"
     "rd.driver.pre=vfio-pci"
     # Bind BOTH GPUs to vfio-pci by default
     "vfio-pci.ids=10de:1f07,10de:10f9,10de:1ada,10de:1adb,1002:ab38,1002:731f,10ec:8125"
@@ -68,7 +69,8 @@
   boot.initrd.luks.devices."cryptroot".device =
     "/dev/disk/by-uuid/2191f348-040d-42e3-9caf-c43b86f9a6df";
 
-  boot.kernelPackages = pkgs.linuxPackages;
+  # Xanmod kernel includes ACS override patch for IOMMU group separation
+  boot.kernelPackages = pkgs.linuxPackages_xanmod;
   hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
   boot.crashDump.enable = true;
   boot.kernel.sysctl."kernel.watchdog" = 1;
