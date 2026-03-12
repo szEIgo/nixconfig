@@ -1,6 +1,6 @@
 { config, lib, pkgs, plasmaEnabled ? false, ... }: {
 
-  imports = [ ./hyprland.nix ./omarchy-theme.nix ./zsh.nix ];
+  imports = [ ./hyprland.nix ./plasma6.nix ./omarchy-theme.nix ./zsh.nix ];
 
   home.file = {
     "./.gitconfig".source = ./configs/gitconfig;

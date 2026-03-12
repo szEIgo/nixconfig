@@ -52,6 +52,4 @@
     graphviz
   ];
 
-  programs.zsh.enable = true;
-
 }

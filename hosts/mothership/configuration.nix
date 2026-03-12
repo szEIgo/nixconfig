@@ -5,12 +5,12 @@
     ./devices/wireguard-server.nix
     ../../modules/common/locales.nix
     ../../modules/common/users.nix
+    ../../modules/common/zsh.nix
     ../../modules/common/zfs.nix
     ../../modules/virtualization/libvirt.nix
     ../../modules/virtualization/podman.nix
     ../../modules/virtualization/k3s.nix
     ../../remote/ssh.nix
-    ./devices/wireguard-server.nix
   ];
   boot.extraModulePackages = [ config.boot.kernelPackages.vendor-reset ];
   boot.kernelModules = [
@@ -103,6 +103,7 @@
       system.nixos.tags = [ "dualGpu" "desktop" ];
       imports = [
         ../../modules/desktop/hyprland.nix
+        ../../modules/desktop/plasma.nix
         ../../modules/common/services.nix
         ./devices/dualGpu.nix
         ./devices/sunshine.nix
@@ -114,10 +115,10 @@
       imports = [
         ./devices/amd.nix
         ../../modules/desktop/hyprland.nix
+        ../../modules/desktop/plasma.nix
         ../../modules/common/services.nix
         ./devices/sunshine.nix
         ../../modules/gaming/steam.nix
-
       ];
     };
 
@@ -126,6 +127,7 @@
       imports = [
         ./devices/nvidia.nix
         ../../modules/desktop/hyprland.nix
+        ../../modules/desktop/plasma.nix
         ../../modules/common/services.nix
       ];
     };
