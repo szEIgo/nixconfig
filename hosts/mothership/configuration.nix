@@ -38,14 +38,11 @@
     "amdgpu.aspm=0"
   ];
 
-  boot.blacklistedKernelModules = [ "nouveau" "nvidia" "amdgpu" "nvidia_drm" "nvidia_modeset" ];
-  boot.initrd.kernelModules = [
-    "dm-snapshot"
-  ];
+  boot.blacklistedKernelModules =
+    [ "nouveau" "nvidia" "amdgpu" "nvidia_drm" "nvidia_modeset" ];
+  boot.initrd.kernelModules = [ "dm-snapshot" ];
 
-  services.xserver = lib.mkDefault {
-    enable = false;
-  };
+  services.xserver = lib.mkDefault { enable = false; };
 
   # Prevent the kernel from auto-loading host USB drivers (xhci/nouveau)
   # for specific NVIDIA devices so vfio can bind them in userspace.
@@ -54,11 +51,10 @@
     ATTR{driver_override}="vfio-pci"
   '';
 
-
   hardware.graphics = lib.mkDefault {
     enable = false;
     enable32Bit = false;
-    extraPackages = [];
+    extraPackages = [ ];
   };
 
   boot.loader.systemd-boot.enable = true;
@@ -86,10 +82,12 @@
     XDG_CONFIG_HOME = "$HOME/.config";
     XDG_DATA_HOME = "$HOME/.local/share";
     XDG_STATE_HOME = "$HOME/.local/state";
+    EDITOR = "vim";
   };
 
   # Required when Home Manager is installed via NixOS module with useUserPackages
-  environment.pathsToLink = [ "/share/applications" "/share/xdg-desktop-portal" ];
+  environment.pathsToLink =
+    [ "/share/applications" "/share/xdg-desktop-portal" ];
 
   zramSwap.enable = true;
   zramSwap.algorithm = "zstd";

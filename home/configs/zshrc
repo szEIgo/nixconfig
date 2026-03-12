@@ -53,10 +53,6 @@ cat() { bat --style plain --pager never "$@"; }
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
 
-# SSH keychain
-eval "$(keychain --eval --quiet --quick --noask --timeout 240 ~/.ssh/id_ecdsa)"
-
-
 # SSH aliases and overrides
 finder() { open -a "Finder" "${1:-.}"; }
 dolphin() { finder "$@"; }
