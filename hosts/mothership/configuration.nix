@@ -13,6 +13,8 @@
     ../../modules/virtualization/libvirt.nix
     ../../modules/virtualization/podman.nix
     ../../modules/virtualization/k3s.nix
+    ../../modules/virtualization/vms      # Declarative VM definitions via NixVirt
+    ../../modules/virtualization/microvm  # MicroVM k3s workers
 
     # Remote access
     ../../remote/ssh.nix
@@ -89,6 +91,7 @@
     XDG_STATE_HOME = "$HOME/.local/state";
     EDITOR = "vim";
     NIXPKGS_ALLOW_UNFREE = "1";
+    LIBVIRT_DEFAULT_URI = "qemu:///system";
   };
 
   # Required when Home Manager is installed via NixOS module with useUserPackages

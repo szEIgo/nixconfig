@@ -1,4 +1,4 @@
-.PHONY: switch build test update gc bootstrap cleanup secrets-edit secrets-updatekeys gpu-reset usb-attach k3s-init k3s-wipe k3s-status k3s-flux-init k3s-flux-bootstrap k3s-flux-status k3s-flux-reconcile vm-fix-efi vnc mount help
+.PHONY: switch build test update gc bootstrap cleanup secrets-edit secrets-updatekeys gpu-reset usb-attach k3s-init k3s-wipe k3s-status k3s-flux-init k3s-flux-bootstrap k3s-flux-status k3s-flux-reconcile vm-fix-efi vnc mount microvm-list microvm-status microvm-start microvm-stop microvm-restart microvm-ssh microvm-init-zfs microvm-destroy-zfs microvm-resize help
 
 # Help
 help:
@@ -75,4 +75,31 @@ vnc:
 mount:
 	@./scripts/storage/mount-pools.sh
 
+# MicroVM
+microvm-list:
+	@./scripts/microvm/list.sh
+
+microvm-status:
+	@./scripts/microvm/status.sh $(VM)
+
+microvm-start:
+	@./scripts/microvm/start.sh $(VM)
+
+microvm-stop:
+	@./scripts/microvm/stop.sh $(VM)
+
+microvm-restart:
+	@./scripts/microvm/restart.sh $(VM)
+
+microvm-ssh:
+	@./scripts/microvm/ssh.sh $(VM)
+
+microvm-init-zfs:
+	@./scripts/microvm/init-zfs.sh
+
+microvm-destroy-zfs:
+	@./scripts/microvm/destroy-zfs.sh
+
+microvm-resize:
+	@./scripts/microvm/resize-zfs.sh $(ID) $(SIZE)
 

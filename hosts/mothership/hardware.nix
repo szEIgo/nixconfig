@@ -12,7 +12,6 @@
   boot.kernel.sysctl = lib.mkForce {
     "kernel.sysrq" = 1;
     "net.ipv4.ip_forward" = true;
-    "vm.nr_hugepages" = 8192;
   };
   boot.extraModulePackages = [ ];
 
