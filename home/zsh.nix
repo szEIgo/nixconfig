@@ -66,7 +66,7 @@ in {
 
       scp() {
         ssh_session
-        command scp -C -v -r -o StrictHostKeyChecking=no "$@"
+        command scp -C -v -r "$@"
       }
 
       git() {

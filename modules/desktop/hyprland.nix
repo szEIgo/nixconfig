@@ -19,22 +19,7 @@
 
   services.printing.enable = true;
 
-  environment.systemPackages = with pkgs; [
-    kitty
-    wofi
-    waybar 
-    mako
-    wl-clipboard
-    clipman
-    playerctl
-    pamixer
-    grim
-    slurp
-    gamescope
-    gamemode
-  ];
-
-    xdg.portal = {
+  xdg.portal = {
       enable = true;
       extraPortals = [
         pkgs.xdg-desktop-portal-hyprland

@@ -55,7 +55,7 @@ in
     role = "server";
     extraFlags = [
       "--disable local-storage"
-      "--write-kubeconfig-mode=0644"
+      "--write-kubeconfig-mode=0600"
     ];
   };
 

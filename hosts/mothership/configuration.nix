@@ -83,6 +83,7 @@
     XDG_DATA_HOME = "$HOME/.local/share";
     XDG_STATE_HOME = "$HOME/.local/state";
     EDITOR = "vim";
+    NIXPKGS_ALLOW_UNFREE = "1";
   };
 
   # Required when Home Manager is installed via NixOS module with useUserPackages
@@ -92,6 +93,9 @@
   zramSwap.enable = true;
   zramSwap.algorithm = "zstd";
   security.polkit.enable = true;
+
+  # Accept Android SDK license for Flutter development
+  nixpkgs.config.android_sdk.accept_license = true;
 
   # Provide the dconf D-Bus service required by Home Manager's dconf module
   services.dbus.enable = true;

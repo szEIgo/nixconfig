@@ -1,57 +1,52 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Config paths
-MASTER_KEY_ENC="../../secrets/id_mothership.age"
-MASTER_KEY_DEC="/tmp/id_mothership"
-SECRET_DIR="../../secrets"
-SSH_DEST="$HOME/.ssh"
-WG_DEST="/etc/secrets"
+# Bootstrap script for sops-nix on a new machine
+# Decrypts the master key and sets up sops for initial configuration
 
-# Ensure dirs exist
-mkdir -p "$SSH_DEST"
-sudo mkdir -p "$WG_DEST"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+MASTER_KEY_ENC="$REPO_ROOT/secrets/id_mothership.age"
+SOPS_AGE_DIR="$HOME/.config/sops/age"
+SOPS_KEY_FILE="$SOPS_AGE_DIR/keys.txt"
 
-# Step 1: Decrypt master key (prompts for passphrase, no --identity!)
-echo "🔐 Decrypting master key ($MASTER_KEY_ENC)"
-age --decrypt -o "$MASTER_KEY_DEC" "$MASTER_KEY_ENC"
-chmod 600 "$MASTER_KEY_DEC"
-chown "$USER" "$MASTER_KEY_DEC"
+echo "=== sops-nix Bootstrap Script ==="
+echo ""
 
-# Step 2: Decrypt secrets using master key
-for encfile in "$SECRET_DIR"/*.age; do
-  [ "$encfile" = "$MASTER_KEY_ENC" ] && continue
-  [ -e "$encfile" ] || continue
+# Step 1: Decrypt master key for sops
+echo "Step 1: Decrypting master key for sops..."
+mkdir -p "$SOPS_AGE_DIR"
+chmod 700 "$SOPS_AGE_DIR"
 
-  filename="$(basename "${encfile%.age}")"
+age --decrypt -o "$SOPS_KEY_FILE" "$MASTER_KEY_ENC"
+chmod 600 "$SOPS_KEY_FILE"
+echo "Master key decrypted to $SOPS_KEY_FILE"
+echo ""
 
-  # Determine target dir
-  if [[ "$filename" == id_* || "$filename" == "mothership" ]]; then
-    dest="$SSH_DEST/$filename"
-    echo "🔓 Decrypting SSH key $filename → $dest"
-    age --identity "$MASTER_KEY_DEC" --decrypt -o "$dest" "$encfile"
-    chmod 600 "$dest"
-    chown "$USER" "$dest"
-  elif [[ "$filename" == mothership_wg_* ]]; then
-    dest="$WG_DEST/$filename"
-    echo "🔓 Decrypting WireGuard key $filename → $dest (as root)"
-    sudo age --identity "$MASTER_KEY_DEC" --decrypt -o "$dest" "$encfile"
-    sudo chmod 600 "$dest"
-    sudo chown systemd-network:systemd-network "$dest"
-  else
-    echo "⚠️ Unknown .age file type: $filename, skipping"
-  fi
-done
+# Step 2: Show this machine's age key (derived from SSH host key)
+echo "Step 2: This machine's age public key (from SSH host key):"
+if command -v ssh-to-age &>/dev/null; then
+    HOST_AGE_KEY=$(cat /etc/ssh/ssh_host_ed25519_key.pub | ssh-to-age)
+    echo "  $HOST_AGE_KEY"
+else
+    echo "  Run: nix-shell -p ssh-to-age --run 'cat /etc/ssh/ssh_host_ed25519_key.pub | ssh-to-age'"
+fi
+echo ""
 
-# Step 3: Remove master key from disk
-shred -u "$MASTER_KEY_DEC"
-
-# Step 4: Copy .pub files
-for pubfile in "$SECRET_DIR"/*.pub; do
-  [ -e "$pubfile" ] || continue
-  cp "$pubfile" "$SSH_DEST/$(basename "$pubfile")"
-  chmod 644 "$SSH_DEST/$(basename "$pubfile")"
-  echo "📤 Copied $(basename "$pubfile") → $SSH_DEST"
-done
-
-echo "✅ All secrets decrypted and placed securely."
+# Step 3: Instructions
+echo "Step 3: Next steps:"
+echo ""
+echo "  1. Add this machine's key to .sops.yaml if not already present:"
+echo "     vim $REPO_ROOT/.sops.yaml"
+echo ""
+echo "  2. Re-encrypt secrets for this machine:"
+echo "     cd $REPO_ROOT && sops updatekeys secrets/secrets.yaml"
+echo ""
+echo "  3. Build and switch:"
+echo "     sudo nixos-rebuild switch --flake $REPO_ROOT#<hostname>"
+echo ""
+echo "  4. After successful boot, clean up the master key:"
+echo "     shred -u $SOPS_KEY_FILE"
+echo ""
+echo "Note: After first boot, secrets decrypt automatically via SSH host key."
+echo "      The master key is only needed for bootstrapping or editing secrets."

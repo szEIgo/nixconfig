@@ -1,8 +1,62 @@
+# Nix build outputs
+result
+result-*
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Local history
+.history/
+
+# Lock files (except flake.lock which should be committed for reproducibility)
+# Note: flake.lock is NOT ignored - it ensures reproducible builds
+
+# Private/secret files - NEVER commit these
 *.private
-.history
-*.lock
-flake.lock
+*.secret
+*.key
+!*.key.age
+*.pem
+!*.pem.age
+*.p12
+*.pfx
+
+# Decrypted secrets - sops-encrypted files (.yaml) ARE safe to commit
+# Only ignore truly unencrypted secret files
+secrets/*.decrypted
+secrets/*.plain
+secrets/*.json
+!secrets/*.json.age
+
+# Environment files
+.env
+.env.*
+*.env
+
+# SSH keys (unencrypted)
+id_rsa
+id_ecdsa
+id_ed25519
+*.pub.backup
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.orig
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Debug/logs
+*.log
+debug/
+
+# Generated configs
 all-configs.txt
-.vscode
-.history
-.idea

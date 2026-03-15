@@ -5,10 +5,12 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     home-manager.url = "github:nix-community/home-manager/release-25.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  # The outputs function now takes all the new inputs
-  outputs = { self, nixpkgs, home-manager, ... }: {
+  outputs = { self, nixpkgs, home-manager, sops-nix, ... }: {
 
     # --- NixOS Configuration for Mothership (uses 25.05) ---
     nixosConfigurations = {
@@ -17,6 +19,8 @@
         modules = [
           ./hosts/mothership/configuration.nix
           ./hosts/mothership/hardware.nix
+          sops-nix.nixosModules.sops
+          ./secrets/secrets.nix
           home-manager.nixosModules.home-manager # Uses the main 25.05 home-manager
           {
             home-manager.useUserPackages = true;
