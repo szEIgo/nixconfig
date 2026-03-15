@@ -1,43 +1,71 @@
 {
-  description = "Jonis Flaked NixConfig for Mothership / Macbook / Android";
+  description = "Jonis NixConfig - Multi-platform: NixOS, macOS, Raspberry Pi";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+
     home-manager.url = "github:nix-community/home-manager/release-25.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
+
+    # Uncomment when ready to use nix-darwin for macOS
+    # nix-darwin.url = "github:LnL7/nix-darwin";
+    # nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, sops-nix, ... }: {
-
-    # --- NixOS Configuration for Mothership (uses 25.05) ---
-    nixosConfigurations = {
-      mothership = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
+  outputs = { self, nixpkgs, home-manager, sops-nix, ... }:
+  let
+    # Helper to create NixOS configurations
+    mkNixosHost = { system, hostName, hostType ? "desktop", extraModules ? [] }:
+      nixpkgs.lib.nixosSystem {
+        inherit system;
         modules = [
-          ./hosts/mothership/configuration.nix
-          ./hosts/mothership/hardware.nix
+          # Core modules (required for all hosts)
+          ./modules/core
+
+          # Host-specific configuration
+          ./hosts/${hostName}/configuration.nix
+          ./hosts/${hostName}/hardware.nix
+
+          # Secrets
           sops-nix.nixosModules.sops
           ./secrets/secrets.nix
-          home-manager.nixosModules.home-manager # Uses the main 25.05 home-manager
+
+          # Home-manager integration
+          home-manager.nixosModules.home-manager
           {
             home-manager.useUserPackages = true;
             home-manager.useGlobalPkgs = true;
             home-manager.backupFileExtension = "backup";
-            home-manager.extraSpecialArgs = { plasmaEnabled = true; };
+            home-manager.extraSpecialArgs = {
+              inherit hostType;
+              plasmaEnabled = hostType == "desktop";
+            };
             home-manager.users.joni = { imports = [ ./home/joni.nix ]; };
           }
-        ];
+        ] ++ extraModules;
+      };
+  in
+  {
+    # NixOS Configurations
+    nixosConfigurations = {
+      mothership = mkNixosHost {
+        system = "x86_64-linux";
+        hostName = "mothership";
+        hostType = "desktop";
       };
     };
 
-    # --- Home Manager for macOS (uses 25.05) ---
+    # Standalone Home Manager (for systems without NixOS/nix-darwin)
     homeConfigurations = {
       "joni@jsz-mac-01.nine.dk" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.aarch64-darwin;
-        extraSpecialArgs = { plasmaEnabled = false; };
+        extraSpecialArgs = {
+          hostType = "workstation";
+          plasmaEnabled = false;
+        };
         modules = [
           ./home/joni.nix
           {
@@ -48,5 +76,25 @@
         ];
       };
     };
+
+    # Uncomment when ready to use nix-darwin
+    # darwinConfigurations = {
+    #   macbook = nix-darwin.lib.darwinSystem {
+    #     system = "aarch64-darwin";
+    #     modules = [
+    #       ./darwin
+    #       home-manager.darwinModules.home-manager
+    #       {
+    #         home-manager.useUserPackages = true;
+    #         home-manager.useGlobalPkgs = true;
+    #         home-manager.extraSpecialArgs = {
+    #           hostType = "workstation";
+    #           plasmaEnabled = false;
+    #         };
+    #         home-manager.users.joni = { imports = [ ./home/joni.nix ]; };
+    #       }
+    #     ];
+    #   };
+    # };
   };
 }

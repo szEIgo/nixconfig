@@ -1,8 +1,9 @@
-{ config, lib, pkgs, ... }: {
+# Common system packages for NixOS desktops/workstations
+# CLI tools are now in home/profiles/base.nix (home-manager)
+# This is for NixOS system-level packages only
+{ config, lib, pkgs, ... }:
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  nixpkgs.config.allowUnfree = true;
-
+{
   environment.systemPackages = with pkgs; [
     gnumake
     net-tools

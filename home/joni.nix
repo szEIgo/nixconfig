@@ -1,46 +1,25 @@
-{ config, lib, pkgs, plasmaEnabled ? false, ... }: {
+# Main home-manager configuration
+# Composes profiles based on hostType
+{ config, lib, pkgs, hostType ? "desktop", plasmaEnabled ? false, ... }:
 
-  imports = [ ./hyprland.nix ./plasma6.nix ./omarchy-theme.nix ./zsh.nix ];
+let
+  isDesktop = hostType == "desktop";
+  isWorkstation = hostType == "workstation" || isDesktop;
+  isServer = hostType == "server";
+in
+{
+  imports = [
+    # Always include base CLI tools and shell
+    ./profiles/base.nix
+    ./shell
+  ]
+  # Development tools for workstations (not servers)
+  ++ lib.optionals isWorkstation [ ./profiles/dev.nix ]
+  # Desktop environment (Linux desktop only)
+  ++ lib.optionals isDesktop [ ./profiles/desktop.nix ];
 
-  home.file = {
-    "./.gitconfig".source = ./configs/gitconfig;
-    # ".zshrc".source = ./configs/zshrc;
-    ".powerlevel10k".source = ./configs/p10k.zsh;
-  };
-
-  home.packages = with pkgs;
-    [ firefox neovim git htop zsh-powerlevel10k oh-my-zsh ]
-    ++ import ./fonts.nix { pkgs = pkgs; };
-
-  programs.git.enable = true;
-  programs.zoxide = {
-    enable = true;
-    enableZshIntegration = true;
-  };
-  programs.fzf.enable = true;
-
-  programs.helix = {
-    enable = true;
-    settings = {
-      theme = "autumn_night_transparent";
-      editor.cursor-shape = {
-        normal = "block";
-        insert = "bar";
-        select = "underline";
-      };
-    };
-    languages.language = [{
-      name = "nix";
-      auto-format = true;
-      formatter.command = "${pkgs.nixfmt-classic}/bin/nixfmt";
-    }];
-    themes = {
-      autumn_night_transparent = {
-        "inherits" = "autumn_night";
-        "ui.background" = { };
-      };
-    };
-  };
+  # Pass plasmaEnabled to desktop profile
+  _module.args.plasmaEnabled = plasmaEnabled;
 
   home.stateVersion = "25.11";
 }

@@ -1,15 +1,20 @@
 { config, lib, pkgs, ... }: {
   imports = [
-    # General, non-graphics modules
+    # Host-specific
     ./packages.nix
     ./devices/wireguard-server.nix
-    ../../modules/common/locales.nix
-    ../../modules/common/users.nix
-    ../../modules/common/zsh.nix
+
+    # Core is imported via flake.nix, these extend it:
+    ../../modules/common/users.nix    # Adds desktop groups (libvirtd, kvm, etc.)
+    ../../modules/common/zsh.nix      # System-level zsh (root prompt)
     ../../modules/common/zfs.nix
+
+    # Virtualization
     ../../modules/virtualization/libvirt.nix
     ../../modules/virtualization/podman.nix
     ../../modules/virtualization/k3s.nix
+
+    # Remote access
     ../../remote/ssh.nix
   ];
   boot.extraModulePackages = [ config.boot.kernelPackages.vendor-reset ];

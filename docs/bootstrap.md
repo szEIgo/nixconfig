@@ -4,10 +4,11 @@ How to set up this NixOS configuration on a new machine.
 
 ## Prerequisites
 
-- NixOS installed with flakes enabled
+- NixOS installed (or nix-darwin for macOS)
+- Flakes enabled
 - Access to `secrets/id_mothership.age` passphrase
 
-## Quick Start
+## Quick Start (NixOS)
 
 ```bash
 # 1. Clone the repository
@@ -15,52 +16,117 @@ git clone https://github.com/YOUR_USER/nixconfig
 cd nixconfig
 
 # 2. Run the bootstrap script (prompts for passphrase)
-./home/scripts/decrypt-keys.sh
+make bootstrap
 
 # 3. Add this machine's age key to .sops.yaml
 #    The script shows the key - add it as a new entry
 
 # 4. Re-encrypt secrets for this machine
-sops updatekeys secrets/secrets.yaml
+make secrets-updatekeys
 
-# 5. Commit and build
-git add .sops.yaml secrets/secrets.yaml
-sudo nixos-rebuild switch --flake .#mothership
+# 5. Create host configuration (see "Adding a New Host" below)
 
-# 6. Clean up (secrets now decrypt via SSH host key)
-shred -u ~/.config/sops/age/keys.txt
+# 6. Build and switch
+make switch HOST=hostname
+
+# 7. Clean up (secrets now decrypt via SSH host key)
+make cleanup
 ```
 
-## Step-by-Step
+## Available Commands
 
-### 1. Clone Repository
+Run `make help` to see all available commands.
+
+## Adding a New Host
+
+### 1. Create Host Directory
 
 ```bash
-git clone https://github.com/YOUR_USER/nixconfig
-cd nixconfig
+mkdir -p hosts/myhostname
 ```
 
-### 2. Decrypt Master Key
+### 2. Create configuration.nix
 
-Run the bootstrap script:
+```nix
+# hosts/myhostname/configuration.nix
+{ config, lib, pkgs, ... }: {
+  imports = [
+    # Desktop groups, zsh, etc. (skip for servers)
+    ../../modules/common/users.nix
+    ../../modules/common/zsh.nix
+
+    # Add modules as needed:
+    # ../../modules/virtualization/podman.nix
+    # ../../modules/virtualization/k3s.nix
+    # ../../remote/ssh.nix
+  ];
+
+  networking.hostName = "myhostname";
+  networking.hostId = "xxxxxxxx";  # head -c 8 /etc/machine-id
+
+  system.stateVersion = "25.11";
+}
+```
+
+### 3. Generate hardware.nix
+
 ```bash
-./home/scripts/decrypt-keys.sh
+nixos-generate-config --show-hardware-config > hosts/myhostname/hardware.nix
 ```
 
-This will:
-- Prompt for the `id_mothership.age` passphrase
-- Place the decrypted key where sops expects it
-- Display this machine's age public key
+### 4. Add to flake.nix
 
-### 3. Add Machine to `.sops.yaml`
+```nix
+nixosConfigurations = {
+  # ... existing hosts ...
 
-Edit `.sops.yaml` and add the new machine's key:
+  myhostname = mkNixosHost {
+    system = "x86_64-linux";  # or "aarch64-linux" for ARM
+    hostName = "myhostname";
+    hostType = "desktop";     # or "server" or "workstation"
+  };
+};
+```
+
+### Host Types
+
+| Type | Profiles Included | Use Case |
+|------|-------------------|----------|
+| `"server"` | base.nix | Headless servers, Raspberry Pis |
+| `"workstation"` | base.nix, dev.nix | Development machines without desktop |
+| `"desktop"` | base.nix, dev.nix, desktop.nix | Full desktop with GUI |
+
+## macOS Setup
+
+### Home-Manager Only (Current)
+
+```bash
+# Apply home-manager configuration
+home-manager switch --flake .#"joni@hostname"
+```
+
+### With nix-darwin (Future)
+
+Uncomment nix-darwin in `flake.nix` and run:
+```bash
+nix run nix-darwin -- switch --flake .#macbook
+```
+
+## Secrets Setup
+
+### 1. Get Machine's Age Key
+
+```bash
+nix-shell -p ssh-to-age --run 'cat /etc/ssh/ssh_host_ed25519_key.pub | ssh-to-age'
+```
+
+### 2. Add to .sops.yaml
 
 ```yaml
 keys:
-  - &joni age1798uc9a5r3f8lsg0utsl5nsflnmrr6d0p6tqhpweldq2j9dftgmqgvjdln
-  - &mothership age13m0dh0996244ktl8qq8lst7q9ektpn544rz9fh7n86qnfxu8w3sq830mwa
-  - &newmachine age1xxxx...  # Add new key here
+  - &joni age1798uc9...
+  - &mothership age13m0dh...
+  - &newmachine age1xxxx...  # Add here
 
 creation_rules:
   - path_regex: secrets/secrets\.yaml$
@@ -68,45 +134,23 @@ creation_rules:
       - age:
           - *joni
           - *mothership
-          - *newmachine  # Add reference here
+          - *newmachine  # Reference here
 ```
 
-### 4. Re-encrypt Secrets
+### 3. Re-encrypt
 
 ```bash
 sops updatekeys secrets/secrets.yaml
 ```
 
-### 5. Build Configuration
-
-```bash
-# Add new machine config if needed
-# Then build:
-sudo nixos-rebuild switch --flake .#hostname
-```
-
-### 6. Cleanup
-
-After successful boot, remove the temporary master key:
-```bash
-shred -u ~/.config/sops/age/keys.txt
-```
-
-The machine now decrypts secrets automatically using its SSH host key.
-
 ## Editing Secrets
 
-To modify secrets after initial setup:
-
 ```bash
-# Temporarily decrypt master key
-age --decrypt -o ~/.config/sops/age/keys.txt secrets/id_mothership.age
+# Edit secrets (handles master key automatically)
+make secrets-edit
 
-# Edit secrets (decrypts in editor, re-encrypts on save)
-sops secrets/secrets.yaml
-
-# Clean up
-shred -u ~/.config/sops/age/keys.txt
+# After editing, clean up the master key
+make cleanup
 ```
 
 ## Troubleshooting
