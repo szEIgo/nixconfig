@@ -16,7 +16,7 @@ let
 
   # Base configuration for k3s worker MicroVMs
   mkK3sWorker = { id, macAddress }: {
-    autostart = true;
+    autostart = false;
     restartIfChanged = true;
 
     config = { config, pkgs, ... }: {
@@ -138,21 +138,28 @@ in {
   ];
 
   # Service to copy k3s token for MicroVMs
+  # Started manually via microvm start script, not at boot
   systemd.services.microvm-k3s-token = {
     description = "Copy k3s token for MicroVM workers";
-    wantedBy = [ "multi-user.target" ];
+    wantedBy = [ ]; # Don't auto-start; triggered by microvm start script
     after = [ "k3s.service" ];
-    requires = [ "k3s.service" ];
+    # No Requires - avoids failure if k3s restarts during boot
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
       ExecStart = pkgs.writeShellScript "copy-k3s-token" ''
-        # Wait for token to exist
-        while [ ! -f /var/lib/rancher/k3s/server/token ]; do
+        # Wait for k3s to be ready and token to exist (max 60s)
+        for i in $(seq 1 60); do
+          if [ -f /var/lib/rancher/k3s/server/token ]; then
+            cp /var/lib/rancher/k3s/server/token /run/microvm-secrets/k3s-token
+            chmod 0440 /run/microvm-secrets/k3s-token
+            echo "k3s token copied successfully"
+            exit 0
+          fi
           sleep 1
         done
-        cp /var/lib/rancher/k3s/server/token /run/microvm-secrets/k3s-token
-        chmod 0440 /run/microvm-secrets/k3s-token
+        echo "ERROR: k3s token not found after 60s"
+        exit 1
       '';
     };
   };
@@ -163,13 +170,13 @@ in {
       id = 1;
       macAddress = "02:00:00:00:01:01";
     };
-    # k3s-worker-2 = mkK3sWorker {
-    #   id = 2;
-    #   macAddress = "02:00:00:00:01:02";
-    # };
-    # k3s-worker-3 = mkK3sWorker {
-    #   id = 3;
-    #   macAddress = "02:00:00:00:01:03";
-    # };
+    k3s-worker-2 = mkK3sWorker {
+      id = 2;
+      macAddress = "02:00:00:00:01:02";
+    };
+    k3s-worker-3 = mkK3sWorker {
+      id = 3;
+      macAddress = "02:00:00:00:01:03";
+    };
   };
 }
