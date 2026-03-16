@@ -52,9 +52,15 @@ nixconfig/
 │   ├── gaming/
 │   │   └── steam.nix         # Steam + gamemode
 │   └── virtualization/
-│       ├── k3s.nix           # Kubernetes
-│       ├── libvirt.nix       # KVM/QEMU
-│       └── podman.nix        # Containers
+│       ├── k3s.nix           # Kubernetes control plane
+│       ├── libvirt.nix       # KVM/QEMU with VFIO
+│       ├── podman.nix        # Containers
+│       ├── vms/              # Declarative libvirt VMs (NixVirt)
+│       │   ├── default.nix   # VM domain definitions
+│       │   └── xml/          # Libvirt XML configs
+│       └── microvm/          # Lightweight k3s worker VMs
+│           ├── default.nix   # Host config, bridge, ZFS
+│           └── k3s-agent.nix # Guest k3s agent
 │
 ├── darwin/                   # macOS (nix-darwin)
 │   └── default.nix           # System defaults, homebrew
@@ -67,6 +73,16 @@ nixconfig/
 │   ├── secrets.yaml          # Encrypted secrets (safe for git)
 │   ├── secrets.nix           # Deployment paths
 │   └── *.age                 # Encrypted keys
+│
+├── scripts/                  # Management scripts
+│   ├── nixos/                # switch, build, test, update, gc
+│   ├── k3s/                  # init, wipe, status, flux-*
+│   ├── microvm/              # list, status, start, stop, ssh, zfs
+│   ├── storage/              # mount-pools (ZFS import/decrypt)
+│   ├── hardware/             # gpu-reset, usb-attach
+│   ├── vm/                   # fix-efi, vnc
+│   ├── secrets/              # edit, updatekeys
+│   └── bootstrap/            # decrypt-keys, cleanup
 │
 └── docs/                     # Documentation
 ```
@@ -89,9 +105,55 @@ Extensions for desktop/workstation machines:
 
 ### Virtualization (modules/virtualization/)
 Container and VM support:
-- `k3s.nix` - Lightweight Kubernetes
-- `libvirt.nix` - KVM/QEMU with VFIO hooks
+- `k3s.nix` - Lightweight Kubernetes (control plane on mothership)
+- `libvirt.nix` - KVM/QEMU with VFIO hooks, polkit rules, KSM
 - `podman.nix` - Docker-compatible containers
+- `vms/` - Declarative libvirt VMs via NixVirt (see below)
+- `microvm/` - Lightweight VMs for k3s worker nodes (see below)
+
+### MicroVM (modules/virtualization/microvm/)
+Lightweight VMs using cloud-hypervisor for k3s worker nodes:
+- `default.nix` - Host configuration, network bridge, ZFS storage
+- `k3s-agent.nix` - Guest k3s agent configuration
+
+**Architecture:**
+```
+mothership (k3s server) ─── 10.100.0.1 ───┬─── k3s-worker-1 (10.100.0.11)
+                                          ├─── k3s-worker-2 (10.100.0.12)
+                                          └─── k3s-worker-3 (10.100.0.13)
+```
+
+**Storage:** ZFS zvols at `fastPool/microvm/k3s-worker-{1,2,3}` mounted as `/var/lib/rancher`
+
+**Boot flow (manual, ZFS encrypted):**
+1. `make mount` - Import and decrypt ZFS pools
+2. `make microvm-start` - Copy k3s token, start VMs
+3. Workers auto-join cluster
+
+### NixVirt (modules/virtualization/vms/)
+Declarative libvirt VM management using [NixVirt](https://github.com/AshleyYakeley/NixVirt).
+VMs are defined in Nix and their libvirt XML configs are version-controlled.
+
+**Configured VMs:**
+| VM | Description |
+|----|-------------|
+| `win11-nvidia` | Windows 11 with NVIDIA GPU passthrough |
+| `win11-amd` | Windows 11 with AMD GPU passthrough |
+| `win11-goldenImage` | Windows 11 base/template image |
+| `archlinux` | Arch Linux VM |
+
+**Key features:**
+- VMs are defined declaratively in `vms/default.nix`
+- XML configs stored in `vms/xml/` for full control
+- `active = null` means VMs don't auto-start (manual via `virsh start`)
+- Changes to VM definitions apply on `nixos-rebuild switch`
+
+**Usage:**
+```bash
+virsh list --all          # List all VMs
+virsh start win11-nvidia  # Start a VM
+virsh shutdown win11-amd  # Graceful shutdown
+```
 
 ## Home-Manager Profiles
 
@@ -142,3 +204,50 @@ See [bootstrap.md](bootstrap.md#adding-a-new-host)
 | NixOS x86_64 | `x86_64-linux` | Full system |
 | NixOS ARM64 | `aarch64-linux` | Full system (Pi) |
 | macOS | `aarch64-darwin` | home-manager or nix-darwin |
+
+## Command Reference
+
+Run `make help` for full details. Key commands:
+
+### NixOS
+| Command | Description |
+|---------|-------------|
+| `make switch` | Build and switch to configuration |
+| `make build` | Build without switching |
+| `make update` | Update flake inputs and rebuild |
+| `make gc` | Garbage collect old generations |
+
+### Storage & MicroVM
+| Command | Description |
+|---------|-------------|
+| `make mount` | Import and decrypt ZFS pools |
+| `make microvm-start` | Copy k3s token and start all VMs |
+| `make microvm-stop VM=...` | Stop specific or all VMs |
+| `make microvm-status` | Show VM status |
+| `make microvm-ssh VM=...` | SSH into VM via VSOCK |
+| `make microvm-init-zfs` | Create ZFS zvols for VMs |
+
+### Kubernetes (k3s)
+| Command | Description |
+|---------|-------------|
+| `make k3s-init` | Copy kubeconfig to ~/.kube/config |
+| `make k3s-status` | Show nodes, pods, services |
+| `make k3s-wipe` | Wipe k3s state |
+| `make k3s-flux-bootstrap` | Bootstrap Flux CD |
+| `make k3s-flux-status` | Show Flux sources and kustomizations |
+
+### Libvirt VMs (NixVirt)
+| Command | Description |
+|---------|-------------|
+| `virsh list --all` | List all defined VMs |
+| `virsh start <vm>` | Start a VM |
+| `virsh shutdown <vm>` | Graceful shutdown |
+| `make vm-fix-efi VM=...` | Remove EFI entries from VM |
+| `make usb-attach VM=...` | Attach USB devices to VM |
+| `make vnc` | Start headless KDE with VNC |
+
+### Secrets & Hardware
+| Command | Description |
+|---------|-------------|
+| `make secrets-edit` | Edit encrypted secrets |
+| `make gpu-reset` | Reset AMD GPU (PCI rescan) |
