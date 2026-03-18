@@ -1,5 +1,5 @@
 # Unified shell configuration for all platforms
-# This is the single source of truth for zsh setup
+# This is the single source of truth for shell setup
 { config, lib, pkgs, ... }:
 
 let
@@ -9,6 +9,38 @@ let
   sshKey = "~/.ssh/id_ecdsa";
 in
 {
+  # Minimal bash configuration (used by tools like Claude Code)
+  programs.bash = {
+    enable = true;
+    enableCompletion = true;
+
+    historyControl = [ "ignoredups" "ignorespace" ];
+
+    initExtra = ''
+      # Locale
+      export LANG=en_US.UTF-8
+      export LC_ALL=en_US.UTF-8
+
+      # Architecture flags
+      export ARCHFLAGS="-arch $(uname -m)"
+
+      # SSH agent setup
+      ssh_session() {
+        if [ -z "$SSH_AUTH_SOCK" ]; then
+          eval "$(ssh-agent -s)"
+        fi
+        if ! ssh-add -l &>/dev/null; then
+          ssh-add ${sshKey} 2>/dev/null
+        fi
+      }
+    '' + lib.optionalString isLinux ''
+      # Linux-specific: keychain for SSH
+      if command -v keychain &>/dev/null; then
+        eval "$(keychain --eval --quiet --quick --noask --timeout 240 ${sshKey} 2>/dev/null)"
+      fi
+    '';
+  };
+
   programs.zsh = {
     enable = true;
     enableCompletion = true;
