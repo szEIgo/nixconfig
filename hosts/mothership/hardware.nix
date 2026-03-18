@@ -33,6 +33,12 @@
     options = [ "fmask=0022" "dmask=0022" ];
   };
 
+  # Podman container storage on dedicated ZFS dataset
+  fileSystems."/var/lib/containers" = {
+    device = "rpool/podman";
+    fsType = "zfs";
+  };
+
   swapDevices = [ ];
 
   

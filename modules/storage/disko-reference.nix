@@ -159,9 +159,10 @@
             mountpoint = "/home";
             options.mountpoint = "legacy";
           };
-          "docker" = {
+          "podman" = {
             type = "zfs_fs";
-            mountpoint = "/var/lib/docker";
+            mountpoint = "/var/lib/containers";
+            options.mountpoint = "legacy";
           };
           "vm-pools" = {
             type = "zfs_fs";

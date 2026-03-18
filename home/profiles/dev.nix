@@ -21,6 +21,13 @@
     scala
     jdk
 
+    # Python
+    python312
+    uv
+    ruff
+    basedpyright
+    python312Packages.ipython
+    
     # Build tools
     gnumake
 

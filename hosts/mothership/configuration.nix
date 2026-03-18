@@ -72,8 +72,7 @@
   boot.initrd.luks.devices."cryptroot".device =
     "/dev/disk/by-uuid/2191f348-040d-42e3-9caf-c43b86f9a6df";
 
-  # Xanmod kernel includes ACS override patch for IOMMU group separation
-  boot.kernelPackages = pkgs.linuxPackages_xanmod;
+  boot.kernelPackages = pkgs.linuxPackages_zen;
   hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
   boot.crashDump.enable = true;
   boot.kernel.sysctl."kernel.watchdog" = 1;
