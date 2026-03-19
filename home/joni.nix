@@ -1,16 +1,104 @@
-{ config, lib, pkgs, plasmaEnabled ? false, ... }: {
+{ config, lib, pkgs, plasmaEnabled ? false, isLinux ? true, isDarwin ? false
+, ... }: {
 
-  imports = [ ./hyprland.nix ./plasma6.nix ./omarchy-theme.nix ./zsh.nix ];
+  imports = [
+    ./zsh.nix
+    ./theme-kitty.nix
+  ] ++ lib.optionals isLinux [
+    ./hyprland.nix
+    ./plasma6.nix
+  ];
 
   home.file = {
     "./.gitconfig".source = ./configs/gitconfig;
-    # ".zshrc".source = ./configs/zshrc;
     ".powerlevel10k".source = ./configs/p10k.zsh;
   };
 
+  # Cross-platform packages (shared between NixOS and macOS)
   home.packages = with pkgs;
-    [ firefox neovim git htop zsh-powerlevel10k oh-my-zsh ]
-    ++ import ./fonts.nix { pkgs = pkgs; };
+    [
+      # Core CLI tools
+      neovim
+      git
+      htop
+      btop
+      wget
+      ripgrep
+      jq
+      fd
+      eza
+      bat
+      tree
+      dust
+      ncdu
+      tmux
+      watch
+      tldr
+      glow
+      yq
+      gnupg
+
+      # Shell
+      zsh
+      zsh-powerlevel10k
+      oh-my-zsh
+
+      # Dev tools
+      gnumake
+      gh
+      glab
+      sops
+      age
+      vim
+      helix
+
+      # Languages & runtimes
+      sbt
+      scala
+      rustc
+      cargo
+      rustfmt
+      pnpm
+      uv
+
+      # DevOps / K8s
+      kubectl
+      kustomize
+      fluxcd
+      k9s
+      helm
+      cosign
+
+      # Infrastructure
+      opentofu
+      pulumi
+
+      # Networking & monitoring
+      nmap
+      fzf
+      zoxide
+      speedtest-cli
+
+      # Misc
+      graphviz
+      plantuml
+      jdk
+      mc
+      yamllint
+      sshpass
+      yazi
+      zellij
+    ]
+    ++ import ./fonts.nix { pkgs = pkgs; }
+    ++ lib.optionals isLinux [
+      # Linux-only packages
+      firefox
+      copyq
+      vscode
+      wireguard-tools
+      atop
+      netdata
+    ];
 
   programs.git.enable = true;
   programs.zoxide = {

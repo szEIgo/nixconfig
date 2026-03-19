@@ -3,53 +3,18 @@
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
 
+  # Linux-only system packages (cross-platform tools are in home/joni.nix)
   environment.systemPackages = with pkgs; [
-    gnumake
     net-tools
-    kustomize
-    fluxcd
-    gh
-    sops
-    android-tools
-    qtscrcpy
-    fzf
-    zoxide
-    zsh
-    eza
-    bat
-    age
-    vim
-    btop
-    wget
     pciutils
-    nmap
-    haskellPackages.Xauth
-    vscode
-    ripgrep
-    jq
-    sbt
-    scala
-    rustc
-    cargo
-    rustfmt
-    ncdu
-    tree
-    dust
-    tmux
-    helix
-    copyq
-    parted
     usbutils
     gptfdisk
+    parted
     woeusb-ng
-    fd
-    kubectl
-    wireguard-tools
-    atop
-    netdata
-    plantuml
-    jdk
-    graphviz
+    haskellPackages.Xauth
+    kmod
+    android-tools
+    qtscrcpy
   ];
 
 }

@@ -6,13 +6,16 @@
     home-manager.url = "github:nix-community/home-manager/release-25.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
+    nix-darwin.url = "github:LnL7/nix-darwin";
+    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, sops-nix, ... }: {
+  outputs = { self, nixpkgs, home-manager, nix-darwin, sops-nix, ... }: {
 
-    # --- NixOS Configuration for Mothership (uses 25.05) ---
+    # --- NixOS Configuration for Mothership ---
     nixosConfigurations = {
       mothership = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -21,29 +24,39 @@
           ./hosts/mothership/hardware.nix
           sops-nix.nixosModules.sops
           ./secrets/secrets.nix
-          home-manager.nixosModules.home-manager # Uses the main 25.05 home-manager
+          home-manager.nixosModules.home-manager
           {
             home-manager.useUserPackages = true;
             home-manager.useGlobalPkgs = true;
             home-manager.backupFileExtension = "backup";
-            home-manager.extraSpecialArgs = { plasmaEnabled = true; };
+            home-manager.extraSpecialArgs = {
+              plasmaEnabled = true;
+              isLinux = true;
+              isDarwin = false;
+            };
             home-manager.users.joni = { imports = [ ./home/joni.nix ]; };
           }
         ];
       };
     };
 
-    # --- Home Manager for macOS (uses 25.05) ---
-    homeConfigurations = {
-      "joni@jsz-mac-01.nine.dk" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.aarch64-darwin;
-        extraSpecialArgs = { plasmaEnabled = false; };
+    # --- nix-darwin Configuration for Macbook ---
+    darwinConfigurations = {
+      "jsz-mac-01" = nix-darwin.lib.darwinSystem {
+        system = "aarch64-darwin";
         modules = [
-          ./home/joni.nix
+          ./hosts/macbook/default.nix
+          home-manager.darwinModules.home-manager
           {
-            home.username = "joni";
-            home.homeDirectory = "/Users/joni";
-            home.stateVersion = "25.11";
+            home-manager.useUserPackages = true;
+            home-manager.useGlobalPkgs = true;
+            home-manager.backupFileExtension = "backup";
+            home-manager.extraSpecialArgs = {
+              plasmaEnabled = false;
+              isLinux = false;
+              isDarwin = true;
+            };
+            home-manager.users.joni = { imports = [ ./home/joni.nix ]; };
           }
         ];
       };
