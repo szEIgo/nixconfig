@@ -66,7 +66,6 @@
       kustomize
       fluxcd
       k9s
-      helm
       cosign
 
       # Infrastructure
@@ -92,6 +91,7 @@
     ++ import ./fonts.nix { pkgs = pkgs; }
     ++ lib.optionals isLinux [
       # Linux-only packages
+      helm
       firefox
       copyq
       vscode
@@ -130,5 +130,7 @@
     };
   };
 
+  home.username = "joni";
+  home.homeDirectory = lib.mkForce (if isDarwin then "/Users/joni" else "/home/joni");
   home.stateVersion = "25.11";
 }

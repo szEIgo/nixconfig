@@ -1,7 +1,9 @@
 { config, lib, pkgs, ... }: {
 
-  # Nix settings
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  system.primaryUser = "joni";
+
+  # Nix settings (managed by Determinate, so disable nix-darwin's nix management)
+  nix.enable = false;
   nixpkgs.config.allowUnfree = true;
 
   # Enable zsh system-wide

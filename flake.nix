@@ -2,8 +2,8 @@
   description = "Jonis Flaked NixConfig for Mothership / Macbook / Android";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
-    home-manager.url = "github:nix-community/home-manager/release-25.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     nix-darwin.url = "github:LnL7/nix-darwin";
