@@ -2,6 +2,59 @@
 
 Multi-platform Nix configuration for NixOS (mothership) and macOS (jsz-mac-01).
 
+---
+
+## Fra Distro-Nomade til Nix-Evangelist: 20 års jagt på "The One OS"
+
+<details>
+<summary><b>Min rejse til NixOS (klik for at læse)</b></summary>
+
+### 2006: Den spæde start (OpenSUSE & XP-syndromet)
+
+Min rejse startede som 12-årig med en aflagt server og OpenSUSE. Jeg følte mig som en troldmand i 10 minutter, indtil jeg indså, at mine spil krævede Windows. Jeg flygtede tilbage til Windows XP, men nysgerrigheden var vakt.
+
+### 2011-2014: Matrix-drømme og Android-kirurgi
+
+Inden jeg landede fast på Linux igen, røg jeg dybt ned i Android modding-miljøet. Hvis det kunne flashes, blev det flashet. Det lærte mig værdien af root-adgang og risikoen for "bricks" – en god forberedelse til det, der fulgte.
+
+I 2014 vendte jeg hjem til Linux via Ubuntu 14.04. Det var her, mine "hacker-drømme" for alvor tog fart med Backtrack 4/5. Jeg fattede intet om porte, men jeg lærte at cracke WPA-nøgler og lege med WiFi Pineapples. Jeg blev aldrig rig på det, men følelsen af magt over netværket var rigelig betaling.
+
+### Distro-Hopping som ekstremsport
+
+I de følgende år blev jeg en sand IT-nomade. Jeg har været hele vejen rundt for at finde det perfekte fix:
+
+- **Debian & Mint:** For stabiliteten (og kedsomheden).
+- **Manjaro & EndeavourOS:** Da jeg ville have Arch-power uden de manuelle tæsk.
+- **Slackware & NomadBSD:** Fordi jeg kortvarigt troede, jeg var hardcore nok til det helt rå setup.
+- **Tails:** Når paranoiaen ramte.
+- **PhotonOS & ProtonOS:** Da container-verdenen og specialiserede miljøer begyndte at trække.
+
+Jeg har skiftet Desktop Environments (DE) oftere, end folk skifter sokker. Fra Unitys storhedstid til GNOME, KDE Plasma, og diverse Tiling Window Managers. Hver gang var det det samme: En uges opsætning, to ugers nydelse, og så et system, der langsomt blev "beskidt" af konfigurations-filer og uoverskuelige dependencies.
+
+### 2017: Arch-oplysningen og GPU-magi
+
+På datamatiker-studiet blev Arch Linux min nye religion. Ingen installer, ingen nåde. Her lærte jeg den hårde skole om EFI-partitioner og GRUB. Det var her, jeg knækkede koden til den ultimative hybrid: **GPU Passthrough**. Med KVM, Libvirt og det geniale Looking Glass-projekt, kunne jeg endelig køre Windows-spil i en VM med 99,9% native performance fra min Linux-host.
+
+### TDC-æraen: Scala og den "hemmelige" lytning
+
+Karrieren startede i TDC som Scala-udvikler under vingerne på min mentor, "Mr. Anderson". Han lærte mig, at mens objektorientering er fint, så er funktionel programmering den sande vej. Som ansvarlig for en FreeSwitch-instans opdagede jeg, hvor hullet SIP-protokollen er. Jeg morede mig med at spoofe opkald internt og lytte med via Wireshark – rent teknisk skadefryd uden økonomisk bagtanke.
+
+### 2026: Destinationen er NixOS
+
+Efter 20 års rodløshed har jeg fundet **"The One OS to Rule Them All": NixOS**.
+
+Efter at have brændt nallerne på alt fra Slackware til Tails, er NixOS det første system, der rent faktisk giver mening for en "praktisk nørd":
+
+- **Farvel til muterbart kaos:** Ingen "rådne" installationer.
+- **Deklarativ magi:** Hele min rejse – fra Zen-kernel og IOMMU-grupper til mine personlige genveje – bor i ét Git-repo.
+- **Reproducerbarhed:** Hvis min maskine dør, tager det mig under en time at genskabe 20 års tweaks. `sudo nixos-rebuild switch`, og jeg er live.
+
+> *NixOS er ikke bare en distribution; det er kulminationen på to årtiers søgen efter et system, der er lige så klogt som brugeren (på en god dag).*
+
+</details>
+
+---
+
 ## Quick Reference
 
 ```bash

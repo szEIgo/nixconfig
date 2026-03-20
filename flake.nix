@@ -17,9 +17,13 @@
 
     microvm.url = "github:astro/microvm.nix";
     microvm.inputs.nixpkgs.follows = "nixpkgs";
+
+    plasma-manager.url = "github:nix-community/plasma-manager";
+    plasma-manager.inputs.nixpkgs.follows = "nixpkgs";
+    plasma-manager.inputs.home-manager.follows = "home-manager";
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-darwin, sops-nix, nixvirt, microvm, ... }: {
+  outputs = { self, nixpkgs, home-manager, nix-darwin, sops-nix, nixvirt, microvm, plasma-manager, ... }: {
 
     # --- NixOS Configuration for Mothership ---
     nixosConfigurations = {
@@ -52,7 +56,12 @@
               isLinux = true;
               isDarwin = false;
             };
-            home-manager.users.joni = { imports = [ ./home/joni.nix ]; };
+            home-manager.users.joni = {
+              imports = [
+                plasma-manager.homeModules.plasma-manager
+                ./home/joni.nix
+              ];
+            };
           }
         ];
       };
