@@ -19,7 +19,7 @@ in {
     virt-manager
     qemu
     libvirt
-    xorg.xauth
+    xauth
     amdgpu_top
     kdePackages.yakuake
     kdePackages.kdeconnect-kde
