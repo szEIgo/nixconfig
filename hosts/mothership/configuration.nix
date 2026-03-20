@@ -1,15 +1,22 @@
 { config, lib, pkgs, ... }: {
   imports = [
-    # General, non-graphics modules
+    # Host-specific
     ./packages.nix
     ./devices/wireguard-server.nix
-    ../../modules/common/locales.nix
-    ../../modules/common/users.nix
-    ../../modules/common/zsh.nix
+
+    # Core is imported via flake.nix, these extend it:
+    ../../modules/common/users.nix    # Adds desktop groups (libvirtd, kvm, etc.)
+    ../../modules/common/zsh.nix      # System-level zsh (root prompt)
     ../../modules/common/zfs.nix
+
+    # Virtualization
     ../../modules/virtualization/libvirt.nix
     ../../modules/virtualization/podman.nix
     ../../modules/virtualization/k3s.nix
+    ../../modules/virtualization/vms      # Declarative VM definitions via NixVirt
+    ../../modules/virtualization/microvm  # MicroVM k3s workers
+
+    # Remote access
     ../../remote/ssh.nix
   ];
   boot.extraModulePackages = [ config.boot.kernelPackages.vendor-reset ];
@@ -65,8 +72,7 @@
   boot.initrd.luks.devices."cryptroot".device =
     "/dev/disk/by-uuid/2191f348-040d-42e3-9caf-c43b86f9a6df";
 
-  # Xanmod kernel includes ACS override patch for IOMMU group separation
-  boot.kernelPackages = pkgs.linuxPackages_xanmod;
+  boot.kernelPackages = pkgs.linuxPackages_zen;
   hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
   boot.crashDump.enable = true;
   boot.kernel.sysctl."kernel.watchdog" = 1;
@@ -84,6 +90,7 @@
     XDG_STATE_HOME = "$HOME/.local/state";
     EDITOR = "vim";
     NIXPKGS_ALLOW_UNFREE = "1";
+    LIBVIRT_DEFAULT_URI = "qemu:///system";
   };
 
   # Required when Home Manager is installed via NixOS module with useUserPackages

@@ -1,5 +1,5 @@
 {
-  description = "Jonis Flaked NixConfig for Mothership / Macbook / Android";
+  description = "Jonis NixConfig - Multi-platform: NixOS, macOS, Raspberry Pi";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -11,19 +11,37 @@
 
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
+
+    nixvirt.url = "https://flakehub.com/f/AshleyYakeley/NixVirt/*.tar.gz";
+    nixvirt.inputs.nixpkgs.follows = "nixpkgs";
+
+    microvm.url = "github:astro/microvm.nix";
+    microvm.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-darwin, sops-nix, ... }: {
+  outputs = { self, nixpkgs, home-manager, nix-darwin, sops-nix, nixvirt, microvm, ... }: {
 
     # --- NixOS Configuration for Mothership ---
     nixosConfigurations = {
       mothership = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
+          # Core modules
+          ./modules/core
+
+          # Host-specific configuration
           ./hosts/mothership/configuration.nix
           ./hosts/mothership/hardware.nix
+
+          # Secrets
           sops-nix.nixosModules.sops
           ./secrets/secrets.nix
+
+          # Virtualization
+          microvm.nixosModules.host
+          nixvirt.nixosModules.default
+
+          # Home Manager
           home-manager.nixosModules.home-manager
           {
             home-manager.useUserPackages = true;

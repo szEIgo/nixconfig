@@ -1,5 +1,19 @@
-
 # ZFS Maintenance & Management Guide
+
+**Navigation:** [README](../README.md) | [Usage](usage.md) | [Virtualization](virtualization.md) | [Structure](structure.md)
+
+---
+
+## Quick Reference
+
+```bash
+make mount          # Import and decrypt pools
+make zfs-status     # Pool and dataset status
+make zfs-scrub      # Start integrity scrub
+make zfs-snapshot DATASET=rpool/nixos/home
+```
+
+---
 ### Pool & Dataset Naming Overview
 ```
 rpool/                   # Main system pool

@@ -7,16 +7,37 @@
         ]
       },
       "locked": {
-        "lastModified": 1773898372,
-        "narHash": "sha256-PqeDgmyI/Df3/Mv0B81FP/ZC4KuO88YRQF5ZfeFyA4k=",
+        "lastModified": 1773962693,
+        "narHash": "sha256-nf9pgktDE4E2TCavUT1vh3Nd/tfKixL1BK6P32Zp3hI=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "ecf019baf47df009937b5f8c4604cee10f410a76",
+        "rev": "9d3c1d636e7b8ab10f357cd9bee653cd400437de",
         "type": "github"
       },
       "original": {
         "owner": "nix-community",
         "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "microvm": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "spectrum": "spectrum"
+      },
+      "locked": {
+        "lastModified": 1773872447,
+        "narHash": "sha256-IWTp4EMUfZwnuF5S/AjWfOFzCbbgkMzRwNd0qHC/EMg=",
+        "owner": "astro",
+        "repo": "microvm.nix",
+        "rev": "b202882536b018a76f0b6e71a48677f41f4de9d8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "astro",
+        "repo": "microvm.nix",
         "type": "github"
       }
     },
@@ -56,11 +77,32 @@
         "type": "github"
       }
     },
+    "nixvirt": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1748140003,
+        "narHash": "sha256-DNBZmuk1YRM2PmwbHzVdXumRjCUzQkMarg4iI/37rOQ=",
+        "rev": "5dfe108fd859b122f9a96981cb6bc12297653d6c",
+        "revCount": 407,
+        "type": "tarball",
+        "url": "https://api.flakehub.com/f/pinned/AshleyYakeley/NixVirt/0.6.0/0197059a-e45f-7446-86b5-411ccc894ab0/source.tar.gz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://flakehub.com/f/AshleyYakeley/NixVirt/%2A.tar.gz"
+      }
+    },
     "root": {
       "inputs": {
         "home-manager": "home-manager",
+        "microvm": "microvm",
         "nix-darwin": "nix-darwin",
         "nixpkgs": "nixpkgs",
+        "nixvirt": "nixvirt",
         "sops-nix": "sops-nix"
       }
     },
@@ -82,6 +124,22 @@
         "owner": "Mic92",
         "repo": "sops-nix",
         "type": "github"
+      }
+    },
+    "spectrum": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1772189877,
+        "narHash": "sha256-i1p90Rgssb//aNiTDFq46ZG/fk3LmyRLChtp/9lddyA=",
+        "ref": "refs/heads/main",
+        "rev": "fe39e122d898f66e89ffa17d4f4209989ccb5358",
+        "revCount": 1255,
+        "type": "git",
+        "url": "https://spectrum-os.org/git/spectrum"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://spectrum-os.org/git/spectrum"
       }
     }
   },

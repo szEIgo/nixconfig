@@ -2,7 +2,7 @@
 , ... }: {
 
   imports = [
-    ./zsh.nix
+    ./shell
     ./theme-kitty.nix
   ] ++ lib.optionals isLinux [
     ./hyprland.nix

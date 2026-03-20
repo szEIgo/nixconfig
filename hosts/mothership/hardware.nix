@@ -12,7 +12,6 @@
   boot.kernel.sysctl = lib.mkForce {
     "kernel.sysrq" = 1;
     "net.ipv4.ip_forward" = true;
-    "vm.nr_hugepages" = 8192;
   };
   boot.extraModulePackages = [ ];
 
@@ -32,6 +31,12 @@
     device = "/dev/disk/by-uuid/8B9A-049B";
     fsType = "vfat";
     options = [ "fmask=0022" "dmask=0022" ];
+  };
+
+  # Podman container storage on dedicated ZFS dataset
+  fileSystems."/var/lib/containers" = {
+    device = "rpool/podman";
+    fsType = "zfs";
   };
 
   swapDevices = [ ];

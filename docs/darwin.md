@@ -2,6 +2,10 @@
 
 How to set up and use this Nix configuration on a Mac.
 
+**Navigation:** [README](../README.md) | [Getting Started](getting-started.md) | [Usage](usage.md) | [Structure](structure.md)
+
+---
+
 ## Prerequisites
 
 - macOS on Apple Silicon (aarch64-darwin)
