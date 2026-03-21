@@ -102,8 +102,34 @@ echo -e "${BLUE}Writing configuration...${NC}"
 
 HASHED_PASSWORD=$(echo "$PASSWORD" | mkpasswd -m sha-512 -s)
 
+# Write hardware config with labels (replaces the generated one)
+cat > /mnt/etc/nixos/hardware-configuration.nix << 'HWEOF'
+{ config, lib, pkgs, modulesPath, ... }: {
+  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
+
+  boot.initrd.availableKernelModules =
+    [ "xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod" ];
+  boot.kernelModules = [ ];
+  boot.extraModulePackages = [ ];
+
+  fileSystems."/" = {
+    device = "/dev/disk/by-label/nixos";
+    fsType = "ext4";
+  };
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-label/BOOT";
+    fsType = "vfat";
+    options = [ "fmask=0022" "dmask=0022" ];
+  };
+
+  swapDevices = [ ];
+}
+HWEOF
+
 cat > /mnt/etc/nixos/configuration.nix << NIXEOF
 { config, lib, pkgs, ... }: {
+  imports = [ ./hardware-configuration.nix ];
+
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
@@ -128,15 +154,6 @@ cat > /mnt/etc/nixos/configuration.nix << NIXEOF
   system.stateVersion = "25.11";
 }
 NIXEOF
-
-# ---- Verify labels in hardware config ----
-HWCONF="/mnt/etc/nixos/hardware-configuration.nix"
-if grep -q "by-uuid" "$HWCONF"; then
-    echo -e "${YELLOW}Fixing hardware config to use labels instead of UUIDs...${NC}"
-    sed -i 's|/dev/disk/by-uuid/[^ "]*|/dev/disk/by-label/nixos|' "$HWCONF"
-    # Fix boot partition specifically
-    sed -i '0,/by-label\/nixos/{//!b};/\/boot/,/};/{s|/dev/disk/by-label/nixos|/dev/disk/by-label/BOOT|}' "$HWCONF"
-fi
 
 # ---- Install ----
 echo ""
