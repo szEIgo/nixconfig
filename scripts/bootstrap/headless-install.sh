@@ -84,9 +84,14 @@ mkfs.ext4 -F -L nixos "${PART_PREFIX}2"
 
 # ---- Mount ----
 echo -e "${BLUE}Mounting...${NC}"
-mount /dev/disk/by-label/nixos /mnt
+
+# Refresh partition table and wait for labels to appear
+partprobe "$DISK" 2>/dev/null || true
+udevadm settle
+
+mount "${PART_PREFIX}2" /mnt
 mkdir -p /mnt/boot
-mount /dev/disk/by-label/BOOT /mnt/boot
+mount "${PART_PREFIX}1" /mnt/boot
 
 # ---- Generate hardware config ----
 echo -e "${BLUE}Generating hardware config...${NC}"
