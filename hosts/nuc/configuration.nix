@@ -30,14 +30,12 @@
     serverAddr = "https://192.168.2.62:6443";
     tokenFile = "/etc/k3s/token";
     extraFlags = [
-      "--node-ip=192.168.2.211"
+      "--node-label=node-role.kubernetes.io/worker=worker"
+      "--node-label=kubernetes.io/hostname=nuc"
     ];
   };
 
-  # Container runtime
-  virtualisation.containerd.enable = true;
-
-  # Firewall - allow kubelet and flannel
+  # Firewall
   networking.firewall = {
     enable = true;
     allowedTCPPorts = [
