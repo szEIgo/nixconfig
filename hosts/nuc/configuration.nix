@@ -29,7 +29,9 @@
     role = "agent";
     serverAddr = "https://192.168.2.62:6443";
     tokenFile = "/etc/k3s/token";
-    extraFlags = [ ];
+    extraFlags = [
+      "--node-ip=192.168.2.211"
+    ];
   };
 
   # Container runtime
