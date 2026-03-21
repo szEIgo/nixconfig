@@ -106,8 +106,23 @@ swapon /dev/zvol/rpool/swap
 ```bash
 # Generate hardware config
 nixos-generate-config --root /mnt
+```
 
-# Install minimal system
+ZFS requires `networking.hostId` to be set before `nixos-install` will succeed.
+Add it to the generated config:
+
+```bash
+# Generate a random 8-char hex hostId
+head -c4 /dev/urandom | od -A none -t x4 | tr -d ' '
+
+# Add to the generated configuration
+vim /mnt/etc/nixos/configuration.nix
+# → Add: networking.hostId = "<hex string from above>";
+```
+
+Then install and reboot:
+
+```bash
 nixos-install
 reboot
 ```

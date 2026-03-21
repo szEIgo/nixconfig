@@ -1,8 +1,8 @@
 # Hardware configuration for Intel NUC
 #
-# TODO: Replace this with the output of `nixos-generate-config --show-hardware-config`
-#       run on the actual NUC hardware. The filesystem and boot device UUIDs below
-#       are placeholders.
+# Uses /dev/disk/by-label/ references so the disk can be prepared on another
+# machine and moved to the NUC without UUID mismatches.
+# Labels set during partitioning: BOOT (EFI), nixos (root)
 { config, lib, pkgs, modulesPath, ... }: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
@@ -18,15 +18,12 @@
     "net.ipv4.ip_forward" = true;
   };
 
-  # TODO: Update these to match the actual NUC disk layout after install.
-  # These are placeholders — run `nixos-generate-config` on the NUC and
-  # copy the fileSystems / swapDevices sections here.
   fileSystems."/" = {
     device = "/dev/disk/by-label/nixos";
     fsType = "ext4";
   };
   fileSystems."/boot" = {
-    device = "/dev/disk/by-label/boot";
+    device = "/dev/disk/by-label/BOOT";
     fsType = "vfat";
     options = [ "fmask=0022" "dmask=0022" ];
   };
