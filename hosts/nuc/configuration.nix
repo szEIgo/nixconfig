@@ -12,6 +12,8 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "nuc";
+  networking.useNetworkd = true;
+  networking.useDHCP = false;
 
   users.defaultUserShell = pkgs.zsh;
 
