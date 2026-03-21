@@ -79,6 +79,9 @@
       zoxide
       speedtest-cli
 
+      # Clipboard
+      wl-clipboard
+
       # Misc
       graphviz
       plantuml

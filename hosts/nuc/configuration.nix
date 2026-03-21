@@ -30,8 +30,7 @@
     serverAddr = "https://192.168.2.62:6443";
     tokenFile = "/etc/k3s/token";
     extraFlags = [
-      "--node-label=node-role.kubernetes.io/worker=worker"
-      "--node-label=kubernetes.io/hostname=nuc"
+      "--node-label=k3s.io/role=worker"
     ];
   };
 
