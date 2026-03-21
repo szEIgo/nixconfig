@@ -94,6 +94,38 @@
           }
         ];
       };
+
+      # --- NixOS Configuration for ThinkPad T480 (laptop) ---
+      t480 = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          # Core modules
+          ./modules/core
+
+          # Host-specific configuration
+          ./hosts/t480/configuration.nix
+          ./hosts/t480/hardware.nix
+
+          # Home Manager with Plasma
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useUserPackages = true;
+            home-manager.useGlobalPkgs = true;
+            home-manager.backupFileExtension = "backup";
+            home-manager.extraSpecialArgs = {
+              plasmaEnabled = true;
+              isLinux = true;
+              isDarwin = false;
+            };
+            home-manager.users.joni = {
+              imports = [
+                plasma-manager.homeModules.plasma-manager
+                ./home/joni.nix
+              ];
+            };
+          }
+        ];
+      };
     };
 
     # --- nix-darwin Configuration for Macbook ---
