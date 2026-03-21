@@ -19,11 +19,15 @@
 
   # Laptop power management
   services.thermald.enable = true;
+  services.power-profiles-daemon.enable = false;
   services.tlp = {
     enable = true;
     settings = {
       CPU_SCALING_GOVERNOR_ON_AC = "performance";
       CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+      # ThinkPad battery charge thresholds (preserve battery longevity)
+      START_CHARGE_THRESH_BAT0 = 20;
+      STOP_CHARGE_THRESH_BAT0 = 80;
     };
   };
   powerManagement.powertop.enable = true;
