@@ -28,6 +28,7 @@
       tokenFile = "/run/secrets/k3s-token";
       extraFlags = [
         "--node-ip=10.100.0.1${toString config.microvm.workerId}"
+        "--node-label=k3s.io/role=worker"
       ];
     };
 
