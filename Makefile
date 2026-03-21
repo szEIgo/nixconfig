@@ -1,4 +1,4 @@
-.PHONY: help switch build test update gc bootstrap cleanup secrets-edit secrets-updatekeys \
+.PHONY: help install switch build test update gc bootstrap cleanup secrets-edit secrets-updatekeys \
         gpu-reset usb-attach vm-list vm-start vm-stop vm-console vm-fix-efi vnc \
         zfs-status zfs-scrub zfs-snapshot mount \
         k3s-init k3s-wipe k3s-status k3s-flux-init k3s-flux-bootstrap k3s-flux-status k3s-flux-reconcile \
@@ -10,6 +10,12 @@
 # =============================================================================
 help:
 	@./scripts/help.sh
+
+# =============================================================================
+# INSTALL (headless bootstrap from NixOS live ISO)
+# =============================================================================
+install:
+	@./scripts/bootstrap/headless-install.sh
 
 # =============================================================================
 # NIXOS
