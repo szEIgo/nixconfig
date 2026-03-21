@@ -65,6 +65,35 @@
           }
         ];
       };
+
+      # --- NixOS Configuration for Intel NUC (k3s worker) ---
+      nuc = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          # Core modules
+          ./modules/core
+
+          # Host-specific configuration
+          ./hosts/nuc/configuration.nix
+          ./hosts/nuc/hardware.nix
+
+          # Home Manager (shell config, no desktop)
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useUserPackages = true;
+            home-manager.useGlobalPkgs = true;
+            home-manager.backupFileExtension = "backup";
+            home-manager.extraSpecialArgs = {
+              plasmaEnabled = false;
+              isLinux = true;
+              isDarwin = false;
+            };
+            home-manager.users.joni = {
+              imports = [ ./home/joni.nix ];
+            };
+          }
+        ];
+      };
     };
 
     # --- nix-darwin Configuration for Macbook ---

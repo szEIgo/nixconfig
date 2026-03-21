@@ -15,7 +15,10 @@ help:
 # NIXOS
 # =============================================================================
 switch:
-	@./scripts/nixos/switch.sh $(HOST)
+	@./scripts/nixos/switch.sh $(HOST) $(SPEC)
+
+switch-interactive:
+	@./scripts/nixos/switch.sh $(HOST) interactive
 
 build:
 	@./scripts/nixos/build.sh $(HOST)

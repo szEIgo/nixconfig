@@ -4,7 +4,9 @@ cat << 'EOF'
 NixConfig Management Commands
 
 NIXOS
-  make switch [HOST=...]       Build and switch to configuration
+  make switch [HOST=...] [SPEC=...]  Build and switch to configuration
+                               SPEC: amd (default), nvidia, dualGpu, base
+  make switch-interactive      Interactive menu to choose specialisation
   make build [HOST=...]        Build without switching
   make test [HOST=...]         Build and activate without bootloader entry
   make update [HOST=...]       Update flake inputs and rebuild
