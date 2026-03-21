@@ -58,12 +58,16 @@
     IdleAction = "ignore";
   };
 
+  # NFS client support for democratic-csi storage
+  boot.supportedFilesystems = [ "nfs" ];
+
   # Minimal packages for a worker node
   environment.systemPackages = with pkgs; [
     curl
     htop
     iproute2
     vim
+    nfs-utils
   ];
 
   system.stateVersion = "25.11";

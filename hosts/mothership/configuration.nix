@@ -18,6 +18,9 @@
 
     # Remote access
     ../../remote/ssh.nix
+
+    # NFS server for democratic-csi (serves ZFS storage to k3s worker nodes)
+    ../../modules/common/nfs-server.nix
   ];
   boot.extraModulePackages = [ config.boot.kernelPackages.vendor-reset ];
   boot.kernelModules = [
