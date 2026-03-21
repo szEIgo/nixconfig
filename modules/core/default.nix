@@ -8,4 +8,7 @@
     ./locales.nix
     ./users.nix
   ];
+
+  # Wireless tools — iwctl available if a wifi card is present
+  environment.systemPackages = [ pkgs.iwd ];
 }
