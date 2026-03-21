@@ -9,9 +9,6 @@
     ./users.nix
   ];
 
-  # Console keyboard layout
-  console.keyMap = "dk-latin1";
-
   # Wireless tools — iwctl available if a wifi card is present
   environment.systemPackages = [ pkgs.iwd ];
 }

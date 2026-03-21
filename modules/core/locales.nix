@@ -5,8 +5,5 @@
   time.timeZone = lib.mkDefault "Europe/Copenhagen";
   i18n.defaultLocale = lib.mkDefault "en_US.UTF-8";
 
-  console = {
-    keyMap = lib.mkDefault "dk";
-    useXkbConfig = true;
-  };
+  console.keyMap = lib.mkDefault "dk-latin1";
 }
