@@ -15,6 +15,9 @@
 
   users.defaultUserShell = pkgs.zsh;
 
+  # Required when Home Manager is installed via NixOS module with useUserPackages
+  environment.pathsToLink = [ "/share/applications" "/share/xdg-desktop-portal" ];
+
   environment.sessionVariables = {
     EDITOR = "vim";
     KUBECONFIG = "/etc/rancher/k3s/k3s.yaml";
