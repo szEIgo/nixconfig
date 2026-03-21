@@ -6,8 +6,8 @@
     ./theme-kitty.nix
   ] ++ lib.optionals isLinux [
     ./hyprland.nix
+  ] ++ lib.optionals plasmaEnabled [
     ./plasma.nix      # Declarative Plasma config via plasma-manager
-    # ./plasma6.nix   # Old file-based config (kept for reference)
   ];
 
   home.file = {
