@@ -12,8 +12,6 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "nuc";
-  networking.useNetworkd = true;
-  networking.useDHCP = false;
 
   users.defaultUserShell = pkgs.zsh;
 
@@ -31,9 +29,7 @@
     role = "agent";
     serverAddr = "https://192.168.2.62:6443";
     tokenFile = "/etc/k3s/token";
-    extraFlags = [
-      "--node-ip=192.168.2.211"
-    ];
+    extraFlags = [ ];
   };
 
   # Container runtime
