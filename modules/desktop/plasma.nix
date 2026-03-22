@@ -17,10 +17,17 @@
   };
 
   environment.systemPackages = with pkgs; [
-    kdePackages.bluedevil # ✅ Corrected for Qt6 / Plasma 6
+    kdePackages.bluedevil
     bluez
     bluez-tools
     wireplumber
+
+    # KDE Control Station dependencies
+    kdePackages.plasma-nm          # org.kde.plasma.networkmanagement
+    kdePackages.plasma-workspace   # session actions
+
+    # Disk monitoring
+    quota                          # Disk Quota widget
   ];
 }
 

@@ -106,13 +106,10 @@ echo ""
 
 # Build and switch
 echo "Building configuration..."
-sudo GC_INITIAL_HEAP_SIZE="$GC_INITIAL_HEAP_SIZE" nixos-rebuild switch --flake "$REPO_ROOT#$HOST" $NIX_OPTS
-
-# Activate specialisation if specified
 if [[ -n "$SPEC" && "$SPEC" != "base" ]]; then
-    echo ""
-    echo "Activating specialisation: $SPEC"
-    sudo /run/current-system/specialisation/$SPEC/bin/switch-to-configuration switch
+    sudo GC_INITIAL_HEAP_SIZE="$GC_INITIAL_HEAP_SIZE" nixos-rebuild switch --flake "$REPO_ROOT#$HOST" --specialisation "$SPEC" $NIX_OPTS
+else
+    sudo GC_INITIAL_HEAP_SIZE="$GC_INITIAL_HEAP_SIZE" nixos-rebuild switch --flake "$REPO_ROOT#$HOST" $NIX_OPTS
 fi
 
 echo ""
