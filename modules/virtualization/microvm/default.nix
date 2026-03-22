@@ -40,7 +40,7 @@ let
       microvm = {
         hypervisor = "cloud-hypervisor";
         vcpu = 2;
-        mem = 2048; # 2GB RAM
+        mem = 4096; # 4GB RAM
 
         # vsock for systemd-notify (CID 3+ reserved for guests)
         vsock = {
