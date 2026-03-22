@@ -1,4 +1,4 @@
-.PHONY: help install switch build test update gc bootstrap add-host-keys cleanup secrets-edit secrets-updatekeys \
+.PHONY: help install switch build test update gc bootstrap add-host-keys cleanup secrets-edit secrets-updatekeys secrets-list \
         gpu-reset usb-attach vm-list vm-start vm-stop vm-console vm-fix-efi vnc \
         zfs-status zfs-scrub zfs-snapshot mount \
         k3s-init k3s-wipe k3s-status k3s-flux-init k3s-flux-bootstrap k3s-flux-status k3s-flux-reconcile \
@@ -55,6 +55,9 @@ secrets-edit:
 
 secrets-updatekeys:
 	@./scripts/secrets/updatekeys.sh
+
+secrets-list:
+	@./scripts/secrets/list.sh
 
 # =============================================================================
 # STORAGE (ZFS)

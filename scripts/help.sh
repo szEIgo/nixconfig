@@ -17,11 +17,16 @@ NIXOS
     NIX_CORES=8                Cores per build (default: 8)
     Example: NIX_JOBS=4 NIX_CORES=4 make switch
 
-BOOTSTRAP & SECRETS
+INSTALL & BOOTSTRAP
+  make install                 Interactive NixOS install (from live ISO)
   make bootstrap               Decrypt master key for new machine setup
   make cleanup                 Securely delete temporary master key
+
+SECRETS & SSH KEYS
+  make add-host-keys HOST=... IP=...  Generate SSH keys and add SOPS for a host
   make secrets-edit            Edit encrypted secrets
   make secrets-updatekeys      Re-encrypt for all hosts
+  make secrets-list            Show which secrets are stored
 
 STORAGE (ZFS)
   make mount                   Import and decrypt ZFS pools
