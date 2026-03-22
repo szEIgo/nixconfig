@@ -32,6 +32,8 @@
     extraFlags = [
       "--node-label=k3s.io/role=worker"
       "--node-label=node-role=customer"
+      "--node-label=node-type=bare-metal"
+      "--node-label=node-id=nuc"
     ];
   };
 

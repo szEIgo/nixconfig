@@ -29,6 +29,8 @@
       extraFlags = [
         "--node-ip=10.100.0.1${toString config.microvm.workerId}"
         "--node-label=k3s.io/role=worker"
+        "--node-label=node-type=microvm"
+        "--node-label=node-id=worker-${toString config.microvm.workerId}"
       ];
     };
 
