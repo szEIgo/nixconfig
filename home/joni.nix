@@ -16,7 +16,6 @@ in
   ];
 
   home.file = {
-    "./.gitconfig".source = ./configs/gitconfig;
     ".powerlevel10k".source = ./configs/p10k.zsh;
   };
 
@@ -116,7 +115,51 @@ in
       netdata
     ];
 
-  programs.git.enable = true;
+  programs.ssh = lib.mkIf (!isAndroid) {
+    enable = true;
+    matchBlocks = {
+      "github.com" = {
+        hostname = "github.com";
+        user = "git";
+        identityFile = "~/.ssh/id_ed25519";
+        identitiesOnly = true;
+      };
+      "gitlab.com" = {
+        hostname = "gitlab.com";
+        user = "git";
+        identityFile = "~/.ssh/id_ed25519";
+        identitiesOnly = true;
+      };
+      "git.govcloud.dk" = {
+        hostname = "git.govcloud.dk";
+        user = "git";
+        identityFile = "~/.ssh/id_ecdsa";
+        identitiesOnly = true;
+      };
+      "nuc" = {
+        hostname = "192.168.2.102";
+        user = "joni";
+      };
+      "t480" = {
+        hostname = "192.168.2.87";
+        user = "joni";
+      };
+    };
+  };
+
+  programs.git = {
+    enable = true;
+    userName = "Jonathan Szigethy";
+    userEmail = "jonathan@szigethy.dk";
+    extraConfig = {
+      core = {
+        editor = "vim";
+        autocrlf = "input";
+      };
+      color.ui = true;
+      push.default = "simple";
+    };
+  };
   programs.zoxide = {
     enable = true;
     enableZshIntegration = true;
