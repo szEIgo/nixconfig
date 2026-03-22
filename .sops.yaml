@@ -6,6 +6,7 @@ keys:
   # Machine host keys (derived from SSH host key)
   # Run: nix-shell -p ssh-to-age --run 'cat /etc/ssh/ssh_host_ed25519_key.pub | ssh-to-age'
   - &mothership age13m0dh0996244ktl8qq8lst7q9ektpn544rz9fh7n86qnfxu8w3sq830mwa
+  - &t480 age1jxuuk95fu7jdugytulhacehukgj0meyamyv5q4zwv6cfx2yyacjquj6cax
 
 creation_rules:
   - path_regex: secrets/secrets\.yaml$
@@ -13,3 +14,4 @@ creation_rules:
       - age:
           - *joni
           - *mothership
+          - *t480

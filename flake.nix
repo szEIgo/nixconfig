@@ -112,6 +112,10 @@
           ./hosts/t480/configuration.nix
           ./hosts/t480/hardware.nix
 
+          # Secrets
+          sops-nix.nixosModules.sops
+          ./secrets/t480.nix
+
           # Home Manager with Plasma
           home-manager.nixosModules.home-manager
           {
