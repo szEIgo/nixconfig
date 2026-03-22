@@ -149,9 +149,11 @@ in
 
   programs.git = {
     enable = true;
-    userName = "Jonathan Szigethy";
-    userEmail = "jonathan@szigethy.dk";
-    extraConfig = {
+    settings = {
+      user = {
+        name = "Jonathan Szigethy";
+        email = "jonathan@szigethy.dk";
+      };
       core = {
         editor = "vim";
         autocrlf = "input";
