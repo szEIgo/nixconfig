@@ -130,12 +130,16 @@ Lightweight VMs using cloud-hypervisor for k3s worker nodes:
 
 **Architecture:**
 ```
-mothership (k3s server) ─── 10.100.0.1 ───┬─── k3s-worker-1 (10.100.0.11)
-                                          ├─── k3s-worker-2 (10.100.0.12)
-                                          └─── k3s-worker-3 (10.100.0.13)
+mothership (k3s server) ─── 192.168.2.62 ─── nuc (bare-metal worker, 192.168.2.102)
+          │
+          └── 10.100.0.1 ──┬─── k3s-worker-1 (microvm, 10.100.0.11)
+                           ├─── k3s-worker-2 (microvm, 10.100.0.12)
+                           └─── k3s-worker-3 (microvm, 10.100.0.13)
 ```
 
-**Storage:** ZFS zvols at `fastPool/microvm/k3s-worker-{1,2,3}` mounted as `/var/lib/rancher`
+**Node labels:** All workers set `k3s.io/role=worker`. MicroVMs add `node-type=microvm` + `node-id=worker-{N}`. The nuc adds `node-type=bare-metal`, `node-id=nuc`, and `node-role=customer`.
+
+**Storage:** MicroVM zvols at `fastPool/microvm/k3s-worker-{1,2,3}` mounted as `/var/lib/rancher`. Nuc uses local ext4 disk.
 
 **Boot flow (manual, ZFS encrypted):**
 1. `make mount` - Import and decrypt ZFS pools

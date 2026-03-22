@@ -17,12 +17,16 @@ mothership
 │   └── archlinux
 │
 ├── MicroVMs (cloud-hypervisor)
-│   ├── k3s-worker-1 (10.100.0.11)
-│   ├── k3s-worker-2 (10.100.0.12)
-│   └── k3s-worker-3 (10.100.0.13)
+│   ├── k3s-worker-1 (10.100.0.11, node-type=microvm)
+│   ├── k3s-worker-2 (10.100.0.12, node-type=microvm)
+│   └── k3s-worker-3 (10.100.0.13, node-type=microvm)
 │
-└── K3s (control plane: 10.100.0.1:6443)
-    └── Workers join via microvm bridge
+├── K3s (control plane: 10.100.0.1:6443)
+│   └── MicroVM workers join via bridge, nuc joins via LAN
+│
+nuc (192.168.2.102)
+└── k3s worker (node-type=bare-metal, node-role=customer)
+    └── Independent hardware, local ext4 storage
 ```
 
 ---
@@ -169,8 +173,80 @@ Each worker:
 ### Architecture
 
 - **Control plane:** mothership (10.100.0.1)
-- **Workers:** MicroVMs (10.100.0.11-13)
+- **Workers:** nuc (192.168.2.102), MicroVMs (10.100.0.11-13)
 - **Networking:** Flannel VXLAN
+- **GitOps:** Flux CD (repo: `flux-system`)
+- **Storage:** OpenEBS ZFS (local), democratic-csi (NFS over SSH)
+
+```
+mothership (control-plane)
+├── k3s server, ZFS pools, NFS server for democratic-csi
+│
+├── nuc (bare-metal worker, 192.168.2.102)
+│   ├── Independent hardware, survives mothership downtime
+│   ├── Local ext4 disk (hostPath for customer workloads)
+│   └── NFS client for democratic-csi shared storage
+│
+└── MicroVMs on mothership (cloud-hypervisor)
+    ├── k3s-worker-1 (10.100.0.11)
+    ├── k3s-worker-2 (10.100.0.12)
+    └── k3s-worker-3 (10.100.0.13)
+```
+
+### Node Labels
+
+Labels are set via `--node-label` in each agent's k3s config. Use these for `nodeSelector` in deployments.
+
+| Label | Values | Purpose |
+|-------|--------|---------|
+| `k3s.io/role` | `worker` | All worker nodes (nuc + microvms) |
+| `node-type` | `bare-metal`, `microvm` | Broad scheduling by hardware type |
+| `node-id` | `nuc`, `worker-1`, `worker-2`, `worker-3` | Target a specific node |
+| `node-role` | `customer` | Customer-facing workloads (nuc only) |
+
+**Label map:**
+
+| Node | `node-type` | `node-id` | `node-role` |
+|------|-------------|-----------|-------------|
+| mothership | — | — | — |
+| nuc | `bare-metal` | `nuc` | `customer` |
+| k3s-worker-1 | `microvm` | `worker-1` | — |
+| k3s-worker-2 | `microvm` | `worker-2` | — |
+| k3s-worker-3 | `microvm` | `worker-3` | — |
+
+**Scheduling examples:**
+```yaml
+# All workers
+nodeSelector:
+  k3s.io/role: worker
+
+# Only microvms (e.g. observability, internal workloads)
+nodeSelector:
+  node-type: microvm
+
+# Only physical hardware
+nodeSelector:
+  node-type: bare-metal
+
+# Specific node
+nodeSelector:
+  node-id: worker-2
+
+# Customer workloads (pinned to nuc, survives mothership reboot)
+nodeSelector:
+  node-role: customer
+```
+
+### Storage Classes
+
+| Class | Provisioner | Backend | Nodes |
+|-------|-------------|---------|-------|
+| `zfs-fast` (default) | openebs | `fastPool/k3s` on mothership | mothership only |
+| `zfs-slow` | openebs | `slowPool/k3s` on mothership | mothership only |
+| `nfs-fast` | democratic-csi | ZFS over NFS from mothership | all nodes |
+| `nfs-slow` | democratic-csi | ZFS over NFS from mothership | all nodes |
+
+For workloads that must survive mothership downtime (e.g. customer sites on nuc), use `hostPath` volumes instead of CSI storage classes.
 
 ### Initial Setup
 

@@ -94,8 +94,8 @@ mothership (NixOS - Desktop)
 ├── Desktop: Hyprland / KDE Plasma 6 (plasma-manager)
 ├── GPU: VFIO passthrough (NVIDIA + AMD)
 ├── Storage: ZFS (rpool, slowPool, fastPool)
-├── K3s: Kubernetes control plane
-├── MicroVMs: k3s workers (10.100.0.11-13)
+├── K3s: Kubernetes control plane + NFS server (democratic-csi)
+├── MicroVMs: k3s workers (10.100.0.11-13, node-type=microvm)
 ├── VMs: Windows 11, Arch Linux (libvirt)
 ├── Shell: zsh + powerlevel10k + oh-my-zsh (system-wide)
 └── Secrets: sops-nix
@@ -108,8 +108,10 @@ t480 (NixOS - Laptop)
 └── No: ZFS, virtualization, k3s, gaming
 
 nuc (NixOS - Headless Server)
-├── Role: k3s agent (joins mothership at 192.168.2.62:6443)
-├── Storage: NFS client (democratic-csi)
+├── Role: k3s worker (joins mothership at 192.168.2.62:6443)
+├── Labels: node-type=bare-metal, node-id=nuc, node-role=customer
+├── Storage: local ext4 (hostPath), NFS client (democratic-csi)
+├── Customer workloads: pinned here, survives mothership downtime
 ├── Lid/power: all events ignored (headless)
 ├── Shell: zsh + powerlevel10k + oh-my-zsh (system-wide)
 └── No: desktop, plasma, hyprland, virtualization
