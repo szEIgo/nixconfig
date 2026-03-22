@@ -29,13 +29,16 @@
 
   # Single consolidated kernelParams including NVIDIA DRM modeset for Wayland
   boot.kernelParams = lib.mkForce [
-    "amd_iommu=on" 
-    "iommu=pt" 
-    "amdgpu.runpm=0" 
-    "modprobe.blacklist=nouveau" 
+    "amd_iommu=on"
+    "iommu=pt"
+    "amdgpu.runpm=0"
+    "modprobe.blacklist=nouveau"
     "rd.driver.blacklist=nouveau"
     "nvidia_drm.modeset=1"
- #   "drm.edid_firmware=HDMI-A-1:edid/virtual-2048x1332.bin"
- #   "video=HDMI-A-1:2048x1332R@60e"
+    "quiet"
+    "splash"
+    "boot.shell_on_fail"
+    "udev.log_level=3"
+    "rd.udev.log_level=3"
   ];
 }

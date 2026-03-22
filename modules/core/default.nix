@@ -7,12 +7,19 @@ let
     pname = "nixconfig-plymouth-theme";
     version = "1.0";
     src = ./plymouth-theme;
-    dontBuild = true;
+    nativeBuildInputs = [ pkgs.imagemagick ];
+    buildPhase = ''
+      # Generate progress bar images
+      convert -size 300x6 xc:'#400000' bar-bg.png
+      convert -size 300x6 xc:'#FF0000' bar-fill.png
+    '';
     installPhase = ''
       mkdir -p $out/share/plymouth/themes/nixconfig
       cp $src/nixconfig.plymouth $out/share/plymouth/themes/nixconfig/
       cp $src/nixconfig.script $out/share/plymouth/themes/nixconfig/
       cp $src/logo.png $out/share/plymouth/themes/nixconfig/
+      cp bar-bg.png $out/share/plymouth/themes/nixconfig/
+      cp bar-fill.png $out/share/plymouth/themes/nixconfig/
     '';
   };
 in
@@ -36,7 +43,9 @@ in
     "splash"
     "boot.shell_on_fail"
     "udev.log_level=3"
+    "rd.udev.log_level=3"
   ];
+
 
   # Wireless tools — iwctl available if a wifi card is present
   environment.systemPackages = [ pkgs.iwd ];

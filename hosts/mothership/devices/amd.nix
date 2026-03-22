@@ -11,6 +11,11 @@
     "vfio-pci.ids=10de:1f07,10de:10f9,10de:1ada,10de:1adb,10ec:8125"
     "modprobe.blacklist=nouveau"
     "rd.driver.blacklist=nouveau"
+    "quiet"
+    "splash"
+    "boot.shell_on_fail"
+    "udev.log_level=3"
+    "rd.udev.log_level=3"
   ];
 
   hardware.graphics = lib.mkForce {

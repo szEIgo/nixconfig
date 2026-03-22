@@ -6,102 +6,72 @@ Window.SetBackgroundTopColor(0, 0, 0);
 Window.SetBackgroundBottomColor(0, 0, 0);
 
 // ---- Logo ----
-logo.image = Image("logo.png");
-logo.sprite = Sprite(logo.image);
-logo.sprite.SetX(Window.GetWidth() / 2 - logo.image.GetWidth() / 2);
-logo.sprite.SetY(Window.GetHeight() / 2 - logo.image.GetHeight() / 2 - 40);
-logo.sprite.SetZ(10);
+logo = Image("logo.png");
+logo_sprite = Sprite(logo);
+logo_sprite.SetX(Window.GetWidth() / 2 - logo.GetWidth() / 2);
+logo_sprite.SetY(Window.GetHeight() / 2 - logo.GetHeight() / 2 - 50);
+logo_sprite.SetZ(10);
 
 // ---- Progress bar ----
-bar_width = 400;
-bar_height = 8;
-bar_x = Window.GetWidth() / 2 - bar_width / 2;
-bar_y = Window.GetHeight() / 2 + logo.image.GetHeight() / 2 + 20;
+bar_bg = Image("bar-bg.png");
+bar_fill = Image("bar-fill.png");
 
-// Dark red background bar
-bar_bg.image = Image.Text("", 0, 0, 0);
-fun create_bar_bg() {
-    bar_bg_image = Image(bar_width, bar_height);
-    bar_bg_image = bar_bg_image.Rotate(0);
-    return bar_bg_image;
+bar_x = Window.GetWidth() / 2 - bar_bg.GetWidth() / 2;
+bar_y = Window.GetHeight() / 2 + logo.GetHeight() / 2;
+
+// Background bar (dark red)
+bg_sprite = Sprite(bar_bg);
+bg_sprite.SetX(bar_x);
+bg_sprite.SetY(bar_y);
+bg_sprite.SetZ(1);
+
+// Fill bar (bright red, scaled by progress)
+fill_sprite = Sprite();
+fill_sprite.SetX(bar_x);
+fill_sprite.SetY(bar_y);
+fill_sprite.SetZ(2);
+
+fun boot_progress(duration, progress) {
+    fill_sprite.SetImage(bar_fill.Scale(Math.Int(bar_fill.GetWidth() * progress), bar_fill.GetHeight()));
 }
 
-// Draw progress bar using a simple box approach
-progress_box.sprite = Sprite();
-progress_box.sprite.SetPosition(bar_x, bar_y, 1);
+Plymouth.SetBootProgressFunction(boot_progress);
 
-progress_bg.sprite = Sprite();
-progress_bg.sprite.SetPosition(bar_x, bar_y, 0);
+// ---- Messages ----
+msg_sprite = Sprite();
 
-fun refresh_callback() {
-    // Redraw is handled by progress_callback
+fun msg_callback(text) {
+    t = Image.Text(text, 1, 1, 1);
+    msg_sprite.SetImage(t);
+    msg_sprite.SetX(Window.GetWidth() / 2 - t.GetWidth() / 2);
+    msg_sprite.SetY(bar_y + 20);
+    msg_sprite.SetZ(10);
 }
 
-fun progress_callback(duration, progress) {
-    // Background bar (dark red: #8B0000)
-    bg_image = Image(bar_width, bar_height);
-    for (x = 0; x < bar_width; x++) {
-        for (y = 0; y < bar_height; y++) {
-            bg_image = bg_image.Rotate(0);
-        }
+Plymouth.SetMessageFunction(msg_callback);
+
+// ---- Password prompt ----
+prompt_s = Sprite();
+bullet_s = Sprite();
+
+fun pw_callback(prompt, bullets) {
+    p = Image.Text(prompt, 1, 1, 1);
+    prompt_s.SetImage(p);
+    prompt_s.SetX(Window.GetWidth() / 2 - p.GetWidth() / 2);
+    prompt_s.SetY(bar_y + 50);
+    prompt_s.SetZ(10);
+
+    b = "";
+    for (i = 0; i < bullets; i++)
+        b += "* ";
+
+    if (bullets > 0) {
+        bi = Image.Text(b, 1, 0.1, 0.1);
+        bullet_s.SetImage(bi);
+        bullet_s.SetX(Window.GetWidth() / 2 - bi.GetWidth() / 2);
+        bullet_s.SetY(bar_y + 80);
+        bullet_s.SetZ(10);
     }
-
-    // Since Plymouth script has limited drawing, use text-based boxes
-    // Dark red background
-    dark_red_box = Image.Text("", 0.55, 0.05, 0.05);
-    progress_bg.sprite = Sprite(dark_red_box.Scale(bar_width, bar_height));
-    progress_bg.sprite.SetPosition(bar_x, bar_y, 0);
-
-    // Bright red progress fill
-    if (progress > 0) {
-        fill_width = Math.Int(bar_width * progress);
-        if (fill_width > 0) {
-            red_box = Image.Text("", 1, 0.1, 0.1);
-            progress_box.sprite = Sprite(red_box.Scale(fill_width, bar_height));
-            progress_box.sprite.SetPosition(bar_x, bar_y, 1);
-        }
-    }
 }
 
-Plymouth.SetRefreshFunction(refresh_callback);
-Plymouth.SetBootProgressFunction(progress_callback);
-
-// ---- Message handling ----
-message_sprite = Sprite();
-fun message_callback(text) {
-    text_image = Image.Text(text, 1, 1, 1);  // white text
-    message_sprite = Sprite(text_image);
-    message_sprite.SetPosition(
-        Window.GetWidth() / 2 - text_image.GetWidth() / 2,
-        bar_y + bar_height + 20,
-        10
-    );
-}
-
-Plymouth.SetMessageFunction(message_callback);
-
-// ---- Password prompt (LUKS etc) ----
-fun display_password_callback(prompt, bullets) {
-    prompt_image = Image.Text(prompt, 1, 1, 1);  // white text
-    prompt_sprite = Sprite(prompt_image);
-    prompt_sprite.SetPosition(
-        Window.GetWidth() / 2 - prompt_image.GetWidth() / 2,
-        bar_y + bar_height + 50,
-        10
-    );
-
-    bullet_string = "";
-    for (i = 0; i < bullets; i++) {
-        bullet_string += "*";
-    }
-
-    bullet_image = Image.Text(bullet_string, 1, 0.1, 0.1);  // red bullets
-    bullet_sprite = Sprite(bullet_image);
-    bullet_sprite.SetPosition(
-        Window.GetWidth() / 2 - bullet_image.GetWidth() / 2,
-        bar_y + bar_height + 80,
-        10
-    );
-}
-
-Plymouth.SetDisplayPasswordFunction(display_password_callback);
+Plymouth.SetDisplayPasswordFunction(pw_callback);

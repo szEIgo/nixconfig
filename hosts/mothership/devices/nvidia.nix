@@ -9,11 +9,13 @@
     "rd.driver.pre=vfio-pci"
     "vfio-pci.ids=1002:ab38,1002:731f,10ec:8125"
     "nvidia_drm.modeset=1"
-    # Ensure nouveau is prevented from loading for the proprietary driver
     "modprobe.blacklist=nouveau"
     "rd.driver.blacklist=nouveau"
-#  "drm.edid_firmware=HDMI-A-1:edid/virtual-2048x1332.bin"
-#    "video=HDMI-A-1:2048x1332R@60e"
+    "quiet"
+    "splash"
+    "boot.shell_on_fail"
+    "udev.log_level=3"
+    "rd.udev.log_level=3"
   ];
   boot.blacklistedKernelModules = lib.mkForce [ "amdgpu" "radeon" "nouveau" ];
   
