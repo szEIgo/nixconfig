@@ -107,7 +107,7 @@ in
     ++ lib.optionals (!isAndroid) (import ./fonts.nix { pkgs = pkgs; })
     ++ lib.optionals isDesktop [
       # Linux desktop-only packages
-      helm
+      kubernetes-helm
       firefox
       copyq
       vscode
