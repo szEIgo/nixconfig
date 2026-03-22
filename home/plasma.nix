@@ -355,7 +355,7 @@ lib.mkIf plasmaEnabled {
       kdeglobals = {
         "General"."BrowserApplication" = "firefox.desktop";
         "KDE"."SingleClick" = false;
-        "KDE"."LookAndFeelPackage" = "org.kde.breezedark.desktop";
+        # LookAndFeelPackage is already set by workspace.lookAndFeel
       };
 
       # Disable baloo file indexer (heavy on resources)
@@ -363,11 +363,6 @@ lib.mkIf plasmaEnabled {
         "Basic Settings"."Indexing-Enabled" = false;
       };
 
-      # Ensure black wallpaper via config file (backup for desktop script)
-      "plasma-org.kde.plasma.desktop-appletsrc" = {
-        "Containments/1"."wallpaperplugin" = "org.kde.color";
-        "Containments/1/Wallpaper/org.kde.color/General"."Color" = "0,0,0";
-      };
 
       # Keyboard layout
       kxkbrc = {
