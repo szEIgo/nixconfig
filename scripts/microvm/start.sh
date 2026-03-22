@@ -35,7 +35,7 @@ cleanup_stale_nodes
 
 if [[ -z "$VM" ]] || [[ "$VM" == "all" ]]; then
   echo "Starting all MicroVMs..."
-  systemctl list-units 'microvm@*' --all --no-legend | while read -r unit _rest; do
+  systemctl list-units 'microvm@*' --all --no-legend --plain | awk '{print $1}' | grep '^microvm@' | while read -r unit; do
     echo "  Starting $unit"
     sudo systemctl start "$unit"
   done

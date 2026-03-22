@@ -83,12 +83,20 @@ in {
   # Create parent dataset and zvols for each worker
   # Run manually once:
   #   sudo zfs create fastPool/microvm
-  #   sudo zfs create -V 10G fastPool/microvm/k3s-worker-1
-  #   sudo zfs create -V 10G fastPool/microvm/k3s-worker-2
-  #   sudo zfs create -V 10G fastPool/microvm/k3s-worker-3
+  #   sudo zfs create -V 20G fastPool/microvm/k3s-worker-1
+  #   sudo zfs create -V 20G fastPool/microvm/k3s-worker-2
+  #   sudo zfs create -V 20G fastPool/microvm/k3s-worker-3
   #   sudo mkfs.ext4 /dev/zvol/fastPool/microvm/k3s-worker-1
   #   sudo mkfs.ext4 /dev/zvol/fastPool/microvm/k3s-worker-2
   #   sudo mkfs.ext4 /dev/zvol/fastPool/microvm/k3s-worker-3
+  #
+  # To resize existing zvols from 10G to 20G:
+  #   sudo zfs set volsize=20G fastPool/microvm/k3s-worker-1
+  #   sudo zfs set volsize=20G fastPool/microvm/k3s-worker-2
+  #   sudo zfs set volsize=20G fastPool/microvm/k3s-worker-3
+  #   sudo resize2fs /dev/zvol/fastPool/microvm/k3s-worker-1
+  #   sudo resize2fs /dev/zvol/fastPool/microvm/k3s-worker-2
+  #   sudo resize2fs /dev/zvol/fastPool/microvm/k3s-worker-3
 
   # Bridge network for MicroVMs
   systemd.network = {

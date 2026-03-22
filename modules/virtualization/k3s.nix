@@ -50,6 +50,12 @@ in
     traefikGatewayApiHelmChartConfig;
 
 
+  # Kernel tuning for k3s + microvms (many watchers across containers and VMs)
+  boot.kernel.sysctl = {
+    "fs.inotify.max_user_instances" = 524288;
+    "fs.inotify.max_user_watches" = 524288;
+  };
+
   services.k3s = {
     enable = true;
     role = "server";

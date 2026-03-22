@@ -9,7 +9,7 @@ if [[ -z "$VM" ]]; then
   echo "Usage: $0 <vm-name>"
   echo ""
   echo "Available MicroVMs:"
-  systemctl list-units 'microvm@*' --all --no-legend | while read -r unit _rest; do
+  systemctl list-units 'microvm@*' --all --no-legend --plain | awk '{print $1}' | grep '^microvm@' | while read -r unit; do
     name=$(echo "$unit" | sed 's/microvm@\(.*\)\.service/\1/')
     echo "  $name"
   done
