@@ -363,6 +363,12 @@ lib.mkIf plasmaEnabled {
         "Basic Settings"."Indexing-Enabled" = false;
       };
 
+      # Ensure black wallpaper via config file (backup for desktop script)
+      "plasma-org.kde.plasma.desktop-appletsrc" = {
+        "Containments/1"."wallpaperplugin" = "org.kde.color";
+        "Containments/1/Wallpaper/org.kde.color/General"."Color" = "0,0,0";
+      };
+
       # Keyboard layout
       kxkbrc = {
         "Layout"."LayoutList" = "dk";
