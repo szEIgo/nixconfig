@@ -46,27 +46,54 @@ ssh joni@<dhcp-ip>
 nix-shell -p git
 git clone https://github.com/szeigo/nixconfig ~/nixconfig
 cd ~/nixconfig
-sudo nixos-rebuild switch --flake .#nuc
+make switch HOST=<hostname>
 ```
 
-Your SSH session will drop when the static IP (`192.168.2.211`) takes over. Reconnect:
+## 4. Add SSH Keys
+
+From the **mothership** (or any machine with the repo), run:
 
 ```bash
-ssh joni@192.168.2.211
+make add-host-keys HOST=<hostname> IP=<ip>
 ```
 
-## 4. Join k3s Cluster
+This will:
+- SSH into the new host and generate an ed25519 key pair
+- Get the host's age key for SOPS decryption
+- Add the age key to `.sops.yaml`
+- Encrypt the private key in `secrets/secrets.yaml`
+- Add the public key to `remote/authorized_keys`
+- Create `secrets/<hostname>.nix`
+
+Then add SOPS to the host's entry in `flake.nix`:
+
+```nix
+sops-nix.nixosModules.sops
+./secrets/<hostname>.nix
+```
+
+Push and rebuild:
+
+```bash
+git add -A && git commit -m "Add SSH keys for <hostname>"
+make switch HOST=<hostname>
+```
+
+## 5. Join k3s Cluster (worker nodes only)
 
 ```bash
 # On the mothership — get the join token
 sudo cat /var/lib/rancher/k3s/server/node-token
 
-# On the NUC — place the token
+# On the worker — place the token
 sudo mkdir -p /etc/k3s
 echo "<token>" | sudo tee /etc/k3s/token
-sudo systemctl restart k3s-agent
+sudo systemctl restart k3s
+```
 
-# On the mothership — verify
+Verify on the mothership:
+
+```bash
 kubectl get nodes
 ```
 

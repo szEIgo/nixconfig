@@ -7,6 +7,7 @@ keys:
   # Run: nix-shell -p ssh-to-age --run 'cat /etc/ssh/ssh_host_ed25519_key.pub | ssh-to-age'
   - &mothership age13m0dh0996244ktl8qq8lst7q9ektpn544rz9fh7n86qnfxu8w3sq830mwa
   - &t480 age1jxuuk95fu7jdugytulhacehukgj0meyamyv5q4zwv6cfx2yyacjquj6cax
+  - &nuc age1vz4putkv49camvurqq3v2dzffahkjqnlhu8u9k84r732fch8pawsd04xfa
 
 creation_rules:
   - path_regex: secrets/secrets\.yaml$
@@ -15,3 +16,4 @@ creation_rules:
           - *joni
           - *mothership
           - *t480
+          - *nuc

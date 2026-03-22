@@ -82,6 +82,10 @@
           ./hosts/nuc/configuration.nix
           ./hosts/nuc/hardware.nix
 
+          # Secrets
+          sops-nix.nixosModules.sops
+          ./secrets/nuc.nix
+
           # Home Manager (shell config, no desktop)
           home-manager.nixosModules.home-manager
           {

@@ -252,37 +252,52 @@ Open new terminal. You should have:
 
 ## Adding a New Host
 
-### NixOS
+### 1. Install NixOS
 
-1. Create host directory:
+For headless machines, see [Headless Getting Started](headless-getting-started.md).
+For machines with a display, use the NixOS graphical installer or `make install`.
+
+### 2. Create host config
+
 ```bash
-mkdir -p hosts/newhostname
+mkdir -p hosts/<hostname>
 ```
 
-2. Create `hosts/newhostname/configuration.nix`:
+Create `configuration.nix` and `hardware.nix` — see existing hosts as templates:
+- **Desktop laptop**: `hosts/t480/` (Plasma, TLP, NetworkManager)
+- **Headless server**: `hosts/nuc/` (k3s worker, no desktop)
+- **Workstation**: `hosts/mothership/` (GPU passthrough, virtualization)
+
+### 3. Add to flake.nix
+
+Add a `nixosConfigurations.<hostname>` entry (copy an existing one as template).
+
+### 4. First switch
+
+```bash
+make switch HOST=<hostname>
+```
+
+### 5. Add SSH keys
+
+From any machine that can reach the new host:
+
+```bash
+make add-host-keys HOST=<hostname> IP=<ip>
+```
+
+This generates an SSH key pair, encrypts the private key with SOPS, and adds the
+public key to `authorized_keys`. Then add SOPS to the host's flake entry:
+
 ```nix
-{ config, lib, pkgs, ... }: {
-  imports = [
-    ../../modules/common/users.nix
-    ../../modules/common/zsh.nix
-  ];
-  networking.hostName = "newhostname";
-  networking.hostId = "xxxxxxxx";  # head -c 8 /etc/machine-id
-  system.stateVersion = "25.11";
-}
+sops-nix.nixosModules.sops
+./secrets/<hostname>.nix
 ```
 
-3. Generate hardware config:
-```bash
-nixos-generate-config --show-hardware-config > hosts/newhostname/hardware.nix
-```
+Push, rebuild the new host, and rebuild other hosts to pick up the new authorized key:
 
-4. Add to `flake.nix` (see existing mothership entry as template)
-
-5. Add machine key to `.sops.yaml` and re-encrypt:
 ```bash
-make secrets-updatekeys
-make switch HOST=newhostname
+make switch HOST=<hostname>
 ```
 
 ---
