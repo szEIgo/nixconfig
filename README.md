@@ -82,24 +82,63 @@ make gc                      # Garbage collect (default: 30 days)
 | Host | Platform | Type | Description |
 |------|----------|------|-------------|
 | `mothership` | NixOS x86_64 | Desktop | Main workstation with GPU passthrough |
+| `t480` | NixOS x86_64 | Laptop | ThinkPad T480 portable workstation |
+| `nuc` | NixOS x86_64 | Server | Headless k3s worker node |
 | `jsz-mac-01` | macOS aarch64 | Workstation | MacBook with nix-darwin |
 
 ## System Overview
 
 ```
-mothership (NixOS)
-├── Desktop: Hyprland / KDE Plasma 6
+mothership (NixOS - Desktop)
+├── Desktop: Hyprland / KDE Plasma 6 (plasma-manager)
 ├── GPU: VFIO passthrough (NVIDIA + AMD)
 ├── Storage: ZFS (rpool, slowPool, fastPool)
 ├── K3s: Kubernetes control plane
 ├── MicroVMs: k3s workers (10.100.0.11-13)
-└── VMs: Windows 11, Arch Linux (libvirt)
+├── VMs: Windows 11, Arch Linux (libvirt)
+├── Shell: zsh + powerlevel10k + oh-my-zsh (system-wide)
+└── Secrets: sops-nix
+
+t480 (NixOS - Laptop)
+├── Desktop: KDE Plasma 6 (plasma-manager, shared config with mothership)
+├── Power: TLP (20-80% battery thresholds), thermald, powertop
+├── Network: NetworkManager (WiFi)
+├── Shell: zsh + powerlevel10k + oh-my-zsh (system-wide)
+└── No: ZFS, virtualization, k3s, gaming
+
+nuc (NixOS - Headless Server)
+├── Role: k3s agent (joins mothership at 192.168.2.62:6443)
+├── Storage: NFS client (democratic-csi)
+├── Lid/power: all events ignored (headless)
+├── Shell: zsh + powerlevel10k + oh-my-zsh (system-wide)
+└── No: desktop, plasma, hyprland, virtualization
 
 jsz-mac-01 (macOS)
 ├── Nix: CLI tools, dev environment
 ├── Homebrew: GUI apps (managed by nix-darwin)
 └── Shared: Shell config, helix, kitty
 ```
+
+### Feature Matrix
+
+| Feature | mothership | t480 | nuc | macbook |
+|---------|:---:|:---:|:---:|:---:|
+| Plasma 6 (plasma-manager) | ✓ | ✓ | - | - |
+| Hyprland | ✓ | ✓* | - | - |
+| Home-manager (joni) | ✓ | ✓ | ✓ | ✓ |
+| System-wide zsh/p10k | ✓ | ✓ | ✓ | - |
+| K3s server | ✓ | - | - | - |
+| K3s agent | - | - | ✓ | - |
+| ZFS | ✓ | - | - | - |
+| Libvirt/VFIO | ✓ | - | - | - |
+| Podman | ✓ | - | - | - |
+| MicroVMs | ✓ | - | - | - |
+| Gaming (Steam) | ✓ | - | - | - |
+| TLP power mgmt | - | ✓ | - | - |
+| sops-nix secrets | ✓ | - | - | - |
+| SSH server | ✓ | ✓ | ✓ | - |
+
+\* Hyprland config imported via home-manager but Plasma is the primary DE
 
 ## Command Categories
 
@@ -163,6 +202,8 @@ nixconfig/
 ├── Makefile                 # All operations
 ├── hosts/                   # Machine configs
 │   ├── mothership/          # NixOS desktop
+│   ├── t480/                # NixOS laptop
+│   ├── nuc/                 # NixOS headless k3s worker
 │   └── macbook/             # macOS
 ├── modules/                 # Reusable NixOS modules
 │   ├── core/                # Required for all hosts

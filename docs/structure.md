@@ -22,9 +22,8 @@ nixconfig/
 │   │   └── desktop.nix       # Desktop/GUI applications
 │   ├── shell/
 │   │   └── default.nix       # Unified zsh configuration
-│   ├── hyprland.nix          # Hyprland window manager
-│   ├── plasma6.nix           # KDE Plasma config
-│   ├── omarchy-theme.nix     # GTK/cursor/kitty theming
+│   ├── hyprland.nix          # Hyprland window manager + GTK theming
+│   ├── plasma.nix            # KDE Plasma config (plasma-manager)
 │   ├── fonts.nix             # Font packages
 │   └── configs/              # Dotfiles
 │       ├── gitconfig
@@ -32,11 +31,18 @@ nixconfig/
 │       └── plasma6/
 │
 ├── hosts/                    # Machine-specific configs
-│   └── mothership/
-│       ├── configuration.nix # Main NixOS config
-│       ├── hardware.nix      # Generated hardware config
-│       ├── packages.nix      # Host-specific packages
-│       └── devices/          # Hardware variants
+│   ├── mothership/
+│   │   ├── configuration.nix # Main NixOS config
+│   │   ├── hardware.nix      # Generated hardware config
+│   │   ├── packages.nix      # Host-specific packages
+│   │   └── devices/          # Hardware variants
+│   ├── t480/
+│   │   ├── configuration.nix # Laptop config (Plasma, TLP, WiFi)
+│   │   └── hardware.nix      # ThinkPad T480 hardware
+│   ├── nuc/
+│   │   ├── configuration.nix # Headless k3s worker
+│   │   └── hardware.nix      # Intel NUC hardware
+│   └── macbook/
 │
 ├── modules/                  # Reusable NixOS modules
 │   ├── core/                 # Required for ALL NixOS hosts
@@ -46,7 +52,7 @@ nixconfig/
 │   │   └── users.nix         # Basic user (wheel group)
 │   ├── common/               # Desktop extensions
 │   │   ├── users.nix         # Adds libvirtd, kvm, podman groups
-│   │   ├── zsh.nix           # System zsh (root prompt)
+│   │   ├── zsh.nix           # System-wide zsh (oh-my-zsh, p10k, aliases for all users incl. root)
 │   │   ├── packages.nix      # System packages
 │   │   ├── services.nix      # Display manager, logind
 │   │   └── zfs.nix           # ZFS support
@@ -103,7 +109,7 @@ Minimal base imported via `flake.nix` for ALL NixOS hosts:
 ### Common (modules/common/)
 Extensions for desktop/workstation machines:
 - `users.nix` - Adds groups: libvirtd, kvm, podman, video, seat
-- `zsh.nix` - System-level zsh with root prompt
+- `zsh.nix` - System-wide zsh (oh-my-zsh, powerlevel10k, aliases for all users including root)
 - `packages.nix` - System packages
 - `services.nix` - SDDM, logind settings
 
