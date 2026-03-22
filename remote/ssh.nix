@@ -17,6 +17,11 @@ in {
     gnupg.agent = {
       enable = true;
       enableSSHSupport = true;
+      settings = {
+        default-cache-ttl = 28800;
+        max-cache-ttl = 28800;
+      };
+      pinentryPackage = pkgs.pinentry-gnome3;
     };
   };
 

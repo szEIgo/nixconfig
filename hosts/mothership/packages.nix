@@ -67,15 +67,5 @@ in {
         expat
       ];
     };
-
-    gnupg.agent = {
-      enable = true;
-      enableSSHSupport = true;
-      settings = {
-        default-cache-ttl = 1800;
-        max-cache-ttl = 7200;
-      };
-      pinentryPackage = pkgs.pinentry-tty;
-    };
   };
 }

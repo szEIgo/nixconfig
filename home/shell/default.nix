@@ -7,7 +7,6 @@ let
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
   isDesktop = isLinux && !isAndroid;
-  sshKey = "~/.ssh/id_ecdsa";
 in
 {
   # Minimal bash configuration (used by tools like Claude Code)
@@ -25,20 +24,6 @@ in
       # Architecture flags
       export ARCHFLAGS="-arch $(uname -m)"
 
-      # SSH agent setup
-      ssh_session() {
-        if [ -z "$SSH_AUTH_SOCK" ]; then
-          eval "$(ssh-agent -s)"
-        fi
-        if ! ssh-add -l &>/dev/null; then
-          ssh-add ${sshKey} 2>/dev/null
-        fi
-      }
-    '' + lib.optionalString isDesktop ''
-      # Linux-specific: keychain for SSH
-      if command -v keychain &>/dev/null; then
-        eval "$(keychain --eval --quiet --quick --noask --timeout 240 ${sshKey} 2>/dev/null)"
-      fi
     '';
   };
 
@@ -106,32 +91,6 @@ in
       [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
       [[ -f ~/.powerlevel10k ]] && source ~/.powerlevel10k
 
-      # SSH agent setup
-      ssh_session() {
-        if [ -z "$SSH_AUTH_SOCK" ]; then
-          eval "$(ssh-agent -s)"
-        fi
-        if ! ssh-add -l &>/dev/null; then
-          ssh-add ${sshKey} 2>/dev/null
-        fi
-      }
-
-      # SSH with agent and forwarding
-      ssh() {
-        ssh_session
-        command ssh -X -CY -o ServerAliveInterval=120 "$@"
-      }
-
-      scp() {
-        ssh_session
-        command scp -C -v -r "$@"
-      }
-
-      git() {
-        ssh_session
-        command git "$@"
-      }
-
       # Keybindings
       bindkey "^[[3~" delete-char
       bindkey "^[[5~" beginning-of-buffer-or-history
@@ -154,16 +113,7 @@ in
     '' + lib.optionalString isDarwin ''
       # macOS-specific helpers
       finder() { open -a "Finder" "''${1:-.}"; }
-    '' + lib.optionalString isDesktop ''
-      # Linux-specific: keychain for SSH
-      if command -v keychain &>/dev/null; then
-        eval "$(keychain --eval --quiet --quick --noask --timeout 240 ${sshKey} 2>/dev/null)"
-      fi
     '';
-  };
-
-  programs.keychain = lib.mkIf isDesktop {
-    enable = true;
   };
 
   # Deploy p10k config so powerlevel10k theme works on all machines
