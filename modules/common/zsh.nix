@@ -38,6 +38,11 @@
       cat = "bat --style plain --pager never";
       k = "kubectl";
       docker = "podman";
+
+      # SSH into hosts
+      mothership = "ssh -X joni@192.168.2.62";
+      t480 = "ssh -X joni@192.168.2.87";
+      nuc = "ssh -X joni@192.168.2.102";
     };
 
     # Init for all users (loaded via /etc/zshrc)

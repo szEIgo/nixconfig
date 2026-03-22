@@ -79,6 +79,11 @@ in
       # Kubernetes
       k = "kubectl";
 
+      # SSH into hosts
+      mothership = "ssh -X joni@192.168.2.62";
+      t480 = "ssh -X joni@192.168.2.87";
+      nuc = "ssh -X joni@192.168.2.102";
+
       # Platform-specific
     } // lib.optionalAttrs isDesktop {
       docker = "podman";
