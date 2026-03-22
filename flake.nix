@@ -27,13 +27,23 @@
     nix-on-droid.inputs.home-manager.follows = "home-manager";
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-darwin, sops-nix, nixvirt, microvm, plasma-manager, nix-on-droid, ... }: {
+  outputs = { self, nixpkgs, home-manager, nix-darwin, sops-nix, nixvirt, microvm, plasma-manager, nix-on-droid, ... }:
+  let
+    # Git revision tracking — embedded in every NixOS system label
+    gitRevision = self.shortRev or self.dirtyShortRev or "unknown";
+    nixosRevisionModule = {
+      system.configurationRevision = self.rev or self.dirtyRev or "dirty";
+      system.nixos.label = "nixconfig-${gitRevision}";
+    };
+  in {
 
     # --- NixOS Configuration for Mothership ---
     nixosConfigurations = {
       mothership = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
+          nixosRevisionModule
+
           # Core modules
           ./modules/core
 
@@ -75,6 +85,8 @@
       nuc = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
+          nixosRevisionModule
+
           # Core modules
           ./modules/core
 
@@ -109,6 +121,8 @@
       t480 = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
+          nixosRevisionModule
+
           # Core modules
           ./modules/core
 

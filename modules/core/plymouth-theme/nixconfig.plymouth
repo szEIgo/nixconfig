@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=NixConfig
+Description=Custom NixConfig boot theme
+ModuleName=script
+
+[script]
+ImageDir=/etc/plymouth/themes/nixconfig
+ScriptFile=/etc/plymouth/themes/nixconfig/nixconfig.script
