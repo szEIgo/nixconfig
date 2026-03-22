@@ -159,4 +159,7 @@ in
   programs.keychain = lib.mkIf isLinux {
     enable = true;
   };
+
+  # Deploy p10k config so powerlevel10k theme works on all machines
+  home.file.".p10k.zsh".source = ../configs/p10k.zsh;
 }
