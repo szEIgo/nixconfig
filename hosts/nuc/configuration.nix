@@ -31,6 +31,7 @@
     tokenFile = "/etc/k3s/token";
     extraFlags = [
       "--node-label=k3s.io/role=worker"
+      "--node-label=node-role=customer"
     ];
   };
 
