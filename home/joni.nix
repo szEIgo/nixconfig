@@ -1,10 +1,15 @@
 { config, lib, pkgs, plasmaEnabled ? false, isLinux ? true, isDarwin ? false
-, ... }: {
+, isAndroid ? false, ... }:
 
+let
+  isDesktop = isLinux && !isAndroid;
+in
+{
   imports = [
     ./shell
+  ] ++ lib.optionals (!isAndroid) [
     ./theme-kitty.nix
-  ] ++ lib.optionals isLinux [
+  ] ++ lib.optionals isDesktop [
     ./hyprland.nix
   ] ++ lib.optionals plasmaEnabled [
     ./plasma.nix      # Declarative Plasma config via plasma-manager
@@ -15,7 +20,7 @@
     ".powerlevel10k".source = ./configs/p10k.zsh;
   };
 
-  # Cross-platform packages (shared between NixOS and macOS)
+  # Core CLI packages shared across ALL platforms (including Android)
   home.packages = with pkgs;
     [
       # Core CLI tools
@@ -53,6 +58,18 @@
       vim
       helix
 
+      # Networking
+      fzf
+      zoxide
+      openssh
+
+      # Misc
+      mc
+      yamllint
+      yazi
+    ]
+    # Heavier dev tools (skip on Android — slow to build, large closure)
+    ++ lib.optionals (!isAndroid) [
       # Languages & runtimes
       sbt
       scala
@@ -75,9 +92,9 @@
 
       # Networking & monitoring
       nmap
-      fzf
-      zoxide
       speedtest-cli
+      sshpass
+      zellij
 
       # Clipboard
       wl-clipboard
@@ -86,15 +103,10 @@
       graphviz
       plantuml
       jdk
-      mc
-      yamllint
-      sshpass
-      yazi
-      zellij
     ]
-    ++ import ./fonts.nix { pkgs = pkgs; }
-    ++ lib.optionals isLinux [
-      # Linux-only packages
+    ++ lib.optionals (!isAndroid) (import ./fonts.nix { pkgs = pkgs; })
+    ++ lib.optionals isDesktop [
+      # Linux desktop-only packages
       helm
       firefox
       copyq
@@ -134,7 +146,11 @@
     };
   };
 
-  home.username = "joni";
-  home.homeDirectory = lib.mkForce (if isDarwin then "/Users/joni" else "/home/joni");
+  home.username = lib.mkForce (if isAndroid then "nix-on-droid" else "joni");
+  home.homeDirectory = lib.mkForce (
+    if isAndroid then "/data/data/com.termux.nix/files/home"
+    else if isDarwin then "/Users/joni"
+    else "/home/joni"
+  );
   home.stateVersion = "25.11";
 }

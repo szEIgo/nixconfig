@@ -42,6 +42,8 @@ nixconfig/
 │   ├── nuc/
 │   │   ├── configuration.nix # Headless k3s worker
 │   │   └── hardware.nix      # Intel NUC hardware
+│   ├── android/
+│   │   └── default.nix       # nix-on-droid config (shell + CLI tools)
 │   └── macbook/
 │
 ├── modules/                  # Reusable NixOS modules

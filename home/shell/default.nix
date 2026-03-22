@@ -1,11 +1,12 @@
 # Unified shell configuration for all platforms
 # This is the single source of truth for shell setup
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, isAndroid ? false, ... }:
 
 let
   # Platform detection
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
+  isDesktop = isLinux && !isAndroid;
   sshKey = "~/.ssh/id_ecdsa";
 in
 {
@@ -33,7 +34,7 @@ in
           ssh-add ${sshKey} 2>/dev/null
         fi
       }
-    '' + lib.optionalString isLinux ''
+    '' + lib.optionalString isDesktop ''
       # Linux-specific: keychain for SSH
       if command -v keychain &>/dev/null; then
         eval "$(keychain --eval --quiet --quick --noask --timeout 240 ${sshKey} 2>/dev/null)"
@@ -55,7 +56,7 @@ in
         "cp"
         "history"
         "colorize"
-      ] ++ lib.optionals isLinux [
+      ] ++ lib.optionals isDesktop [
         "systemadmin"
         "podman"
       ] ++ [
@@ -79,7 +80,7 @@ in
       k = "kubectl";
 
       # Platform-specific
-    } // lib.optionalAttrs isLinux {
+    } // lib.optionalAttrs isDesktop {
       docker = "podman";
     };
 
@@ -148,7 +149,7 @@ in
     '' + lib.optionalString isDarwin ''
       # macOS-specific helpers
       finder() { open -a "Finder" "''${1:-.}"; }
-    '' + lib.optionalString isLinux ''
+    '' + lib.optionalString isDesktop ''
       # Linux-specific: keychain for SSH
       if command -v keychain &>/dev/null; then
         eval "$(keychain --eval --quiet --quick --noask --timeout 240 ${sshKey} 2>/dev/null)"
@@ -156,7 +157,7 @@ in
     '';
   };
 
-  programs.keychain = lib.mkIf isLinux {
+  programs.keychain = lib.mkIf isDesktop {
     enable = true;
   };
 

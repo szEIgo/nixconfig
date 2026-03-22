@@ -1,5 +1,5 @@
 {
-  description = "Jonis NixConfig - Multi-platform: NixOS, macOS, Raspberry Pi";
+  description = "Jonis NixConfig - Multi-platform: NixOS, macOS, Android";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -21,9 +21,13 @@
     plasma-manager.url = "github:nix-community/plasma-manager";
     plasma-manager.inputs.nixpkgs.follows = "nixpkgs";
     plasma-manager.inputs.home-manager.follows = "home-manager";
+
+    nix-on-droid.url = "github:nix-community/nix-on-droid/release-24.05";
+    nix-on-droid.inputs.nixpkgs.follows = "nixpkgs";
+    nix-on-droid.inputs.home-manager.follows = "home-manager";
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-darwin, sops-nix, nixvirt, microvm, plasma-manager, ... }: {
+  outputs = { self, nixpkgs, home-manager, nix-darwin, sops-nix, nixvirt, microvm, plasma-manager, nix-on-droid, ... }: {
 
     # --- NixOS Configuration for Mothership ---
     nixosConfigurations = {
@@ -55,6 +59,7 @@
               plasmaEnabled = true;
               isLinux = true;
               isDarwin = false;
+              isAndroid = false;
             };
             home-manager.users.joni = {
               imports = [
@@ -87,6 +92,7 @@
               plasmaEnabled = false;
               isLinux = true;
               isDarwin = false;
+              isAndroid = false;
             };
             home-manager.users.joni = {
               imports = [ ./home/joni.nix ];
@@ -116,6 +122,7 @@
               plasmaEnabled = true;
               isLinux = true;
               isDarwin = false;
+              isAndroid = false;
             };
             home-manager.users.joni = {
               imports = [
@@ -143,11 +150,34 @@
               plasmaEnabled = false;
               isLinux = false;
               isDarwin = true;
+              isAndroid = false;
             };
             home-manager.users.joni = { imports = [ ./home/joni.nix ]; };
           }
         ];
       };
+    };
+
+    # --- nix-on-droid Configuration for Android ---
+    nixOnDroidConfigurations.default = nix-on-droid.lib.nixOnDroidConfiguration {
+      pkgs = import nixpkgs { system = "aarch64-linux"; };
+      modules = [
+        ./hosts/android/default.nix
+        {
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            backupFileExtension = "backup";
+            extraSpecialArgs = {
+              plasmaEnabled = false;
+              isLinux = true;
+              isDarwin = false;
+              isAndroid = true;
+            };
+            config = ./home/joni.nix;
+          };
+        }
+      ];
     };
   };
 }
