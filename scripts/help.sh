@@ -68,6 +68,11 @@ MICROVMS
   make microvm-destroy-zfs     Destroy ZFS volumes (DANGER!)
   make microvm-resize ID=1 SIZE=20G  Resize ZFS volume
 
+WIREGUARD VPN
+  make wg-connect              Connect to mothership VPN (clients only)
+  make wg-disconnect           Disconnect from VPN (clients only)
+  make wg-status               Show WireGuard interface status
+
 DOCUMENTATION
   See docs/ folder or README.md for detailed guides.
 EOF

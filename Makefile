@@ -3,7 +3,8 @@
         zfs-status zfs-scrub zfs-snapshot mount \
         k3s-init k3s-wipe k3s-status k3s-flux-init k3s-flux-bootstrap k3s-flux-status k3s-flux-reconcile \
         microvm-list microvm-status microvm-start microvm-stop microvm-restart microvm-ssh \
-        microvm-init-zfs microvm-destroy-zfs microvm-resize
+        microvm-init-zfs microvm-destroy-zfs microvm-resize \
+        wg-connect wg-disconnect wg-status
 
 # =============================================================================
 # HELP
@@ -157,3 +158,15 @@ microvm-destroy-zfs:
 
 microvm-resize:
 	@./scripts/microvm/resize-zfs.sh $(ID) $(SIZE)
+
+# =============================================================================
+# WIREGUARD VPN
+# =============================================================================
+wg-connect:
+	@./scripts/wireguard/connect.sh
+
+wg-disconnect:
+	@./scripts/wireguard/disconnect.sh
+
+wg-status:
+	@./scripts/wireguard/status.sh

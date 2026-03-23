@@ -45,6 +45,11 @@
             PublicKey = "SOV6U1SR328Up+dP2t+04ErNiIDuD0qkCfa6+ffTrkU=";
             AllowedIPs = [ "192.168.10.4/32" ];
           }
+          {
+            # t480
+            PublicKey = "n+1qBkB/3fpnp6lf2evjWRl6r2/2aQuhgaCsaMtKbFk=";
+            AllowedIPs = [ "192.168.10.5/32" ];
+          }
         ];
       };
     };

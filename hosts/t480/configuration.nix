@@ -9,6 +9,9 @@
 
     # Remote access
     ../../remote/ssh.nix
+
+    # VPN
+    ./wireguard.nix
   ];
 
   boot.loader.systemd-boot.enable = true;

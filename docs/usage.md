@@ -236,6 +236,42 @@ make k3s-wipe ARGS=--mask
 
 ---
 
+## WireGuard VPN
+
+### Connect / Disconnect
+
+On any client host (t480, nuc, etc.) — not mothership (which is the server):
+
+```bash
+# Connect to mothership VPN
+make wg-connect
+
+# Disconnect
+make wg-disconnect
+
+# Check status (works on all hosts including mothership)
+make wg-status
+```
+
+### Network
+
+| Host | WireGuard IP | Role |
+|------|-------------|------|
+| mothership | 192.168.10.1 | Server (port 51821) |
+| t480 | 192.168.10.5 | Client |
+
+### Adding WireGuard to a New Host
+
+1. Generate a keypair: `wg genkey | tee private.key | wg pubkey > public.key`
+2. Add the private key to sops: `make secrets-edit`
+3. Add a `wireguard.nix` to the host (see `hosts/t480/wireguard.nix` as template)
+4. Add the host's secret deployment in `secrets/<host>.nix`
+5. Add the host as a peer in `hosts/mothership/devices/wireguard-server.nix`
+6. Rebuild mothership: `make switch`
+7. Delete the plaintext keys
+
+---
+
 ## Secrets
 
 ### Edit Secrets
