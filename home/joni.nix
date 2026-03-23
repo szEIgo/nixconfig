@@ -141,7 +141,11 @@ in
         user = "joni";
       };
       "t480" = {
-        hostname = "192.168.2.87";
+        hostname = "192.168.10.5";
+        user = "joni";
+      };
+      "mothership" = {
+        hostname = "192.168.10.1";
         user = "joni";
       };
     };
