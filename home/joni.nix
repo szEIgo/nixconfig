@@ -136,16 +136,30 @@ in
         identityFile = "~/.ssh/id_ecdsa";
         identitiesOnly = true;
       };
-      "nuc" = {
-        hostname = "192.168.2.102";
+      "mothership-wg" = {
+        host = "mothership";
+        match = ''exec "ping -c1 -W1 192.168.10.1 &>/dev/null"'';
+        hostname = "192.168.10.1";
         user = "joni";
       };
-      "t480" = {
+      "mothership-lan" = {
+        host = "mothership";
+        hostname = "192.168.2.62";
+        user = "joni";
+      };
+      "t480-wg" = {
+        host = "t480";
+        match = ''exec "ping -c1 -W1 192.168.10.5 &>/dev/null"'';
         hostname = "192.168.10.5";
         user = "joni";
       };
-      "mothership" = {
-        hostname = "192.168.10.1";
+      "t480-lan" = {
+        host = "t480";
+        hostname = "192.168.2.87";
+        user = "joni";
+      };
+      "nuc" = {
+        hostname = "192.168.2.102";
         user = "joni";
       };
     };
