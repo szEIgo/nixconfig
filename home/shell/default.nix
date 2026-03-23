@@ -74,6 +74,11 @@ in
       docker = "podman";
     };
 
+    initExtra = lib.optionalString isDarwin ''
+      # Workbrew adds directories to fpath that zsh considers insecure
+      ZSH_DISABLE_COMPFIX=true
+    '';
+
     initContent = ''
       # Locale
       export LANG=en_US.UTF-8
