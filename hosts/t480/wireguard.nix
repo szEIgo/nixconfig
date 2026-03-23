@@ -9,7 +9,7 @@
       {
         # mothership
         publicKey = "vL6bB4f9ELSQc3OvDPWzFq5eEioUufxNvoqcUp/VX3U=";
-        endpoint = "192.168.2.62:51821";
+        endpoint = "80.209.114.19:51821";
         allowedIPs = [ "192.168.10.0/24" ];
         persistentKeepalive = 25;
       }
