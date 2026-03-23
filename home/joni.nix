@@ -95,9 +95,6 @@ in
       sshpass
       zellij
 
-      # Clipboard
-      wl-clipboard
-
       # Misc
       graphviz
       plantuml
@@ -106,6 +103,7 @@ in
     ++ lib.optionals (!isAndroid) (import ./fonts.nix { pkgs = pkgs; })
     ++ lib.optionals isDesktop [
       # Linux desktop-only packages
+      wl-clipboard
       kubernetes-helm
       firefox
       copyq
