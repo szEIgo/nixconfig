@@ -127,6 +127,22 @@ lib.mkIf plasmaEnabled {
           };
         };
       }
+      {
+        description = "Konsole — no titlebar and frame";
+        match = {
+          window-class = {
+            value = "konsole";
+            type = "exact";
+          };
+          window-types = [ "normal" ];
+        };
+        apply = {
+          noborder = {
+            value = true;
+            apply = "force";
+          };
+        };
+      }
     ];
 
     #
@@ -341,6 +357,11 @@ lib.mkIf plasmaEnabled {
       # Konsole settings
       konsolerc = {
         "Desktop Entry"."DefaultProfile" = "Profile 2.profile";
+        "MainWindow"."MenuBar" = "Disabled";
+        "MainWindow"."StatusBar" = "Disabled";
+        "MainWindow"."ToolBarsMovable" = "Disabled";
+        "Toolbar mainToolBar"."isHidden" = true;
+        "Toolbar sessionToolbar"."isHidden" = true;
       };
 
       # Dolphin file manager
