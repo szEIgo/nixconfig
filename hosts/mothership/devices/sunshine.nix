@@ -8,9 +8,17 @@ in {
     sunshine
     libva
     libva-utils
-    libva-vdpau-driver    
+    libva-vdpau-driver
     libvdpau-va-gl
   ];
+
+  # Grant cap_sys_admin for KMS display capture
+  security.wrappers.sunshine = {
+    owner = "root";
+    group = "root";
+    capabilities = "cap_sys_admin+p";
+    source = "${pkgs.sunshine}/bin/sunshine";
+  };
 
   # Use a user service so Sunshine starts with the Wayland session
   systemd.user.services.sunshine = {
@@ -18,7 +26,7 @@ in {
     after = [ "graphical-session.target" ];
     wantedBy = [ "graphical-session.target" ];
     serviceConfig = {
-      ExecStart = "${pkgs.sunshine}/bin/sunshine";
+      ExecStart = "/run/wrappers/bin/sunshine";
       Restart = "on-failure";
       WorkingDirectory = "/home/${username}";
       Environment = "XDG_RUNTIME_DIR=/run/user/${toString uid}";
