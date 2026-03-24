@@ -22,7 +22,7 @@
     plasma-manager.inputs.nixpkgs.follows = "nixpkgs";
     plasma-manager.inputs.home-manager.follows = "home-manager";
 
-    nix-on-droid.url = "github:nix-community/nix-on-droid/release-24.05";
+    nix-on-droid.url = "github:szEIgo/joni-android/master";
     nix-on-droid.inputs.nixpkgs.follows = "nixpkgs";
     nix-on-droid.inputs.home-manager.follows = "home-manager";
   };

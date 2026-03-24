@@ -115,6 +115,7 @@ in
 
   programs.ssh = lib.mkIf (!isAndroid) {
     enable = true;
+    enableDefaultConfig = false;
     matchBlocks = {
       "github.com" = {
         hostname = "github.com";
