@@ -3,6 +3,7 @@
     # Host-specific
     ./packages.nix
     ./devices/wireguard-server.nix
+    ./devices/blocky.nix
 
     # Core is imported via flake.nix, these extend it:
     ../../modules/common/users.nix    # Adds desktop groups (libvirtd, kvm, etc.)
