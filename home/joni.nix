@@ -98,7 +98,7 @@ in
       # Misc
       graphviz
       plantuml
-      jdk
+      temurin-bin-25
     ]
     ++ lib.optionals (!isAndroid) (import ./fonts.nix { pkgs = pkgs; })
     ++ lib.optionals isDesktop [
@@ -135,8 +135,7 @@ in
         identitiesOnly = true;
       };
       "mothership-wg" = {
-        host = "mothership";
-        match = ''exec "ping -c1 -W1 192.168.10.1 &>/dev/null"'';
+        match = ''host mothership exec "ping -c1 -W1 192.168.10.1 &>/dev/null"'';
         hostname = "192.168.10.1";
         user = "joni";
       };
@@ -146,8 +145,7 @@ in
         user = "joni";
       };
       "t480-wg" = {
-        host = "t480";
-        match = ''exec "ping -c1 -W1 192.168.10.5 &>/dev/null"'';
+        match = ''host t480 exec "ping -c1 -W1 192.168.10.5 &>/dev/null"'';
         hostname = "192.168.10.5";
         user = "joni";
       };

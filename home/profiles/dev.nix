@@ -19,7 +19,7 @@
     rustfmt
     sbt
     scala
-    jdk
+    temurin-bin-25
 
     # Python
     python312

@@ -34,6 +34,10 @@ in
     oh-my-zsh = {
       enable = true;
       theme = "";
+      extraConfig = lib.optionalString isDarwin ''
+        # Workbrew adds directories to fpath that zsh considers insecure
+        ZSH_DISABLE_COMPFIX=true
+      '';
       plugins = [
         "git"
         "sudo"
@@ -74,11 +78,6 @@ in
       docker = "podman";
     };
 
-    initExtra = lib.optionalString isDarwin ''
-      # Workbrew adds directories to fpath that zsh considers insecure
-      ZSH_DISABLE_COMPFIX=true
-    '';
-
     initContent = ''
       # Locale
       export LANG=en_US.UTF-8
@@ -108,6 +107,16 @@ in
       bindkey "^[[1;3D" backward-word
       bindkey "^[[1~" beginning-of-line
       bindkey "^[[4~" end-of-line
+
+      # Zellij: reuse "main" session, open new tabs
+      z() {
+        if zellij list-sessions 2>/dev/null | grep -q "^main"; then
+          zellij --session main action new-tab
+          zellij attach main
+        else
+          zellij --session main
+        fi
+      }
 
       # Architecture flags
       export ARCHFLAGS="-arch $(uname -m)"

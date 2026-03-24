@@ -78,7 +78,7 @@
 
   programs.zellij = {
     enable = true;
-    enableZshIntegration = true;
+    enableZshIntegration = false;
     settings = {
       show_startup_tips = false;
       default_layout = "compact";
