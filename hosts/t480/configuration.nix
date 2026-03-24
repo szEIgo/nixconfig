@@ -40,6 +40,10 @@
   # Required when Home Manager is installed via NixOS module with useUserPackages
   environment.pathsToLink = [ "/share/applications" "/share/xdg-desktop-portal" ];
 
+  environment.systemPackages = with pkgs; [
+    moonlight-qt
+  ];
+
   environment.sessionVariables = {
     EDITOR = "vim";
   };
