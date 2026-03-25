@@ -287,6 +287,11 @@ lib.mkIf plasmaEnabled {
         "stopmedia" = "Media Stop";
       };
 
+      # KRunner
+      "org.kde.krunner.desktop" = {
+        "_launch" = ["Meta" "Search" "Alt+F2"];
+      };
+
       # Power management
       org_kde_powerdevil = {
         "Decrease Keyboard Brightness" = "Keyboard Brightness Down";
