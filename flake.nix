@@ -35,6 +35,15 @@
       system.configurationRevision = self.rev or self.dirtyRev or "dirty";
       system.nixos.label = "nixconfig-${gitRevision}";
     };
+
+    # Default home-manager special args — override per host as needed
+    defaultHomeArgs = {
+      plasmaEnabled = false;
+      isLinux = true;
+      isDarwin = false;
+      isAndroid = false;
+      isPostmarketOS = false;
+    };
   in {
 
     # --- NixOS Configuration for Mothership ---
@@ -65,11 +74,8 @@
             home-manager.useUserPackages = true;
             home-manager.useGlobalPkgs = true;
             home-manager.backupFileExtension = "backup";
-            home-manager.extraSpecialArgs = {
+            home-manager.extraSpecialArgs = defaultHomeArgs // {
               plasmaEnabled = true;
-              isLinux = true;
-              isDarwin = false;
-              isAndroid = false;
             };
             home-manager.users.joni = {
               imports = [
@@ -104,12 +110,7 @@
             home-manager.useUserPackages = true;
             home-manager.useGlobalPkgs = true;
             home-manager.backupFileExtension = "backup";
-            home-manager.extraSpecialArgs = {
-              plasmaEnabled = false;
-              isLinux = true;
-              isDarwin = false;
-              isAndroid = false;
-            };
+            home-manager.extraSpecialArgs = defaultHomeArgs;
             home-manager.users.joni = {
               imports = [ ./home/joni.nix ];
             };
@@ -140,11 +141,8 @@
             home-manager.useUserPackages = true;
             home-manager.useGlobalPkgs = true;
             home-manager.backupFileExtension = "backup";
-            home-manager.extraSpecialArgs = {
+            home-manager.extraSpecialArgs = defaultHomeArgs // {
               plasmaEnabled = true;
-              isLinux = true;
-              isDarwin = false;
-              isAndroid = false;
             };
             home-manager.users.joni = {
               imports = [
@@ -168,11 +166,9 @@
             home-manager.useUserPackages = true;
             home-manager.useGlobalPkgs = true;
             home-manager.backupFileExtension = "backup";
-            home-manager.extraSpecialArgs = {
-              plasmaEnabled = false;
+            home-manager.extraSpecialArgs = defaultHomeArgs // {
               isLinux = false;
               isDarwin = true;
-              isAndroid = false;
             };
             home-manager.users.joni = { imports = [ ./home/joni.nix ]; };
           }
@@ -183,11 +179,7 @@
     # --- Standalone Home Manager for OnePlus 6T (postmarketOS) ---
     homeConfigurations.oneplus6t = home-manager.lib.homeManagerConfiguration {
       pkgs = import nixpkgs { system = "aarch64-linux"; };
-      extraSpecialArgs = {
-        plasmaEnabled = false;
-        isLinux = true;
-        isDarwin = false;
-        isAndroid = false;
+      extraSpecialArgs = defaultHomeArgs // {
         isPostmarketOS = true;
       };
       modules = [
@@ -206,10 +198,7 @@
             useGlobalPkgs = true;
             useUserPackages = true;
             backupFileExtension = "backup";
-            extraSpecialArgs = {
-              plasmaEnabled = false;
-              isLinux = true;
-              isDarwin = false;
+            extraSpecialArgs = defaultHomeArgs // {
               isAndroid = true;
             };
             config = ./home/joni.nix;
