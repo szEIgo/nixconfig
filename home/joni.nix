@@ -1,8 +1,8 @@
 { config, lib, pkgs, plasmaEnabled ? false, isLinux ? true, isDarwin ? false
-, isAndroid ? false, ... }:
+, isAndroid ? false, isPostmarketOS ? false, ... }:
 
 let
-  isDesktop = isLinux && !isAndroid;
+  isDesktop = isLinux && !isAndroid && !isPostmarketOS;
 in
 {
   imports = [
@@ -150,6 +150,10 @@ in
         hostname = "192.168.2.102";
         user = "joni";
       };
+      "oneplus6t" = {
+        hostname = "192.168.2.187";
+        user = "user";
+      };
     };
   };
 
@@ -200,10 +204,27 @@ in
     };
   };
 
-  home.username = lib.mkForce (if isAndroid then "nix-on-droid" else "joni");
+  # On postmarketOS, declaratively set zsh as login shell
+  home.activation.setLoginShell = lib.mkIf isPostmarketOS (
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      ZSH_PATH="$HOME/.nix-profile/bin/zsh"
+      CURRENT_SHELL=$(grep "^$(whoami):" /etc/passwd | cut -d: -f7)
+      if [ "$CURRENT_SHELL" != "$ZSH_PATH" ]; then
+        /usr/bin/grep -qxF "$ZSH_PATH" /etc/shells 2>/dev/null || /usr/bin/doas sh -c "echo $ZSH_PATH >> /etc/shells"
+        /usr/bin/doas chsh -s "$ZSH_PATH" $(whoami)
+      fi
+    ''
+  );
+
+  home.username = lib.mkForce (
+    if isAndroid then "nix-on-droid"
+    else if isPostmarketOS then "user"
+    else "joni"
+  );
   home.homeDirectory = lib.mkForce (
     if isAndroid then "/data/data/com.termux.nix/files/home"
     else if isDarwin then "/Users/joni"
+    else if isPostmarketOS then "/home/user"
     else "/home/joni"
   );
   home.stateVersion = "25.11";

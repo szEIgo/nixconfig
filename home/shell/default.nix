@@ -1,12 +1,12 @@
 # Unified shell configuration for all platforms
 # This is the single source of truth for shell setup
-{ config, lib, pkgs, isAndroid ? false, ... }:
+{ config, lib, pkgs, isAndroid ? false, isPostmarketOS ? false, ... }:
 
 let
   # Platform detection
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
-  isDesktop = isLinux && !isAndroid;
+  isDesktop = isLinux && !isAndroid && !isPostmarketOS;
 in
 {
   # Minimal bash configuration (used by tools like Claude Code)
@@ -75,11 +75,19 @@ in
       mothership = "ssh -X -o ConnectTimeout=2 joni@192.168.10.1 || ssh -X -o ConnectTimeout=5 joni@192.168.2.62";
       t480 = "ssh -X -o ConnectTimeout=2 joni@192.168.10.5 || ssh -X -o ConnectTimeout=5 joni@192.168.2.87";
       nuc = "ssh -X -o ConnectTimeout=2 joni@192.168.2.102";
+      oneplus6t = "ssh -o ConnectTimeout=2 user@192.168.2.187";
 
       # Platform-specific
     } // lib.optionalAttrs isDesktop {
       docker = "podman";
     };
+
+    envExtra = lib.optionalString isPostmarketOS ''
+      # Source Nix profile on non-NixOS (postmarketOS)
+      if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
+        . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+      fi
+    '';
 
     initContent = ''
       # Locale

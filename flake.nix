@@ -180,6 +180,22 @@
       };
     };
 
+    # --- Standalone Home Manager for OnePlus 6T (postmarketOS) ---
+    homeConfigurations.oneplus6t = home-manager.lib.homeManagerConfiguration {
+      pkgs = import nixpkgs { system = "aarch64-linux"; };
+      extraSpecialArgs = {
+        plasmaEnabled = false;
+        isLinux = true;
+        isDarwin = false;
+        isAndroid = false;
+        isPostmarketOS = true;
+      };
+      modules = [
+        ./home/joni.nix
+        ./hosts/oneplus6t/default.nix
+      ];
+    };
+
     # --- nix-on-droid Configuration for Android ---
     nixOnDroidConfigurations.default = nix-on-droid.lib.nixOnDroidConfiguration {
       pkgs = import nixpkgs { system = "aarch64-linux"; };

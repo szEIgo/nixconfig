@@ -160,6 +160,17 @@ microvm-resize:
 	@./scripts/microvm/resize-zfs.sh $(ID) $(SIZE)
 
 # =============================================================================
+# POSTMARKETOS (OnePlus 6T)
+# =============================================================================
+oneplus6t-deploy:
+	nix build .#homeConfigurations.oneplus6t.activationPackage --extra-experimental-features "nix-command flakes" && \
+	nix copy --to ssh://user@192.168.2.187 .#homeConfigurations.oneplus6t.activationPackage --extra-experimental-features "nix-command flakes" && \
+	ssh user@192.168.2.187 "$$(nix path-info .#homeConfigurations.oneplus6t.activationPackage --extra-experimental-features 'nix-command flakes')/activate"
+
+oneplus6t-ssh:
+	ssh user@192.168.2.187
+
+# =============================================================================
 # WIREGUARD VPN
 # =============================================================================
 wg-connect:
