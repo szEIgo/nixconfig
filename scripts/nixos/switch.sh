@@ -26,7 +26,9 @@ if [[ "$HOST" == "macos" ]]; then
     echo "Host: jsz-mac-01"
     echo ""
     echo "Building configuration..."
-    sudo PATH="$PATH" HOME="$HOME" HOMEBREW_FORCE_BREW_WRAPPER="" darwin-rebuild switch --flake "$REPO_ROOT#jsz-mac-01"
+    # Unset Workbrew wrapper to avoid conflict when brew runs under sudo
+    unset HOMEBREW_FORCE_BREW_WRAPPER 2>/dev/null || true
+    sudo -E darwin-rebuild switch --flake "$REPO_ROOT#jsz-mac-01"
     echo ""
     echo -e "${GREEN}Switch complete!${NC}"
     exit 0

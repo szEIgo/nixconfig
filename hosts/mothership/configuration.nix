@@ -60,6 +60,12 @@
   services.udev.extraRules = ''
     ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{device}=="0x1ada", \
     ATTR{driver_override}="vfio-pci"
+
+    # Set vendor-reset as the reset method for AMD Navi 10 GPU + audio (reset bug workaround)
+    ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x1002", ATTR{device}=="0x731f", \
+    RUN+="${pkgs.bash}/bin/bash -c 'echo device_specific > /sys/bus/pci/devices/$kernel/reset_method'"
+    ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x1002", ATTR{device}=="0xab38", \
+    RUN+="${pkgs.bash}/bin/bash -c 'echo device_specific > /sys/bus/pci/devices/$kernel/reset_method'"
   '';
 
   hardware.graphics = lib.mkDefault {
