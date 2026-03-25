@@ -67,17 +67,9 @@ in
       yamllint
       yazi
     ]
-    # Heavier dev tools (skip on Android — slow to build, large closure)
+    # Heavier tools (skip on Android — slow to build, large closure)
+    # Language runtimes & SDKs are in per-project devShells via direnv
     ++ lib.optionals (!isAndroid) [
-      # Languages & runtimes
-      sbt
-      scala
-      rustc
-      cargo
-      rustfmt
-      pnpm
-      uv
-
       # DevOps / K8s
       kubectl
       kustomize
@@ -85,20 +77,11 @@ in
       k9s
       cosign
 
-      # Infrastructure
-      opentofu
-      pulumi
-
       # Networking & monitoring
       nmap
       speedtest-cli
       sshpass
       zellij
-
-      # Misc
-      graphviz
-      plantuml
-      temurin-bin-25
     ]
     ++ lib.optionals (!isAndroid) (import ./fonts.nix { pkgs = pkgs; })
     ++ lib.optionals isDesktop [
@@ -112,6 +95,14 @@ in
       atop
       netdata
     ];
+
+  # Direnv + nix-direnv for per-project dev environments
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+    enableZshIntegration = true;
+    enableBashIntegration = true;
+  };
 
   programs.ssh = lib.mkIf (!isAndroid) {
     enable = true;
@@ -172,11 +163,14 @@ in
       core = {
         editor = "vim";
         autocrlf = "input";
+        excludesfile = "~/.gitignore_global";
       };
       color.ui = true;
       push.default = "simple";
     };
   };
+
+  home.file.".gitignore_global".text = ".direnv/\n";
   programs.zoxide = {
     enable = true;
     enableZshIntegration = true;

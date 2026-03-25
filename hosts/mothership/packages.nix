@@ -1,19 +1,8 @@
 { config, lib, pkgs, ... }:
-let
-  androidComposition = pkgs.androidenv.composeAndroidPackages {
-    cmdLineToolsVersion = "11.0";
-    platformToolsVersion = "35.0.1";
-    buildToolsVersions = [ "34.0.0" "35.0.0" ];
-    platformVersions = [ "34" "35" "36" ];
-    abiVersions = [ "arm64-v8a" "x86_64" ];
-    includeEmulator = false;
-    includeNDK = true;
-    ndkVersions = [ "27.0.12077973" ];
-    cmakeVersions = [ "3.22.1" ];
-  };
-in {
+{
   imports = [ ../../modules/common/packages.nix ];
 
+  # Flutter/Android/JDK moved to per-project devShells via direnv
   environment.systemPackages = with pkgs; [
     openvscode-server
     virt-manager
@@ -37,17 +26,7 @@ in {
     k9s
     wayvnc
     tigervnc
-    # Flutter/Android development
-    flutter
-    jdk17
-    androidComposition.androidsdk
   ];
-
-  # Set Android SDK environment
-  environment.variables = {
-    ANDROID_HOME = "${androidComposition.androidsdk}/libexec/android-sdk";
-    ANDROID_SDK_ROOT = "${androidComposition.androidsdk}/libexec/android-sdk";
-  };
   networking.firewall.allowedTCPPorts = [ 5900 ];
 
   programs = {
