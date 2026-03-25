@@ -32,6 +32,11 @@
   # Nix settings
   nix.extraOptions = ''
     experimental-features = nix-command flakes
+    # Local binary cache served from host machine (nix-serve)
+    extra-substituters = http://192.168.2.62:8463
+    extra-trusted-substituters = http://192.168.2.62:8463
+    extra-trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+    require-sigs = false
   '';
 
   time.timeZone = "Europe/Copenhagen";
