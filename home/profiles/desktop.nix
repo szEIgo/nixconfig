@@ -16,6 +16,19 @@
     ]
     ++ import ../fonts.nix { inherit pkgs; };
 
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "x-scheme-handler/http" = "firefox.desktop";
+      "x-scheme-handler/https" = "firefox.desktop";
+      "x-scheme-handler/postman" = "Postman.desktop";
+    };
+    associations.added = {
+      "x-scheme-handler/http" = "firefox.desktop";
+      "x-scheme-handler/https" = "firefox.desktop";
+    };
+  };
+
   home.file = {
     ".gitconfig".source = ../configs/gitconfig;
     ".powerlevel10k".source = ../configs/p10k.zsh;
