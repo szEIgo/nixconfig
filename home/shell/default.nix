@@ -30,6 +30,9 @@ in
   programs.zsh = {
     enable = true;
     enableCompletion = true;
+    # Workbrew adds group-writable directories to fpath; -u tells compinit
+    # to silently use them instead of prompting about insecure directories
+    completionInit = lib.optionalString isDarwin "autoload -U compinit && compinit -u";
 
     oh-my-zsh = {
       enable = true;

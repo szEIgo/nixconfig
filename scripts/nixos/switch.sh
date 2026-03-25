@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Build and switch to NixOS configuration
+# Build and switch configuration (NixOS, nix-darwin, nix-on-droid)
 # Usage: switch.sh [HOST] [SPEC]
 #   HOST: hostname (default: mothership)
+#         Use "macos" for nix-darwin, "android" for nix-on-droid
 #   SPEC: specialisation (default: amd for mothership, none for others)
 #         Use "base" for headless, "interactive" for menu
 
@@ -11,6 +12,38 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 HOST="${1:-mothership}"
 SPEC="${2:-}"
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# --- nix-darwin (macOS) ---
+if [[ "$HOST" == "macos" ]]; then
+    echo -e "${BLUE}nix-darwin Switch${NC}"
+    echo "Host: jsz-mac-01"
+    echo ""
+    echo "Building configuration..."
+    darwin-rebuild switch --flake "$REPO_ROOT#jsz-mac-01"
+    echo ""
+    echo -e "${GREEN}Switch complete!${NC}"
+    exit 0
+fi
+
+# --- nix-on-droid (Android) ---
+if [[ "$HOST" == "android" ]]; then
+    echo -e "${BLUE}nix-on-droid Switch${NC}"
+    echo ""
+    echo "Building configuration..."
+    nix-on-droid switch --flake "$REPO_ROOT"
+    echo ""
+    echo -e "${GREEN}Switch complete!${NC}"
+    exit 0
+fi
+
+# --- NixOS ---
 
 # Default specialisation per host
 if [[ -z "$SPEC" ]]; then
@@ -31,13 +64,6 @@ NIX_OPTS="--max-jobs $NIX_JOBS --cores $NIX_CORES"
 
 # Limit Nix evaluator memory (in bytes, ~8GB)
 export GC_INITIAL_HEAP_SIZE="${GC_INITIAL_HEAP_SIZE:-8000000000}"
-
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
 
 # Interactive mode
 if [[ "$SPEC" == "interactive" ]]; then
