@@ -45,6 +45,28 @@ if [[ "$HOST" == "android" ]]; then
     exit 0
 fi
 
+# --- postmarketOS (OnePlus 6T) ---
+if [[ "$HOST" == "oneplus6t" ]]; then
+    echo -e "${BLUE}postmarketOS Switch (home-manager)${NC}"
+    echo "Host: oneplus6t (user@192.168.2.187)"
+    echo ""
+    echo "Syncing configuration..."
+    scp -q "$REPO_ROOT/flake.nix" user@192.168.2.187:/home/user/nixconfig/flake.nix
+    scp -q "$REPO_ROOT/flake.lock" user@192.168.2.187:/home/user/nixconfig/flake.lock
+    scp -rq "$REPO_ROOT/home" user@192.168.2.187:/home/user/nixconfig/
+    scp -rq "$REPO_ROOT/hosts/oneplus6t" user@192.168.2.187:/home/user/nixconfig/hosts/
+    scp -q "$REPO_ROOT/remote/authorized_keys" user@192.168.2.187:/home/user/nixconfig/remote/authorized_keys
+
+    echo "Building on device..."
+    STORE_PATH=$(ssh user@192.168.2.187 ". /home/user/.nix-profile/etc/profile.d/nix.sh && cd /home/user/nixconfig && nix run nixpkgs#git -- add -A 2>/dev/null && nix build .#homeConfigurations.oneplus6t.activationPackage --no-link --print-out-paths 2>&1 | tail -1")
+    echo "Activating: $STORE_PATH"
+    ssh -tt user@192.168.2.187 ". /home/user/.nix-profile/etc/profile.d/nix.sh && $STORE_PATH/activate"
+
+    echo ""
+    echo -e "${GREEN}Switch complete!${NC}"
+    exit 0
+fi
+
 # --- NixOS ---
 
 # Default specialisation per host
