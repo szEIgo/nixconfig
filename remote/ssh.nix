@@ -13,10 +13,6 @@ in {
     ssh = {
       forwardX11 = true;
       setXAuthLocation = true;
-      matchBlocks."github.com" = {
-        forwardX11 = false;
-        identityFile = "~/.ssh/id_ed25519";
-      };
     };
     gnupg.agent = {
       enable = true;
