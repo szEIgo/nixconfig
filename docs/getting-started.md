@@ -254,8 +254,8 @@ Open new terminal. You should have:
 
 ### 1. Install NixOS
 
-For headless machines, see [Headless Getting Started](headless-getting-started.md).
-For machines with a display, use the NixOS graphical installer or `make install`.
+- **Headless machines** (servers, NUCs): See [Headless Getting Started](headless-getting-started.md)
+- **Laptops/desktops**: Use the NixOS graphical installer, or boot the minimal ISO and run `make install`
 
 ### 2. Create host config
 
@@ -264,21 +264,50 @@ mkdir -p hosts/<hostname>
 ```
 
 Create `configuration.nix` and `hardware.nix` — see existing hosts as templates:
-- **Desktop laptop**: `hosts/t480/` (Plasma, TLP, NetworkManager)
+- **Desktop laptop**: `hosts/t480/` or `hosts/x250/` (Plasma, TLP, NetworkManager)
 - **Headless server**: `hosts/nuc/` (k3s worker, no desktop)
 - **Workstation**: `hosts/mothership/` (GPU passthrough, virtualization)
 
-### 3. Add to flake.nix
+### 3. Get real hardware config
 
-Add a `nixosConfigurations.<hostname>` entry (copy an existing one as template).
-
-### 4. First switch
+SSH into the new host and generate the hardware config:
 
 ```bash
+ssh joni@<ip>
+nixos-generate-config --show-hardware-config
+```
+
+Copy the output into `hosts/<hostname>/hardware.nix`, keeping any custom additions
+(network.nix import, `i915` in initrd for Intel laptops, etc).
+
+### 4. Add to flake.nix
+
+Add a `nixosConfigurations.<hostname>` entry (copy an existing one as template).
+Stage the new files so Nix can see them:
+
+```bash
+git add hosts/<hostname>/
+```
+
+Verify it evaluates:
+
+```bash
+nix eval .#nixosConfigurations.<hostname>.config.networking.hostName
+```
+
+### 5. First switch
+
+SSH into the new host, clone the repo, and apply:
+
+```bash
+ssh joni@<ip>
+nix-shell -p git
+git clone https://github.com/szeigo/nixconfig ~/nixconfig
+cd ~/nixconfig
 make switch HOST=<hostname>
 ```
 
-### 5. Add SSH keys
+### 6. Add SSH keys
 
 From any machine that can reach the new host:
 
@@ -286,19 +315,30 @@ From any machine that can reach the new host:
 make add-host-keys HOST=<hostname> IP=<ip>
 ```
 
-This generates an SSH key pair, encrypts the private key with SOPS, and adds the
-public key to `authorized_keys`. Then add SOPS to the host's flake entry:
+This will:
+- Generate an SSH key pair on the host
+- Encrypt the private key in SOPS (`secrets/secrets.yaml`)
+- Add the public key to `remote/authorized_keys`
+- Add the host's age key to `.sops.yaml`
+- Create `secrets/<hostname>.nix`
+
+Then add SOPS to the host's entry in `flake.nix`:
 
 ```nix
 sops-nix.nixosModules.sops
 ./secrets/<hostname>.nix
 ```
 
-Push, rebuild the new host, and rebuild other hosts to pick up the new authorized key:
+### 7. Rebuild
+
+Push and rebuild the new host to deploy SSH keys:
 
 ```bash
+git add -A && git commit -m "Add <hostname>"
 make switch HOST=<hostname>
 ```
+
+Rebuild other hosts to pick up the new authorized key in `remote/authorized_keys`.
 
 ---
 

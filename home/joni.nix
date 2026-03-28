@@ -85,15 +85,32 @@ in
     ]
     ++ lib.optionals (!isAndroid) (import ./fonts.nix { pkgs = pkgs; })
     ++ lib.optionals isDesktop [
-      # Linux desktop-only packages
-      wl-clipboard
-      kubernetes-helm
+      # Desktop apps
       firefox
       copyq
       vscode
+
+      # Hardware & system info
+      pciutils        # lspci
+      usbutils        # lsusb
+      lshw            # detailed hardware info
+      dmidecode       # BIOS/firmware info
+
+      # Disk & partition management
+      kdePackages.partitionmanager
+      gparted
+      smartmontools   # smartctl
+
+      # Clipboard
+      wl-clipboard
+
+      # Networking & monitoring
       wireguard-tools
       atop
       netdata
+
+      # DevOps
+      kubernetes-helm
     ];
 
   # Direnv + nix-direnv for per-project dev environments
