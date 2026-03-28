@@ -153,6 +153,38 @@
           }
         ];
       };
+
+      # --- NixOS Configuration for ThinkPad X250 (laptop) ---
+      x250 = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          nixosRevisionModule
+
+          # Core modules
+          ./modules/core
+
+          # Host-specific configuration
+          ./hosts/x250/configuration.nix
+          ./hosts/x250/hardware.nix
+
+          # Home Manager with Plasma
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useUserPackages = true;
+            home-manager.useGlobalPkgs = true;
+            home-manager.backupFileExtension = "backup";
+            home-manager.extraSpecialArgs = defaultHomeArgs // {
+              plasmaEnabled = true;
+            };
+            home-manager.users.joni = {
+              imports = [
+                plasma-manager.homeModules.plasma-manager
+                ./home/joni.nix
+              ];
+            };
+          }
+        ];
+      };
     };
 
     # --- nix-darwin Configuration for Macbook ---
