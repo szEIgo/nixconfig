@@ -23,8 +23,7 @@
     extraGroups = [ "wheel" ];
     shell = pkgs.zsh;
     openssh.authorizedKeys.keys = [
-      # TODO: Add misi's public SSH key here
-      # "ssh-ed25519 AAAA... misi@somewhere"
+      "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBADa7F/4YNEynreqlbcY8sig9o2hwtK485aWXRH3Hj2RDbfH+bSZTHeJqqOr1Dg0XHkMNJrJJJqyomlWRAMrqHy+aQH3htMFpf4+iVsyL6XvpQistqfUOeY+JvzCGR+16GmfIvWp3kugoyx85ViEWMlfXjhlJG64bb3v7aHSY0KnwTwzDg== kitsailer@kitsail"
     ];
   };
 
