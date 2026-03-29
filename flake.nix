@@ -154,6 +154,39 @@
         ];
       };
 
+      # --- NixOS Configuration for node6 (k3s worker, misi's machine) ---
+      node6 = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          nixosRevisionModule
+
+          # Core modules
+          ./modules/core
+
+          # Host-specific configuration
+          ./hosts/node6/configuration.nix
+          ./hosts/node6/hardware.nix
+
+          # Home Manager — two users: joni (admin) and misi
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useUserPackages = true;
+            home-manager.useGlobalPkgs = true;
+            home-manager.backupFileExtension = "backup";
+            home-manager.users.joni = {
+              imports = [ ./home/joni.nix ];
+              home.username = "joni";
+              home.homeDirectory = "/home/joni";
+              home.stateVersion = "25.11";
+            };
+            home-manager.users.misi = {
+              imports = [ ./home/misi ];
+            };
+            home-manager.extraSpecialArgs = defaultHomeArgs;
+          }
+        ];
+      };
+
       # --- NixOS Configuration for ThinkPad X250 (laptop) ---
       x250 = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";

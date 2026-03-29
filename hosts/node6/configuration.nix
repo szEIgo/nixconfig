@@ -1,0 +1,94 @@
+{ config, lib, pkgs, ... }: {
+  imports = [
+    # Shared modules
+    ../../modules/common/zsh.nix
+
+    # Remote access (sshd + authorized keys for joni)
+    ../../remote/ssh.nix
+  ];
+
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.systemd-boot.configurationLimit = 10;
+  boot.loader.efi.canTouchEfiVariables = true;
+
+  networking.hostName = "node6";
+
+  # Users
+  users.defaultUserShell = pkgs.zsh;
+
+  users.groups.misi = {};
+  users.users.misi = {
+    isNormalUser = true;
+    group = "misi";
+    extraGroups = [ "wheel" ];
+    shell = pkgs.zsh;
+    openssh.authorizedKeys.keys = [
+      # TODO: Add misi's public SSH key here
+      # "ssh-ed25519 AAAA... misi@somewhere"
+    ];
+  };
+
+  # Required when Home Manager is installed via NixOS module with useUserPackages
+  environment.pathsToLink = [ "/share/applications" "/share/xdg-desktop-portal" ];
+
+  environment.sessionVariables = {
+    EDITOR = "vim";
+    KUBECONFIG = "/etc/rancher/k3s/k3s.yaml";
+  };
+
+  # k3s agent joining the mothership server
+  services.k3s = {
+    enable = true;
+    role = "agent";
+    serverAddr = "https://192.168.2.62:6443";
+    tokenFile = "/etc/k3s/token";
+    extraFlags = [
+      "--node-label=k3s.io/role=worker"
+      "--node-label=node-role=customer"
+      "--node-label=node-type=bare-metal"
+      "--node-label=node-id=node6"
+    ];
+  };
+
+  # Firewall
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [
+      22    # SSH
+      10250 # kubelet
+    ];
+    allowedUDPPorts = [
+      8472  # flannel VXLAN
+      51821 # WireGuard
+    ];
+  };
+
+  # Networking
+  networking.useDHCP = true;
+
+  # Memory management
+  zramSwap.enable = true;
+  zramSwap.algorithm = "zstd";
+
+  # Ignore power/lid events (headless server)
+  services.logind.settings.Login = {
+    HandlePowerKey = "ignore";
+    HandleLidSwitch = "ignore";
+    HandleLidSwitchExternalPower = "ignore";
+    IdleAction = "ignore";
+  };
+
+  # NFS client support for democratic-csi storage
+  boot.supportedFilesystems = [ "nfs" ];
+
+  # Minimal packages for a worker node
+  environment.systemPackages = with pkgs; [
+    curl
+    htop
+    iproute2
+    vim
+    nfs-utils
+  ];
+
+  system.stateVersion = "25.11";
+}
