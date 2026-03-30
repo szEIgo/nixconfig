@@ -1,0 +1,14 @@
+layout {
+    default_tab_template {
+        // Compact tab bar at the top — shows session name + tab list
+        pane size=1 borderless=true {
+            plugin location="compact-bar"
+        }
+        children
+        // Full status bar at the bottom — shows keybinding tips for all modes
+        // Displays: LOCK, PANE, TAB, RESIZE, MOVE, SEARCH, SESSION, QUIT shortcuts
+        pane size=2 borderless=true {
+            plugin location="status-bar"
+        }
+    }
+}

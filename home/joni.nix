@@ -7,6 +7,7 @@ in
 {
   imports = [
     ./shell
+    ./zellij
   ] ++ lib.optionals (!isAndroid) [
     ./theme-kitty.nix
   ] ++ lib.optionals isDesktop [

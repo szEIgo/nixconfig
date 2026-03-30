@@ -76,13 +76,4 @@
     };
   };
 
-  programs.zellij = {
-    enable = true;
-    enableZshIntegration = false;
-    settings = {
-      show_startup_tips = false;
-      default_layout = "compact";
-      default_shell = "zsh";
-    };
-  };
 }

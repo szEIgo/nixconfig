@@ -50,6 +50,11 @@
             PublicKey = "n+1qBkB/3fpnp6lf2evjWRl6r2/2aQuhgaCsaMtKbFk=";
             AllowedIPs = [ "192.168.10.5/32" ];
           }
+          {
+            # node6 (misi)
+            PublicKey = "ckcD8ZhU5aDula0v91NMg/rtVhiyQYnLALbQDNJjxCs=";
+            AllowedIPs = [ "192.168.10.6/32" ];
+          }
         ];
       };
     };

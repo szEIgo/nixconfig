@@ -119,15 +119,6 @@ in
       bindkey "^[[1~" beginning-of-line
       bindkey "^[[4~" end-of-line
 
-      # Zellij: auto-attach to "main" session as a new tab
-      if [[ -z "$ZELLIJ" && -z "$ZELLIJ_SESSION_NAME" ]]; then
-        if zellij list-sessions 2>/dev/null | grep -q "^main"; then
-          zellij attach main --create
-        else
-          zellij --session main
-        fi
-      fi
-
       # Architecture flags
       export ARCHFLAGS="-arch $(uname -m)"
 
