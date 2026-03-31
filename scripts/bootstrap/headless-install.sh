@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # =============================================================================
-# Headless NixOS Installer (Adaptive Bootloader)
+# Headless NixOS Installer (Adaptive Bootloader - Fixed)
 # =============================================================================
 
 RED='\033[0;31m'
@@ -75,14 +75,16 @@ mount "${PART_PREFIX}1" /mnt/boot
 nixos-generate-config --root /mnt
 HASHED_PASSWORD=$(echo "$PASSWORD" | mkpasswd -m sha-512 -s)
 
-# Setup Bootloader Logic
+# Setup Bootloader Logic (Corrected for conflict)
 if [[ "$BOOT_CHOICE" == "2" ]]; then
     BOOT_CONFIG="boot.loader.grub.enable = true;
   boot.loader.grub.device = \"nodev\";
   boot.loader.grub.efiSupport = true;
-  boot.loader.grub.efiInstallAsRemovable = true;"
+  boot.loader.grub.efiInstallAsRemovable = true;
+  boot.loader.efi.canTouchEfiVariables = false;"
 else
-    BOOT_CONFIG="boot.loader.systemd-boot.enable = true;"
+    BOOT_CONFIG="boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;"
 fi
 
 # Write Hardware Config
@@ -101,7 +103,6 @@ cat > /mnt/etc/nixos/configuration.nix << NIXEOF
   imports = [ ./hardware-configuration.nix ];
   
   ${BOOT_CONFIG}
-  boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "${HOSTNAME}";
   networking.useDHCP = true;
