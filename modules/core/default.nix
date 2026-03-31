@@ -48,6 +48,6 @@ in
 
 
   # Wireless tools — iwctl available if a wifi card is present
-  environment.systemPackages = [ pkgs.iwd ];
+  environment.systemPackages = with pkgs; [ iwd gnumake ];
 }
 
