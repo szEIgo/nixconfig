@@ -1,14 +1,18 @@
 keys:
   # Personal master key (passphrase-protected id_mothership.age)
-  # Used for bootstrapping new machines and editing secrets
   - &joni age1798uc9a5r3f8lsg0utsl5nsflnmrr6d0p6tqhpweldq2j9dftgmqgvjdln
 
   # Machine host keys (derived from SSH host key)
-  # Run: nix-shell -p ssh-to-age --run 'cat /etc/ssh/ssh_host_ed25519_key.pub | ssh-to-age'
   - &mothership age13m0dh0996244ktl8qq8lst7q9ektpn544rz9fh7n86qnfxu8w3sq830mwa
   - &t480 age1jxuuk95fu7jdugytulhacehukgj0meyamyv5q4zwv6cfx2yyacjquj6cax
   - &nuc age1vz4putkv49camvurqq3v2dzffahkjqnlhu8u9k84r732fch8pawsd04xfa
 
+  # Worker nodes
+  - &node5 age1a9m5e757zwq0enz9dwfhw2ruyk8g0e8hkg2saydfmnn4z9rl9gvshlz47e
+  - &node9 age16jkdyphestwvh6uv2ulvgk3a5f60xvsmgccrmwhqyz222rpngd4spcscrq
+  - &node12 age13kxmy5ur5fvnfzdjvw3m3qrn8lg83qcqsah2nwqnksq6ju3rtqms8hy80k
+  - &node6 age1m6xe46dscuvlc5xl9cmum7x7a3wprmsywac9kekpsr7vprhmcslsn9jedl
+  
 creation_rules:
   - path_regex: secrets/secrets\.yaml$
     key_groups:
@@ -17,3 +21,7 @@ creation_rules:
           - *mothership
           - *t480
           - *nuc
+          - *node5
+          - *node9
+          - *node12
+          - *node6

@@ -42,6 +42,11 @@ nixconfig/
 │   ├── nuc/
 │   │   ├── configuration.nix # Headless k3s worker
 │   │   └── hardware.nix      # Intel NUC hardware
+│   ├── worker/               # Shared config for all k3s worker nodes
+│   │   ├── configuration.nix # Worker NixOS config (k3s, firewall, zsh, ssh)
+│   │   ├── hardware.nix      # Shared hardware (Intel, SATA SSD)
+│   │   ├── disko.nix         # Declarative disk layout (GRUB + ext4)
+│   │   └── iso.nix           # Custom installer ISO (sshd + SSH keys)
 │   ├── android/
 │   │   └── default.nix       # nix-on-droid config (shell + CLI tools)
 │   └── macbook/
@@ -94,7 +99,7 @@ nixconfig/
 │   ├── hardware/             # gpu-reset, usb-attach
 │   ├── vm/                   # fix-efi, vnc
 │   ├── secrets/              # edit, updatekeys
-│   └── bootstrap/            # decrypt-keys, cleanup
+│   └── bootstrap/            # decrypt-keys, cleanup, deploy-worker
 │
 └── docs/                     # Documentation
 ```
@@ -130,11 +135,19 @@ Lightweight VMs using cloud-hypervisor for k3s worker nodes:
 
 **Architecture:**
 ```
-mothership (k3s server) ─── 192.168.2.62 ─── nuc (bare-metal worker, 192.168.2.102)
+mothership (k3s server, 192.168.2.62)
           │
-          └── 10.100.0.1 ──┬─── k3s-worker-1 (microvm, 10.100.0.11)
-                           ├─── k3s-worker-2 (microvm, 10.100.0.12)
-                           └─── k3s-worker-3 (microvm, 10.100.0.13)
+          ├── Bare-metal workers (shared hosts/worker/ config, deployed via nixos-anywhere):
+          │   ├── nuc    (192.168.2.102)
+          │   ├── node5  (192.168.2.147)
+          │   ├── node6  (192.168.2.192)
+          │   ├── node9  (192.168.2.250)
+          │   └── node12 (192.168.2.238)
+          │
+          └── MicroVM workers (10.100.0.0/24):
+              ├── k3s-worker-1 (10.100.0.11)
+              ├── k3s-worker-2 (10.100.0.12)
+              └── k3s-worker-3 (10.100.0.13)
 ```
 
 **Node labels:** All workers set `k3s.io/role=worker`. MicroVMs add `node-type=microvm` + `node-id=worker-{N}`. The nuc adds `node-type=bare-metal`, `node-id=nuc`, and `node-role=customer`.

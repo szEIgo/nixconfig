@@ -1,4 +1,4 @@
-.PHONY: help install switch build test update gc bootstrap add-host-keys cleanup secrets-edit secrets-updatekeys secrets-list \
+.PHONY: help install deploy-worker worker-iso flash-worker-iso switch build test update gc bootstrap add-host-keys cleanup secrets-edit secrets-updatekeys secrets-list \
         gpu-reset usb-attach vm-list vm-start vm-stop vm-console vm-fix-efi vnc \
         zfs-status zfs-scrub zfs-snapshot mount \
         k3s-init k3s-wipe k3s-status k3s-flux-init k3s-flux-bootstrap k3s-flux-status k3s-flux-reconcile \
@@ -17,6 +17,16 @@ help:
 # =============================================================================
 install:
 	@./scripts/bootstrap/headless-install.sh
+
+deploy-worker:
+	@./scripts/bootstrap/deploy-worker.sh $(HOST) $(IP)
+
+worker-iso:
+	nix build .#images.worker-iso
+	@echo "ISO: $$(ls result/iso/*.iso)"
+
+flash-worker-iso:
+	@./scripts/bootstrap/flash-worker-iso.sh
 
 # =============================================================================
 # NIXOS

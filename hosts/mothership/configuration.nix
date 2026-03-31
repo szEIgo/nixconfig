@@ -15,7 +15,7 @@
     ../../modules/virtualization/podman.nix
     ../../modules/virtualization/k3s.nix
     ../../modules/virtualization/vms      # Declarative VM definitions via NixVirt
-    ../../modules/virtualization/microvm  # MicroVM k3s workers
+    # ../../modules/virtualization/microvm  # MicroVM k3s workers (disabled — re-enable when needed)
 
     # Remote access
     ../../remote/ssh.nix

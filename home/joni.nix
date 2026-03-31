@@ -1,8 +1,8 @@
 { config, lib, pkgs, plasmaEnabled ? false, isLinux ? true, isDarwin ? false
-, isAndroid ? false, isPostmarketOS ? false, ... }:
+, isAndroid ? false, isPostmarketOS ? false, isServer ? false, ... }:
 
 let
-  isDesktop = isLinux && !isAndroid && !isPostmarketOS;
+  isDesktop = isLinux && !isAndroid && !isPostmarketOS && !isServer;
 in
 {
   imports = [

@@ -3,8 +3,14 @@
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
 
-  boot.initrd.availableKernelModules =
-    [ "ehci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" "sr_mod" ];
+  boot.initrd.availableKernelModules = [
+    # USB controllers
+    "xhci_pci" "ehci_pci" "uhci_hcd"
+    # Storage controllers
+    "ahci" "ata_piix" "nvme"
+    # USB/SCSI storage
+    "usbhid" "usb_storage" "sd_mod" "sr_mod"
+  ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
@@ -12,10 +18,7 @@
     "net.ipv4.ip_forward" = true;
   };
 
-  fileSystems."/" = {
-    device = "/dev/disk/by-label/nixos";
-    fsType = "ext4";
-  };
+  # Filesystems managed by disko.nix
 
   swapDevices = [ ];
 

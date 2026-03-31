@@ -25,9 +25,12 @@
     nix-on-droid.url = "github:szEIgo/joni-android/master";
     nix-on-droid.inputs.nixpkgs.follows = "nixpkgs";
     nix-on-droid.inputs.home-manager.follows = "home-manager";
+
+    disko.url = "github:nix-community/disko";
+    disko.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-darwin, sops-nix, nixvirt, microvm, plasma-manager, nix-on-droid, ... }:
+  outputs = { self, nixpkgs, home-manager, nix-darwin, sops-nix, nixvirt, microvm, plasma-manager, nix-on-droid, disko, ... }:
   let
     # Git revision tracking — embedded in every NixOS system label
     gitRevision = self.shortRev or self.dirtyShortRev or "unknown";
@@ -43,8 +46,46 @@
       isDarwin = false;
       isAndroid = false;
       isPostmarketOS = false;
+      isServer = false;
+    };
+
+    # Helper to create identical k3s worker nodes
+    # bootMode: "legacy" (BIOS/GRUB) or "uefi" (GPT/systemd-boot)
+    mkWorker = hostname: { bootMode ? "legacy", disk ? "/dev/sda", extraModules ? [] }: nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        nixosRevisionModule
+        disko.nixosModules.disko
+        sops-nix.nixosModules.sops
+        ./modules/core
+        ./hosts/worker/disko.nix
+        ./hosts/worker/configuration.nix
+        ./hosts/worker/hardware.nix
+        ./secrets/worker.nix
+        {
+          networking.hostName = hostname;
+          local.worker = { inherit bootMode disk; };
+        }
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useUserPackages = true;
+          home-manager.useGlobalPkgs = true;
+          home-manager.backupFileExtension = "backup";
+          home-manager.extraSpecialArgs = defaultHomeArgs // { isServer = true; };
+          home-manager.users.joni = {
+            imports = [ ./home/joni.nix ];
+          };
+        }
+      ] ++ extraModules;
     };
   in {
+
+    # --- Custom installer ISO (flash to USB, boots with sshd + SSH keys) ---
+    # Build: nix build .#images.worker-iso
+    images.worker-iso = (nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [ ./hosts/worker/iso.nix ];
+    }).config.system.build.isoImage;
 
     # --- NixOS Configuration for Mothership ---
     nixosConfigurations = {
@@ -65,7 +106,7 @@
           ./secrets/secrets.nix
 
           # Virtualization
-          microvm.nixosModules.host
+          # microvm.nixosModules.host  # Disabled — re-enable when using MicroVM workers
           nixvirt.nixosModules.default
 
           # Home Manager
@@ -110,7 +151,7 @@
             home-manager.useUserPackages = true;
             home-manager.useGlobalPkgs = true;
             home-manager.backupFileExtension = "backup";
-            home-manager.extraSpecialArgs = defaultHomeArgs;
+            home-manager.extraSpecialArgs = defaultHomeArgs // { isServer = true; };
             home-manager.users.joni = {
               imports = [ ./home/joni.nix ];
             };
@@ -154,122 +195,11 @@
         ];
       };
 
-      node5 = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [
-          nixosRevisionModule
-
-          # Core modules
-          ./modules/core
-
-          # Host-specific configuration
-          ./hosts/node5/configuration.nix
-          ./hosts/node5/hardware.nix
-
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.useUserPackages = true;
-            home-manager.useGlobalPkgs = true;
-            home-manager.backupFileExtension = "backup";
-            home-manager.users.joni = {
-              imports = [ ./home/joni.nix ];
-              home.username = "joni";
-              home.homeDirectory = "/home/joni";
-              home.stateVersion = "25.11";
-            };
-            home-manager.extraSpecialArgs = defaultHomeArgs;
-          }
-        ];
-      };
-
-      # --- NixOS Configuration for node6 (k3s worker, misi's machine) ---
-      node6 = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [
-          nixosRevisionModule
-
-          # Core modules
-          ./modules/core
-
-          # Host-specific configuration
-          ./hosts/node6/configuration.nix
-          ./hosts/node6/hardware.nix
-
-          # Home Manager — two users: joni (admin) and misi
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.useUserPackages = true;
-            home-manager.useGlobalPkgs = true;
-            home-manager.backupFileExtension = "backup";
-            home-manager.users.joni = {
-              imports = [ ./home/joni.nix ];
-              home.username = "joni";
-              home.homeDirectory = "/home/joni";
-              home.stateVersion = "25.11";
-            };
-            home-manager.users.misi = {
-              imports = [ ./home/misi ];
-            };
-            home-manager.extraSpecialArgs = defaultHomeArgs;
-          }
-        ];
-      };
-
-      node9 = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [
-          nixosRevisionModule
-
-          # Core modules
-          ./modules/core
-
-          # Host-specific configuration
-          ./hosts/node9/configuration.nix
-          ./hosts/node9/hardware.nix
-
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.useUserPackages = true;
-            home-manager.useGlobalPkgs = true;
-            home-manager.backupFileExtension = "backup";
-            home-manager.users.joni = {
-              imports = [ ./home/joni.nix ];
-              home.username = "joni";
-              home.homeDirectory = "/home/joni";
-              home.stateVersion = "25.11";
-            };
-            home-manager.extraSpecialArgs = defaultHomeArgs;
-          }
-        ];
-      };
-
-      node12 = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [
-          nixosRevisionModule
-
-          # Core modules
-          ./modules/core
-
-          # Host-specific configuration
-          ./hosts/node12/configuration.nix
-          ./hosts/node12/hardware.nix
-
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.useUserPackages = true;
-            home-manager.useGlobalPkgs = true;
-            home-manager.backupFileExtension = "backup";
-            home-manager.users.joni = {
-              imports = [ ./home/joni.nix ];
-              home.username = "joni";
-              home.homeDirectory = "/home/joni";
-              home.stateVersion = "25.11";
-            };
-            home-manager.extraSpecialArgs = defaultHomeArgs;
-          }
-        ];
-      };
+      # --- k3s worker nodes (shared config) ---
+      node5  = mkWorker "node5" {};
+      node6  = mkWorker "node6" { bootMode = "uefi"; };
+      node9  = mkWorker "node9" {};
+      node12 = mkWorker "node12" {};
 
       # --- NixOS Configuration for ThinkPad X250 (laptop) ---
       x250 = nixpkgs.lib.nixosSystem {

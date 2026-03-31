@@ -39,6 +39,13 @@ in {
       };
     };
 
+    # SSH askpass for desktop (prompts for SSH key passphrases via GUI)
+    environment.systemPackages = lib.mkIf cfg.desktop [ pkgs.kdePackages.ksshaskpass ];
+    environment.variables = lib.mkIf cfg.desktop {
+      SSH_ASKPASS = lib.mkForce "${pkgs.kdePackages.ksshaskpass}/bin/ksshaskpass";
+      SSH_ASKPASS_REQUIRE = "prefer";
+    };
+
     services.openssh = {
       enable = true;
       listenAddresses = [{
