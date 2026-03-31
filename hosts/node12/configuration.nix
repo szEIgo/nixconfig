@@ -11,7 +11,7 @@
   boot.loader.systemd-boot.configurationLimit = 10;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "node5";
+  networking.hostName = "node12";
 
   # Users
   users.defaultUserShell = pkgs.zsh;
@@ -34,7 +34,7 @@
       "--node-label=k3s.io/role=worker"
       "--node-label=node-role=customer"
       "--node-label=node-type=bare-metal"
-      "--node-label=node-id=node5"
+      "--node-label=node-id=node12"
     ];
   };
 

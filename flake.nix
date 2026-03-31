@@ -243,6 +243,34 @@
         ];
       };
 
+      node12 = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          nixosRevisionModule
+
+          # Core modules
+          ./modules/core
+
+          # Host-specific configuration
+          ./hosts/node12/configuration.nix
+          ./hosts/node12/hardware.nix
+
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useUserPackages = true;
+            home-manager.useGlobalPkgs = true;
+            home-manager.backupFileExtension = "backup";
+            home-manager.users.joni = {
+              imports = [ ./home/joni.nix ];
+              home.username = "joni";
+              home.homeDirectory = "/home/joni";
+              home.stateVersion = "25.11";
+            };
+            home-manager.extraSpecialArgs = defaultHomeArgs;
+          }
+        ];
+      };
+
       # --- NixOS Configuration for ThinkPad X250 (laptop) ---
       x250 = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
