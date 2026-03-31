@@ -2,7 +2,8 @@
 set -euo pipefail
 
 # =============================================================================
-# Headless NixOS Installer (Adaptive Bootloader - Fixed)
+# Headless NixOS Installer (Legacy/MBR version for ThinkCentre Edge 71)
+# Use this if UEFI/GPT continues to give "Error 1962"
 # =============================================================================
 
 RED='\033[0;31m'
@@ -11,29 +12,20 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-echo -e "${BLUE}=== Headless NixOS Installer ===${NC}"
+echo -e "${BLUE}=== Headless NixOS Installer (Legacy MBR Fix) ===${NC}"
 echo ""
 
 # ---- Disk selection ----
 echo -e "${YELLOW}Available disks:${NC}"
 lsblk -d -o NAME,SIZE,MODEL,TYPE | grep disk
 echo ""
-read -p "Enter disk to install on (e.g. nvme0n1, sda): " DISK_NAME
+read -p "Enter disk to install on (e.g. sda): " DISK_NAME
 DISK="/dev/${DISK_NAME}"
 
 if [[ ! -b "$DISK" ]]; then
     echo -e "${RED}Error: $DISK does not exist${NC}"
     exit 1
 fi
-
-PART_PREFIX=$([[ "$DISK_NAME" == nvme* ]] && echo "${DISK}p" || echo "${DISK}")
-
-# ---- Bootloader Selection ----
-echo ""
-echo -e "${YELLOW}Choose Bootloader:${NC}"
-echo "1) systemd-boot (Modern, simple)"
-echo -e "2) GRUB ${GREEN}(Recommended for old PCs / ThinkCentres)${NC}"
-read -p "Selection [1-2]: " BOOT_CHOICE
 
 # ---- Hostname & User ----
 read -p "Hostname [nuc]: " HOSTNAME
@@ -51,58 +43,45 @@ while true; do
 done
 
 # ---- Confirm Wipe ----
-echo -e "${RED}WARNING: Wiping ${DISK}!${NC}"
+echo -e "${RED}WARNING: This wipes ${DISK} and uses MBR (Legacy) mode!${NC}"
 read -p "Type YES to continue: " CONFIRM
 [[ "$CONFIRM" != "YES" ]] && exit 0
 
-# ---- Partition & Format ----
-echo -e "${BLUE}Partitioning...${NC}"
-parted "$DISK" -- mklabel gpt
-parted "$DISK" -- mkpart ESP fat32 1MiB 512MiB
+# ---- Partition & Format (Legacy MBR) ----
+echo -e "${BLUE}Partitioning for Legacy Boot...${NC}"
+# Use msdos label for maximum compatibility with old BIOS
+parted "$DISK" -- mklabel msdos
+parted "$DISK" -- mkpart primary ext4 1MiB 100%
 parted "$DISK" -- set 1 boot on
-parted "$DISK" -- set 1 esp on
-parted "$DISK" -- mkpart primary 512MiB 100%
 
-mkfs.fat -F 32 -n BOOT "${PART_PREFIX}1"
-mkfs.ext4 -F -L nixos "${PART_PREFIX}2"
+# We only have one partition in Legacy mode
+mkfs.ext4 -F -L nixos "${DISK}1"
 
 # ---- Mount ----
-mount "${PART_PREFIX}2" /mnt
-mkdir -p /mnt/boot
-mount "${PART_PREFIX}1" /mnt/boot
+mount "${DISK}1" /mnt
 
 # ---- Generate Configs ----
 nixos-generate-config --root /mnt
 HASHED_PASSWORD=$(echo "$PASSWORD" | mkpasswd -m sha-512 -s)
 
-# Setup Bootloader Logic (Corrected for conflict)
-if [[ "$BOOT_CHOICE" == "2" ]]; then
-    BOOT_CONFIG="boot.loader.grub.enable = true;
-  boot.loader.grub.device = \"nodev\";
-  boot.loader.grub.efiSupport = true;
-  boot.loader.grub.efiInstallAsRemovable = true;
-  boot.loader.efi.canTouchEfiVariables = false;"
-else
-    BOOT_CONFIG="boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;"
-fi
-
-# Write Hardware Config
+# Write Hardware Config (Simplified for Legacy)
 cat > /mnt/etc/nixos/hardware-configuration.nix << HWEOF
 { config, lib, pkgs, modulesPath, ... }: {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod" "ata_piix" "uhci_hcd" ];
+  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" "ata_piix" "uhci_hcd" ];
   fileSystems."/" = { device = "/dev/disk/by-label/nixos"; fsType = "ext4"; };
-  fileSystems."/boot" = { device = "/dev/disk/by-label/BOOT"; fsType = "vfat"; options = [ "fmask=0022" "dmask=0022" ]; };
 }
 HWEOF
 
-# Write Main Config
+# Write Main Config (GRUB Legacy Mode)
 cat > /mnt/etc/nixos/configuration.nix << NIXEOF
 { config, lib, pkgs, ... }: {
   imports = [ ./hardware-configuration.nix ];
   
-  ${BOOT_CONFIG}
+  # Legacy GRUB - No EFI
+  boot.loader.grub.enable = true;
+  boot.loader.grub.device = "${DISK}"; 
+  boot.loader.grub.efiSupport = false;
 
   networking.hostName = "${HOSTNAME}";
   networking.useDHCP = true;
