@@ -23,6 +23,11 @@
     # NFS server for democratic-csi (serves ZFS storage to k3s worker nodes)
     ../../modules/common/nfs-server.nix
   ];
+
+  local.ssh = {
+    desktop = true;
+    passwordAuth = false;
+  };
   boot.extraModulePackages = [ config.boot.kernelPackages.vendor-reset ];
   boot.kernelModules = [
     "kvm-amd"

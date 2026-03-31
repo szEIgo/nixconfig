@@ -1,6 +1,8 @@
 { config, lib, pkgs, ... }:
 
 let
+  cfg = config.local.ssh;
+
   authorizedKeysFile = ./authorized_keys;
 
   authorizedKeys = lib.lists.filter (key: key != "") (
@@ -9,41 +11,51 @@ let
   );
 
 in {
-  programs = {
-    ssh = {
-      forwardX11 = true;
-      setXAuthLocation = true;
+  options.local.ssh = {
+    desktop = lib.mkEnableOption "desktop SSH settings (GTK pinentry)";
+    passwordAuth = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Allow password authentication (disable after SSH key auth is verified)";
     };
-    gnupg.agent = {
-      enable = true;
-      enableSSHSupport = true;
-      settings = {
-        default-cache-ttl = 28800;
-        max-cache-ttl = 28800;
-        default-cache-ttl-ssh = 28800;
-        max-cache-ttl-ssh = 28800;
+  };
+
+  config = {
+    programs = {
+      ssh = {
+        forwardX11 = true;
+        setXAuthLocation = true;
       };
-      pinentryPackage = pkgs.pinentry-gnome3;
+      gnupg.agent = {
+        enable = true;
+        enableSSHSupport = true;
+        settings = {
+          default-cache-ttl = 28800;
+          max-cache-ttl = 28800;
+          default-cache-ttl-ssh = 28800;
+          max-cache-ttl-ssh = 28800;
+        };
+        pinentryPackage = if cfg.desktop then pkgs.pinentry-gnome3 else pkgs.pinentry-curses;
+      };
     };
-  };
 
-  services.openssh = {
-    enable = true;
-    listenAddresses = [{
-      addr = "0.0.0.0";
-      port = 22;
-    }];
-    settings = {
-      PermitRootLogin = "prohibit-password";
-      PasswordAuthentication = false;
-      X11Forwarding = true;
-      AuthorizedKeysFile = "/etc/ssh/authorized_keys.d/%u";
-      Macs = [ "hmac-sha2-512" "hmac-sha2-256" "hmac-sha1" ];
+    services.openssh = {
+      enable = true;
+      listenAddresses = [{
+        addr = "0.0.0.0";
+        port = 22;
+      }];
+      settings = {
+        PermitRootLogin = "prohibit-password";
+        PasswordAuthentication = cfg.passwordAuth;
+        X11Forwarding = true;
+        Macs = [ "hmac-sha2-512" "hmac-sha2-256" "hmac-sha1" ];
+      };
     };
-  };
 
-  users.users = {
-    joni.openssh.authorizedKeys.keys = authorizedKeys;
-    root.openssh.authorizedKeys.keys = authorizedKeys;
+    users.users = {
+      joni.openssh.authorizedKeys.keys = authorizedKeys;
+      root.openssh.authorizedKeys.keys = authorizedKeys;
+    };
   };
 }

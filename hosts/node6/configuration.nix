@@ -77,6 +77,8 @@
     IdleAction = "ignore";
   };
 
+  local.ssh.passwordAuth = false;
+
   # NFS client support for democratic-csi storage
   boot.supportedFilesystems = [ "nfs" ];
 
