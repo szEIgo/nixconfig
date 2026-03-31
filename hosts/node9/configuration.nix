@@ -11,7 +11,7 @@
   boot.loader.systemd-boot.configurationLimit = 10;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "node5";
+  networking.hostName = "node9";
 
   # Users
   users.defaultUserShell = pkgs.zsh;
