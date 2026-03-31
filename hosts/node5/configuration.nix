@@ -15,18 +15,7 @@
 
   # Users
   users.defaultUserShell = pkgs.zsh;
-
-  users.groups.joni = {};
-  users.users.joni = {
-    isNormalUser = true;
-    group = "joni";
-    extraGroups = [ "wheel" ];
-    shell = pkgs.zsh;
-    openssh.authorizedKeys.keys = [
-      "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBADa7F/4YNEynreqlbcY8sig9o2hwtK485aWXRH3Hj2RDbfH+bSZTHeJqqOr1Dg0XHkMNJrJJJqyomlWRAMrqHy+aQH3htMFpf4+iVsyL6XvpQistqfUOeY+JvzCGR+16GmfIvWp3kugoyx85ViEWMlfXjhlJG64bb3v7aHSY0KnwTwzDg== kitsailer@kitsail"
-    ];
-  };
-
+  
   # Required when Home Manager is installed via NixOS module with useUserPackages
   environment.pathsToLink = [ "/share/applications" "/share/xdg-desktop-portal" ];
 
