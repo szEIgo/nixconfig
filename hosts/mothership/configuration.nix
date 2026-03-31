@@ -86,6 +86,8 @@
   hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
   boot.crashDump.enable = true;
   boot.kernel.sysctl."kernel.watchdog" = 1;
+  boot.kernel.sysctl."fs.inotify.max_user_watches" = 524288;
+  boot.kernel.sysctl."fs.inotify.max_user_instances" = 1024;
 
   networking.hostName = "mothership";
   networking.hostId = "6d539f2f";

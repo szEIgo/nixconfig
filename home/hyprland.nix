@@ -218,7 +218,8 @@
     };
   };
 
-  services.clipman.enable = true;
+  # Only run clipman under Hyprland — on Plasma, KDE's built-in clipboard handles this
+  services.clipman.enable = lib.mkDefault false;
 
   home.packages = with pkgs; [
     wl-clipboard

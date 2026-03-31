@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /home/joni/flux-system show origin/main:k8s/apps/kustomization.yaml)",
+      "Bash(tree:*)"
+    ]
+  }
+}

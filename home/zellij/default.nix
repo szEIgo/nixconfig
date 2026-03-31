@@ -50,16 +50,41 @@
   # enableZshIntegration would use) so it executes before anything else in .zshrc.
   # Every new terminal window/tab joins "main" as a new zellij tab.
   programs.zsh.initContent = lib.mkOrder 200 ''
-    if [[ -z "$ZELLIJ" ]]; then
-      # Clean up dead/exited sessions automatically
-      zellij delete-all-sessions --yes 2>/dev/null
+    __zellij_auto_attach() {
+      [[ -n "$ZELLIJ" ]] && return
+      # Need a real terminal for zellij TUI
+      [[ ! -t 0 ]] && return
 
-      # Attach to "main" session as a new tab, or create it if it doesn't exist
-      zellij attach main --create
+      # Remove stale sockets: if list-sessions hangs, the socket dir is dead
+      if ! timeout 2 zellij list-sessions &>/dev/null; then
+        rm -rf /run/user/$(id -u)/zellij/ /tmp/zellij-$(id -u)/ 2>/dev/null
+      fi
 
-      # When detaching/exiting zellij, also exit the shell (no orphan shells)
-      exit
-    fi
+      # Clean up dead/exited sessions
+      timeout 2 zellij delete-all-sessions --yes &>/dev/null || true
+
+      # Tab name: source-HHMMSS (local hostname, or SSH client hostname)
+      local src="$(hostname -s)"
+      if [[ -n "$SSH_CONNECTION" ]]; then
+        src=$(getent hosts "''${SSH_CONNECTION%% *}" 2>/dev/null | awk '{print $2}') || true
+        src="''${src%%.*}"
+        src="''${src:-ssh}"
+      fi
+      local tab_name="''${src}-$(date +%H%M%S)"
+
+      local sessions
+      sessions=$(timeout 2 zellij list-sessions --no-formatting 2>/dev/null) || sessions=""
+
+      if echo "$sessions" | grep -q "^main "; then
+        timeout 2 zellij --session main action new-tab --name "$tab_name" &>/dev/null || true
+        timeout 2 zellij --session main action go-to-tab-name "$tab_name" &>/dev/null || true
+        zellij attach main
+      else
+        zellij --session main
+      fi
+    }
+    __zellij_auto_attach
+    unfunction __zellij_auto_attach 2>/dev/null
   '';
 
   # Zellij shell aliases and session management helpers
