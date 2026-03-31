@@ -87,7 +87,7 @@ NIX_CORES="${NIX_CORES:-8}"     # Cores per build
 NIX_OPTS="--max-jobs $NIX_JOBS --cores $NIX_CORES"
 
 # Limit Nix evaluator memory (in bytes, ~8GB)
-export GC_INITIAL_HEAP_SIZE="${GC_INITIAL_HEAP_SIZE:-8000000000}"
+export GC_INITIAL_HEAP_SIZE="${GC_INITIAL_HEAP_SIZE:-2000000000}"
 
 # Interactive mode
 if [[ "$SPEC" == "interactive" ]]; then
