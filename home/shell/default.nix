@@ -126,6 +126,10 @@ in
       # Architecture flags
       export ARCHFLAGS="-arch $(uname -m)"
 
+      # GPG agent: update TTY/display so pinentry works in current session
+      export GPG_TTY=$(tty)
+      gpg-connect-agent updatestartuptty /bye >/dev/null 2>&1 || true
+
       # SDKMAN (if installed)
       export SDKMAN_DIR="$HOME/.sdkman"
       [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
