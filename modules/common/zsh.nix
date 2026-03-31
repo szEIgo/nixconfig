@@ -43,6 +43,10 @@
       mothership = "ssh -X joni@192.168.2.62";
       t480 = "ssh -X joni@192.168.2.87";
       nuc = "ssh -X joni@192.168.2.102";
+      node5 = "ssh joni@192.168.2.147";
+      node6 = "ssh joni@192.168.2.192";
+      node9 = "ssh joni@192.168.2.250";
+      node12 = "ssh joni@192.168.2.238";
     };
 
     # Init for all users (loaded via /etc/zshrc)

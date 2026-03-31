@@ -168,6 +168,22 @@ in
         hostname = "192.168.2.102";
         user = "joni";
       };
+      "node5" = {
+        hostname = "192.168.2.147";
+        user = "joni";
+      };
+      "node6" = {
+        hostname = "192.168.2.192";
+        user = "joni";
+      };
+      "node9" = {
+        hostname = "192.168.2.250";
+        user = "joni";
+      };
+      "node12" = {
+        hostname = "192.168.2.238";
+        user = "joni";
+      };
       "oneplus6t" = {
         hostname = "192.168.2.187";
         user = "user";

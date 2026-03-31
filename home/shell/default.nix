@@ -75,6 +75,10 @@ in
       mothership = "ssh -X -o ConnectTimeout=2 joni@192.168.10.1 || ssh -X -o ConnectTimeout=5 joni@192.168.2.62";
       t480 = "ssh -X -o ConnectTimeout=2 joni@192.168.10.5 || ssh -X -o ConnectTimeout=5 joni@192.168.2.87";
       nuc = "ssh -X -o ConnectTimeout=2 joni@192.168.2.102";
+      node5 = "ssh -o ConnectTimeout=2 joni@192.168.2.147";
+      node6 = "ssh -o ConnectTimeout=2 joni@192.168.2.192";
+      node9 = "ssh -o ConnectTimeout=2 joni@192.168.2.250";
+      node12 = "ssh -o ConnectTimeout=2 joni@192.168.2.238";
       oneplus6t = "ssh -o ConnectTimeout=2 user@192.168.2.187";
 
       # Platform-specific
