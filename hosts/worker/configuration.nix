@@ -1,13 +1,13 @@
-{ config, lib, pkgs, ... }: {
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.local.worker;
+  isServer = cfg.k3sRole == "server";
+in {
   imports = [
     ../../modules/common/zsh.nix
     ../../remote/ssh.nix
   ];
-
-  # Bootloader and disk layout managed by disko.nix
-
-  # Users
-  users.defaultUserShell = pkgs.zsh;
 
   # Required when Home Manager is installed via NixOS module with useUserPackages
   environment.pathsToLink = [ "/share/applications" "/share/xdg-desktop-portal" ];
@@ -17,17 +17,20 @@
     KUBECONFIG = "/etc/rancher/k3s/k3s.yaml";
   };
 
-  # k3s agent joining the mothership server
+  # Users
+  users.defaultUserShell = pkgs.zsh;
+
+  # k3s node joining the mothership cluster
   services.k3s = {
     enable = true;
-    role = "agent";
+    role = cfg.k3sRole;
     serverAddr = "https://192.168.2.62:6443";
     tokenFile = "/etc/k3s/token";
     extraFlags = [
-      "--node-label=k3s.io/role=worker"
-      "--node-label=node-role=customer"
-      "--node-label=node-type=bare-metal"
       "--node-label=node-id=${config.networking.hostName}"
+      "--node-label=node.kubernetes.io/size=${cfg.nodeSize}"
+    ] ++ lib.optionals isServer [
+      "--disable local-storage"
     ];
   };
 
@@ -37,6 +40,10 @@
     allowedTCPPorts = [
       22    # SSH
       10250 # kubelet
+    ] ++ lib.optionals isServer [
+      6443  # k3s API server
+      2379  # etcd client
+      2380  # etcd peer
     ];
     allowedUDPPorts = [
       8472  # flannel VXLAN
@@ -59,10 +66,18 @@
     IdleAction = "ignore";
   };
 
+  # Pull-through cache: k3s mirrors Docker Hub via local registry
+  environment.etc."rancher/k3s/registries.yaml".text = ''
+    mirrors:
+      docker.io:
+        endpoint:
+          - "http://registry.registry-system.svc.cluster.local:5000"
+  '';
+
   # NFS client support for democratic-csi storage
   boot.supportedFilesystems = [ "nfs" ];
 
-  # Minimal packages for a worker node
+  # Minimal packages
   environment.systemPackages = with pkgs; [
     curl
     htop

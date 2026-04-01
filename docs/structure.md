@@ -42,10 +42,10 @@ nixconfig/
 │   ├── nuc/
 │   │   ├── configuration.nix # Headless k3s worker
 │   │   └── hardware.nix      # Intel NUC hardware
-│   ├── worker/               # Shared config for all k3s worker nodes
-│   │   ├── configuration.nix # Worker NixOS config (k3s, firewall, zsh, ssh)
+│   ├── worker/               # Shared config for k3s nodes (workers + servers)
+│   │   ├── configuration.nix # k3s NixOS config (role, labels, firewall)
 │   │   ├── hardware.nix      # Shared hardware (Intel, SATA SSD)
-│   │   ├── disko.nix         # Declarative disk layout (GRUB + ext4)
+│   │   ├── disko.nix         # Disk layout + node options (k3sRole, nodeSize)
 │   │   └── iso.nix           # Custom installer ISO (sshd + SSH keys)
 │   ├── android/
 │   │   └── default.nix       # nix-on-droid config (shell + CLI tools)
@@ -122,7 +122,7 @@ Extensions for desktop/workstation machines:
 
 ### Virtualization (modules/virtualization/)
 Container and VM support:
-- `k3s.nix` - Lightweight Kubernetes (control plane on mothership)
+- `k3s.nix` - k3s control plane (mothership, HA with embedded etcd)
 - `libvirt.nix` - KVM/QEMU with VFIO hooks, polkit rules, KSM
 - `podman.nix` - Docker-compatible containers
 - `vms/` - Declarative libvirt VMs via NixVirt (see below)
@@ -135,24 +135,47 @@ Lightweight VMs using cloud-hypervisor for k3s worker nodes:
 
 **Architecture:**
 ```
-mothership (k3s server, 192.168.2.62)
-          │
-          ├── Bare-metal workers (shared hosts/worker/ config, deployed via nixos-anywhere):
-          │   ├── nuc    (192.168.2.102)
-          │   ├── node5  (192.168.2.147)
-          │   ├── node6  (192.168.2.192)
-          │   ├── node9  (192.168.2.250)
-          │   └── node12 (192.168.2.238)
-          │
-          └── MicroVM workers (10.100.0.0/24):
-              ├── k3s-worker-1 (10.100.0.11)
-              ├── k3s-worker-2 (10.100.0.12)
-              └── k3s-worker-3 (10.100.0.13)
+k3s HA Cluster (3 control plane nodes, embedded etcd)
+│
+├── Control Plane (k3s servers):
+│   ├── mothership (192.168.2.62)  — initial server, 32c/32GB, ZFS storage
+│   ├── node6      (192.168.2.192) — 8c/16GB
+│   └── node9      (192.168.2.250) — 4c/8GB
+│
+├── Workers (k3s agents):
+│   ├── nuc    (192.168.2.102) — 4c/8GB
+│   ├── node5  (192.168.2.147) — 4c/4GB
+│   └── node12 (192.168.2.238) — 4c/6GB
+│
+└── MicroVM workers (disabled, re-enable when needed):
+    └── 10.100.0.0/24
 ```
 
-**Node labels:** All workers set `k3s.io/role=worker`. MicroVMs add `node-type=microvm` + `node-id=worker-{N}`. The nuc adds `node-type=bare-metal`, `node-id=nuc`, and `node-role=customer`.
+**Node overview:**
 
-**Storage:** MicroVM zvols at `fastPool/microvm/k3s-worker-{1,2,3}` mounted as `/var/lib/rancher`. Nuc uses local ext4 disk.
+| Node | Role | CPUs | RAM | Size Label | IP |
+|------|------|------|-----|------------|----|
+| mothership | control-plane | 32 | 32 GB | `large` | 192.168.2.62 |
+| node6 | control-plane | 8 | 16 GB | `medium` | 192.168.2.192 |
+| node9 | control-plane | 4 | 8 GB | `medium` | 192.168.2.250 |
+| nuc | worker | 4 | 8 GB | `medium` | 192.168.2.102 |
+| node5 | worker | 4 | 4 GB | `small` | 192.168.2.147 |
+| node12 | worker | 4 | 6 GB | `small` | 192.168.2.238 |
+
+**Node labels:** All nodes get `node-id=<hostname>` and `node.kubernetes.io/size=<small|medium|large>`. Control plane nodes additionally get `node-role.kubernetes.io/control-plane=true` (set automatically by k3s).
+
+**Scheduling with labels:**
+```yaml
+# Target medium or large nodes
+nodeSelector:
+  node.kubernetes.io/size: medium
+
+# Target a specific node
+nodeSelector:
+  node-id: mothership
+```
+
+**Storage:** OpenEBS ZFS CSI on mothership (fastPool/slowPool). Democratic CSI NFS from TrueNAS at 192.168.2.62.
 
 **Boot flow (manual, ZFS encrypted):**
 1. `make mount` - Import and decrypt ZFS pools

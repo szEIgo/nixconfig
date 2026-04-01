@@ -16,6 +16,16 @@ in {
       default = "/dev/sda";
       description = "Target disk device";
     };
+    k3sRole = lib.mkOption {
+      type = lib.types.enum [ "agent" "server" ];
+      default = "agent";
+      description = "k3s role: agent (worker) or server (control plane)";
+    };
+    nodeSize = lib.mkOption {
+      type = lib.types.enum [ "small" "medium" "large" ];
+      default = "small";
+      description = "Node resource tier for scheduling (small/medium/large)";
+    };
   };
 
   config = {

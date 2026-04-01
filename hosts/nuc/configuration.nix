@@ -30,10 +30,8 @@
     serverAddr = "https://192.168.2.62:6443";
     tokenFile = "/etc/k3s/token";
     extraFlags = [
-      "--node-label=k3s.io/role=worker"
-      "--node-label=node-role=customer"
-      "--node-label=node-type=bare-metal"
       "--node-label=node-id=nuc"
+      "--node-label=node.kubernetes.io/size=medium"
     ];
   };
 
@@ -62,6 +60,14 @@
   };
 
   local.ssh.passwordAuth = false;
+
+  # Pull-through cache: k3s mirrors Docker Hub via local registry
+  environment.etc."rancher/k3s/registries.yaml".text = ''
+    mirrors:
+      docker.io:
+        endpoint:
+          - "http://registry.registry-system.svc.cluster.local:5000"
+  '';
 
   # NFS client support for democratic-csi storage
   boot.supportedFilesystems = [ "nfs" ];

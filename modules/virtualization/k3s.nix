@@ -49,6 +49,13 @@ in
   environment.etc."k3s/manifests/traefik-config.yaml".text =
     traefikGatewayApiHelmChartConfig;
 
+  # Pull-through cache: k3s mirrors Docker Hub via local registry
+  environment.etc."rancher/k3s/registries.yaml".text = ''
+    mirrors:
+      docker.io:
+        endpoint:
+          - "http://registry.registry-system.svc.cluster.local:5000"
+  '';
 
   # Kernel tuning for k3s + microvms (many watchers across containers and VMs)
   boot.kernel.sysctl = {
@@ -60,13 +67,16 @@ in
     enable = true;
     role = "server";
     extraFlags = [
+      "--cluster-init"
       "--disable local-storage"
       "--write-kubeconfig-mode=0640"
       "--write-kubeconfig-group=wheel"
+      "--node-label=node-id=mothership"
+      "--node-label=node.kubernetes.io/size=large"
     ];
   };
 
-  networking.firewall.allowedTCPPorts = [ 6443 30080 30443 ];
+  networking.firewall.allowedTCPPorts = [ 6443 2379 2380 30080 30443 ];
   networking.firewall.allowedUDPPorts = [ 8472 ];
 
 }

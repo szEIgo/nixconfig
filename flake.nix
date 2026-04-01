@@ -49,9 +49,11 @@
       isServer = false;
     };
 
-    # Helper to create identical k3s worker nodes
+    # Helper to create k3s nodes (workers or servers)
     # bootMode: "legacy" (BIOS/GRUB) or "uefi" (GPT/systemd-boot)
-    mkWorker = hostname: { bootMode ? "legacy", disk ? "/dev/sda", extraModules ? [] }: nixpkgs.lib.nixosSystem {
+    # k3sRole: "agent" (worker) or "server" (control plane)
+    # nodeSize: "small", "medium", or "large" — used for scheduling labels
+    mkWorker = hostname: { bootMode ? "legacy", disk ? "/dev/sda", k3sRole ? "agent", nodeSize ? "small", extraModules ? [] }: nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
         nixosRevisionModule
@@ -64,7 +66,7 @@
         ./secrets/worker.nix
         {
           networking.hostName = hostname;
-          local.worker = { inherit bootMode disk; };
+          local.worker = { inherit bootMode disk k3sRole nodeSize; };
         }
         home-manager.nixosModules.home-manager
         {
@@ -195,11 +197,13 @@
         ];
       };
 
-      # --- k3s worker nodes (shared config) ---
-      node5  = mkWorker "node5" {};
-      node6  = mkWorker "node6" { bootMode = "uefi"; };
-      node9  = mkWorker "node9" {};
-      node12 = mkWorker "node12" {};
+      # --- k3s control plane nodes ---
+      node6  = mkWorker "node6" { bootMode = "uefi"; k3sRole = "server"; nodeSize = "medium"; };
+      node9  = mkWorker "node9" { k3sRole = "server"; nodeSize = "medium"; };
+
+      # --- k3s worker nodes ---
+      node5  = mkWorker "node5" { nodeSize = "small"; };
+      node12 = mkWorker "node12" { nodeSize = "small"; };
 
       # --- NixOS Configuration for ThinkPad X250 (laptop) ---
       x250 = nixpkgs.lib.nixosSystem {
