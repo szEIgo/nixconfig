@@ -31,9 +31,16 @@
 
     deploy-rs.url = "github:serokell/deploy-rs";
     deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
+
+    nixos-hardware.url = "github:NixOS/nixos-hardware";
+
+    impermanence.url = "github:nix-community/impermanence";
+
+    nix-topology.url = "github:oddlama/nix-topology";
+    nix-topology.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-darwin, sops-nix, nixvirt, microvm, plasma-manager, nix-on-droid, disko, deploy-rs, ... }:
+  outputs = { self, nixpkgs, home-manager, nix-darwin, sops-nix, nixvirt, microvm, plasma-manager, nix-on-droid, disko, deploy-rs, nixos-hardware, impermanence, nix-topology, ... }:
   let
     # Git revision tracking — embedded in every NixOS system label
     gitRevision = self.shortRev or self.dirtyShortRev or "unknown";
@@ -62,6 +69,8 @@
         nixosRevisionModule
         disko.nixosModules.disko
         sops-nix.nixosModules.sops
+        impermanence.nixosModules.impermanence
+        nix-topology.nixosModules.default
         ./modules/core
         ./hosts/worker/disko.nix
         ./hosts/worker/configuration.nix
@@ -98,6 +107,7 @@
         system = "x86_64-linux";
         modules = [
           nixosRevisionModule
+          nix-topology.nixosModules.default
 
           # Core modules
           ./modules/core
@@ -139,6 +149,8 @@
         system = "x86_64-linux";
         modules = [
           nixosRevisionModule
+          nixos-hardware.nixosModules.lenovo-thinkpad-t480
+          nix-topology.nixosModules.default
 
           # Core modules
           ./modules/core
@@ -175,7 +187,7 @@
       carrier-tc2 = mkWorker "carrier-tc2" { k3sRole = "server"; nodeSize = "medium"; };
 
       # --- k3s interceptor nodes (workers) ---
-      interceptor-nuc1 = mkWorker "interceptor-nuc1" { bootMode = "uefi"; nodeSize = "medium"; };
+      interceptor-nuc1 = mkWorker "interceptor-nuc1" { bootMode = "uefi"; nodeSize = "medium"; extraModules = [ nixos-hardware.nixosModules.intel-nuc-5i5ryb ]; };
       interceptor-tc1  = mkWorker "interceptor-tc1" { nodeSize = "small"; };
       interceptor-tc2  = mkWorker "interceptor-tc2" { nodeSize = "small"; };
 
@@ -184,6 +196,8 @@
         system = "x86_64-linux";
         modules = [
           nixosRevisionModule
+          nixos-hardware.nixosModules.lenovo-thinkpad-x250
+          nix-topology.nixosModules.default
 
           # Core modules
           ./modules/core
@@ -292,5 +306,14 @@
     checks = builtins.mapAttrs
       (system: deployLib: deployLib.deployChecks self.deploy)
       deploy-rs.lib;
+
+    # Network topology diagram — build with: nix build .#topology.x86_64-linux.config.output
+    topology.x86_64-linux = import nix-topology {
+      pkgs = import nixpkgs { system = "x86_64-linux"; overlays = [ nix-topology.overlays.default ]; };
+      modules = [
+        ./topology.nix
+        { inherit (self) nixosConfigurations; }
+      ];
+    };
   };
 }

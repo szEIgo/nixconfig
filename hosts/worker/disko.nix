@@ -1,9 +1,12 @@
-# Declarative disk layout for k3s worker nodes
+# Declarative disk layout for k3s fleet nodes
 # Supports both Legacy BIOS and UEFI boot modes
+# Uses ZFS for data integrity (checksumming, compression, snapshots)
 { config, lib, ... }:
 
 let
   cfg = config.local.worker;
+  isLegacy = cfg.bootMode == "legacy";
+  isUefi = cfg.bootMode == "uefi";
 in {
   options.local.worker = {
     bootMode = lib.mkOption {
@@ -35,39 +38,96 @@ in {
       content = {
         type = "gpt";
         partitions = {
-          # BIOS boot partition (legacy only, ignored by UEFI)
-          boot = lib.mkIf (cfg.bootMode == "legacy") {
+          # BIOS: small embed area for GRUB stage 1
+          grub-mbr = lib.mkIf isLegacy {
             size = "1M";
             type = "EF02";
           };
-          # EFI System Partition (UEFI only)
-          esp = lib.mkIf (cfg.bootMode == "uefi") {
+          # Both modes get a /boot partition — ext4 for legacy, FAT32 for UEFI
+          boot = {
             size = "512M";
-            type = "EF00";
+            type = if isUefi then "EF00" else "8300";
             content = {
               type = "filesystem";
-              format = "vfat";
+              format = if isUefi then "vfat" else "ext4";
               mountpoint = "/boot";
-              mountOptions = [ "fmask=0022" "dmask=0022" ];
+              mountOptions = lib.mkIf isUefi [ "fmask=0022" "dmask=0022" ];
             };
           };
-          nixos = {
+          # ZFS pool spanning remaining disk
+          zfs = {
             size = "100%";
             content = {
-              type = "filesystem";
-              format = "ext4";
-              mountpoint = "/";
-              extraArgs = [ "-L" "nixos" ];
+              type = "zfs";
+              pool = "rpool";
             };
           };
         };
       };
     };
 
-    # Bootloader: GRUB for legacy, systemd-boot for UEFI
-    boot.loader.grub.enable = cfg.bootMode == "legacy";
-    boot.loader.systemd-boot.enable = cfg.bootMode == "uefi";
-    boot.loader.systemd-boot.configurationLimit = lib.mkIf (cfg.bootMode == "uefi") 10;
-    boot.loader.efi.canTouchEfiVariables = cfg.bootMode == "uefi";
+    disko.devices.zpool.rpool = {
+      type = "zpool";
+      options = {
+        ashift = "12";
+        autotrim = "on";
+      };
+      rootFsOptions = {
+        compression = "zstd";
+        acltype = "posixacl";
+        xattr = "sa";
+        dnodesize = "auto";
+        mountpoint = "none";
+        canmount = "off";
+      };
+      datasets = {
+        "nixos" = {
+          type = "zfs_fs";
+          mountpoint = "/";
+          options.mountpoint = "legacy";
+        };
+        "nixos/nix" = {
+          type = "zfs_fs";
+          mountpoint = "/nix";
+          options.mountpoint = "legacy";
+        };
+        "nixos/var" = {
+          type = "zfs_fs";
+          mountpoint = "/var";
+          options.mountpoint = "legacy";
+        };
+        # Separate dataset for k3s data (etcd on carriers, containerd on all)
+        "nixos/k3s" = {
+          type = "zfs_fs";
+          mountpoint = "/var/lib/rancher";
+          options.mountpoint = "legacy";
+          options."com.sun:auto-snapshot" = "true";
+        };
+        # Persistent state that survives impermanence root rollback
+        "persist" = {
+          type = "zfs_fs";
+          mountpoint = "/persist";
+          options.mountpoint = "legacy";
+        };
+      };
+    };
+
+    # Bootloader — disko sets GRUB device automatically from the EF02 partition
+    boot.loader.grub = lib.mkIf isLegacy {
+      enable = true;
+      zfsSupport = true;
+    };
+    boot.loader.systemd-boot.enable = isUefi;
+    boot.loader.systemd-boot.configurationLimit = lib.mkIf isUefi 10;
+    boot.loader.efi.canTouchEfiVariables = isUefi;
+
+    # ZFS support
+    boot.supportedFilesystems = [ "zfs" ];
+    boot.zfs.forceImportRoot = false;
+
+    # Generate a stable hostId from the hostname (required for ZFS)
+    networking.hostId = builtins.substring 0 8 (
+      builtins.hashString "sha256" config.networking.hostName
+    );
   };
 }

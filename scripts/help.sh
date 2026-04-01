@@ -3,7 +3,12 @@
 cat << 'EOF'
 NixConfig Management Commands
 
-NIXOS
+DEPLOYMENT (deploy-rs with automatic rollback)
+  make deploy HOST=...           Deploy to a single node (e.g. carrier-tc1)
+  make deploy-all                Deploy to all fleet nodes
+  make deploy-new HOST=... IP=.. Provision a new node via nixos-anywhere
+
+NIXOS (local rebuild)
   make switch [HOST=...] [SPEC=...]  Build and switch to configuration
                                SPEC: amd (default), nvidia, dualGpu, base
   make switch-interactive      Interactive menu to choose specialisation
@@ -18,7 +23,8 @@ NIXOS
     Example: NIX_JOBS=4 NIX_CORES=4 make switch
 
 INSTALL & BOOTSTRAP
-  make install                 Interactive NixOS install (from live ISO)
+  make worker-iso              Build custom installer ISO
+  make flash-worker-iso        Flash installer ISO to USB
   make bootstrap               Decrypt master key for new machine setup
   make cleanup                 Securely delete temporary master key
 
@@ -47,7 +53,6 @@ HARDWARE
   make usb-attach VM=...       Attach USB devices to VM
 
 KUBERNETES (K3S)
-  make k3s-init                Copy kubeconfig to ~/.kube/config
   make k3s-status              Show k3s service, nodes, and pods
   make k3s-wipe [ARGS=...]     Wipe k3s state (--mask to prevent restart)
 
@@ -57,22 +62,17 @@ KUBERNETES (K3S)
   make k3s-flux-status         Show Flux sources, kustomizations, releases
   make k3s-flux-reconcile [TARGET=all]  Force reconcile
 
-MICROVMS
-  make microvm-list            List all MicroVMs and status
-  make microvm-status [VM=]    Show detailed status (all or specific)
-  make microvm-start [VM=]     Start MicroVM (all if omitted)
-  make microvm-stop VM=...     Stop MicroVM (or VM=all)
-  make microvm-restart VM=...  Restart MicroVM (or VM=all)
-  make microvm-ssh VM=...      SSH into MicroVM via VSOCK
-  make microvm-init-zfs        Create ZFS volumes for MicroVMs
-  make microvm-destroy-zfs     Destroy ZFS volumes (DANGER!)
-  make microvm-resize ID=1 SIZE=20G  Resize ZFS volume
-
 WIREGUARD VPN
   make wg-connect              Connect to mothership VPN (clients only)
   make wg-disconnect           Disconnect from VPN (clients only)
   make wg-status               Show WireGuard interface status
 
+FLEET NODES
+  Carriers (control plane):     Interceptors (workers):
+    mothership  192.168.2.62      interceptor-nuc1  192.168.2.102
+    carrier-tc1 192.168.2.192     interceptor-tc1   192.168.2.238
+    carrier-tc2 192.168.2.250     interceptor-tc2   192.168.2.147
+
 DOCUMENTATION
-  See docs/ folder or README.md for detailed guides.
+  See docs/ folder for detailed guides.
 EOF

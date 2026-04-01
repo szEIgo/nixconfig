@@ -1,9 +1,8 @@
-.PHONY: help install deploy deploy-all deploy-worker worker-iso flash-worker-iso switch build test update gc bootstrap add-host-keys cleanup secrets-edit secrets-updatekeys secrets-list \
+.PHONY: help deploy deploy-all deploy-new fleet-listen worker-iso flash-worker-iso switch switch-interactive build test update gc \
+        bootstrap add-host-keys cleanup secrets-edit secrets-updatekeys secrets-list \
         gpu-reset usb-attach vm-list vm-start vm-stop vm-console vm-fix-efi vnc \
         zfs-status zfs-scrub zfs-snapshot mount \
-        k3s-init k3s-wipe k3s-status k3s-flux-init k3s-flux-bootstrap k3s-flux-status k3s-flux-reconcile \
-        microvm-list microvm-status microvm-start microvm-stop microvm-restart microvm-ssh \
-        microvm-init-zfs microvm-destroy-zfs microvm-resize \
+        k3s-status k3s-wipe k3s-flux-init k3s-flux-bootstrap k3s-flux-status k3s-flux-reconcile \
         wg-connect wg-disconnect wg-status
 
 # =============================================================================
@@ -13,11 +12,8 @@ help:
 	@./scripts/help.sh
 
 # =============================================================================
-# INSTALL (headless bootstrap from NixOS live ISO)
+# DEPLOYMENT (deploy-rs with automatic rollback)
 # =============================================================================
-install:
-	@./scripts/bootstrap/headless-install.sh
-
 deploy:
 	@if [ -z "$(HOST)" ]; then echo "Usage: make deploy HOST=<node>"; exit 1; fi
 	nix run github:serokell/deploy-rs -- .#$(HOST)
@@ -25,8 +21,14 @@ deploy:
 deploy-all:
 	nix run github:serokell/deploy-rs -- .
 
-deploy-worker:
+# =============================================================================
+# INSTALL (fresh node provisioning via nixos-anywhere)
+# =============================================================================
+deploy-new:
 	@./scripts/bootstrap/deploy-worker.sh $(HOST) $(IP)
+
+fleet-listen:
+	@./scripts/bootstrap/fleet-listen.sh
 
 worker-iso:
 	nix build .#images.worker-iso
@@ -36,7 +38,7 @@ flash-worker-iso:
 	@./scripts/bootstrap/flash-worker-iso.sh
 
 # =============================================================================
-# NIXOS
+# NIXOS (local rebuild)
 # =============================================================================
 switch:
 	@./scripts/nixos/switch.sh $(HOST) $(SPEC)
@@ -125,14 +127,11 @@ usb-attach:
 # =============================================================================
 # KUBERNETES (K3S)
 # =============================================================================
-k3s-init:
-	@./scripts/k3s/init.sh
+k3s-status:
+	@./scripts/k3s/status.sh
 
 k3s-wipe:
 	@./scripts/k3s/wipe.sh $(ARGS)
-
-k3s-status:
-	@./scripts/k3s/status.sh
 
 k3s-flux-init:
 	@./scripts/k3s/flux-init.sh
@@ -145,42 +144,6 @@ k3s-flux-status:
 
 k3s-flux-reconcile:
 	@./scripts/k3s/flux-reconcile.sh $(TARGET)
-
-# =============================================================================
-# MICROVMS
-# =============================================================================
-microvm-list:
-	@./scripts/microvm/list.sh
-
-microvm-status:
-	@./scripts/microvm/status.sh $(VM)
-
-microvm-start:
-	@./scripts/microvm/start.sh $(VM)
-
-microvm-stop:
-	@./scripts/microvm/stop.sh $(VM)
-
-microvm-restart:
-	@./scripts/microvm/restart.sh $(VM)
-
-microvm-ssh:
-	@./scripts/microvm/ssh.sh $(VM)
-
-microvm-init-zfs:
-	@./scripts/microvm/init-zfs.sh
-
-microvm-destroy-zfs:
-	@./scripts/microvm/destroy-zfs.sh
-
-microvm-resize:
-	@./scripts/microvm/resize-zfs.sh $(ID) $(SIZE)
-
-# =============================================================================
-# POSTMARKETOS (OnePlus 6T)
-# =============================================================================
-oneplus6t-ssh:
-	ssh user@192.168.2.187
 
 # =============================================================================
 # WIREGUARD VPN

@@ -29,8 +29,8 @@ echo "2) Legacy (Old - MBR, GRUB)"
 read -p "Selection [1-2]: " MODE
 
 # ---- 3. Setup Info ----
-read -p "Hostname [nuc]: " HOSTNAME
-HOSTNAME="${HOSTNAME:-nuc}"
+read -p "Hostname: " HOSTNAME
+HOSTNAME="${HOSTNAME:?Hostname required}"
 read -p "Username [joni]: " USERNAME
 USERNAME="${USERNAME:-joni}"
 

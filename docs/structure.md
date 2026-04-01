@@ -32,24 +32,21 @@ nixconfig/
 │
 ├── hosts/                    # Machine-specific configs
 │   ├── mothership/
-│   │   ├── configuration.nix # Main NixOS config
+│   │   ├── configuration.nix # Main NixOS config (desktop, k3s server, ZFS)
 │   │   ├── hardware.nix      # Generated hardware config
 │   │   ├── packages.nix      # Host-specific packages
-│   │   └── devices/          # Hardware variants
+│   │   └── devices/          # Hardware variants, network, wireguard
 │   ├── t480/
 │   │   ├── configuration.nix # Laptop config (Plasma, TLP, WiFi)
 │   │   └── hardware.nix      # ThinkPad T480 hardware
-│   ├── nuc/
-│   │   ├── configuration.nix # Headless k3s worker
-│   │   └── hardware.nix      # Intel NUC hardware
-│   ├── worker/               # Shared config for k3s nodes (workers + servers)
-│   │   ├── configuration.nix # k3s NixOS config (role, labels, firewall)
+│   ├── worker/               # Shared config for all k3s fleet nodes
+│   │   ├── configuration.nix # k3s config (role, labels, firewall, role-guard)
 │   │   ├── hardware.nix      # Shared hardware (Intel, SATA SSD)
-│   │   ├── disko.nix         # Disk layout + node options (k3sRole, nodeSize)
+│   │   ├── disko.nix         # Declarative disk layout + node options
 │   │   └── iso.nix           # Custom installer ISO (sshd + SSH keys)
-│   ├── android/
-│   │   └── default.nix       # nix-on-droid config (shell + CLI tools)
-│   └── macbook/
+│   ├── x250/                 # ThinkPad X250 laptop
+│   ├── android/              # nix-on-droid (shell + CLI tools)
+│   └── macbook/              # nix-darwin for macOS
 │
 ├── modules/                  # Reusable NixOS modules
 │   ├── core/                 # Required for ALL NixOS hosts
@@ -57,11 +54,12 @@ nixconfig/
 │   │   ├── nix-settings.nix  # Flakes, gc, store optimization
 │   │   ├── locales.nix       # Timezone, locale, keyboard
 │   │   └── users.nix         # Basic user (wheel group)
-│   ├── common/               # Desktop extensions
+│   ├── common/               # Shared extensions
 │   │   ├── users.nix         # Adds libvirtd, kvm, podman groups
-│   │   ├── zsh.nix           # System-wide zsh (oh-my-zsh, p10k, aliases for all users incl. root)
+│   │   ├── zsh.nix           # System-wide zsh (all users incl. root)
 │   │   ├── packages.nix      # System packages
 │   │   ├── services.nix      # Display manager, logind
+│   │   ├── nfs-server.nix    # NFS exports for k3s cluster
 │   │   └── zfs.nix           # ZFS support
 │   ├── desktop/
 │   │   ├── hyprland.nix      # Hyprland + Wayland
@@ -69,86 +67,54 @@ nixconfig/
 │   ├── gaming/
 │   │   └── steam.nix         # Steam + gamemode
 │   └── virtualization/
-│       ├── k3s.nix           # Kubernetes control plane
+│       ├── k3s.nix           # k3s control plane (HA, embedded etcd)
 │       ├── libvirt.nix       # KVM/QEMU with VFIO
 │       ├── podman.nix        # Containers
 │       ├── vms/              # Declarative libvirt VMs (NixVirt)
 │       │   ├── default.nix   # VM domain definitions
 │       │   └── xml/          # Libvirt XML configs
-│       └── microvm/          # Lightweight k3s worker VMs
+│       └── microvm/          # Lightweight k3s VMs (disabled)
 │           ├── default.nix   # Host config, bridge, ZFS
 │           └── k3s-agent.nix # Guest k3s agent
 │
-├── darwin/                   # macOS (nix-darwin)
-│   └── default.nix           # System defaults, homebrew
-│
 ├── remote/                   # Remote access
-│   ├── ssh.nix               # SSH server config
+│   ├── ssh.nix               # SSH server, ssh-agent systemd service
 │   └── remote-desktop.nix
 │
 ├── secrets/                  # sops-nix encrypted secrets
 │   ├── secrets.yaml          # Encrypted secrets (safe for git)
-│   ├── secrets.nix           # Deployment paths
-│   └── *.age                 # Encrypted keys
+│   ├── secrets.nix           # Mothership secret paths
+│   └── worker.nix            # Fleet node secret paths (k3s token)
 │
 ├── scripts/                  # Management scripts
 │   ├── nixos/                # switch, build, test, update, gc
-│   ├── k3s/                  # init, wipe, status, flux-*
-│   ├── microvm/              # list, status, start, stop, ssh, zfs
-│   ├── storage/              # mount-pools (ZFS import/decrypt)
+│   ├── k3s/                  # status, wipe, flux-*
+│   ├── storage/              # mount-pools, zfs-status, scrub, snapshot
 │   ├── hardware/             # gpu-reset, usb-attach
-│   ├── vm/                   # fix-efi, vnc
-│   ├── secrets/              # edit, updatekeys
-│   └── bootstrap/            # decrypt-keys, cleanup, deploy-worker
+│   ├── vm/                   # list, start, stop, console, fix-efi, vnc
+│   ├── secrets/              # edit, updatekeys, list
+│   ├── bootstrap/            # deploy-worker, decrypt-keys, cleanup
+│   └── wireguard/            # connect, disconnect, status
 │
 └── docs/                     # Documentation
 ```
 
-## Module Hierarchy
+## k3s Cluster Architecture
 
-### Core (modules/core/)
-Minimal base imported via `flake.nix` for ALL NixOS hosts:
-- Nix flakes enabled
-- Garbage collection
-- Locale/timezone defaults
-- Basic user with wheel group
+StarCraft Protoss fleet naming: mothership (command), carriers (control plane), interceptors (workers).
 
-### Common (modules/common/)
-Extensions for desktop/workstation machines:
-- `users.nix` - Adds groups: libvirtd, kvm, podman, video, seat
-- `zsh.nix` - System-wide zsh (oh-my-zsh, powerlevel10k, aliases for all users including root)
-- `packages.nix` - System packages
-- `services.nix` - SDDM, logind settings
-
-### Virtualization (modules/virtualization/)
-Container and VM support:
-- `k3s.nix` - k3s control plane (mothership, HA with embedded etcd)
-- `libvirt.nix` - KVM/QEMU with VFIO hooks, polkit rules, KSM
-- `podman.nix` - Docker-compatible containers
-- `vms/` - Declarative libvirt VMs via NixVirt (see below)
-- `microvm/` - Lightweight VMs for k3s worker nodes (see below)
-
-### MicroVM (modules/virtualization/microvm/)
-Lightweight VMs using cloud-hypervisor for k3s worker nodes:
-- `default.nix` - Host configuration, network bridge, ZFS storage
-- `k3s-agent.nix` - Guest k3s agent configuration
-
-**Architecture:**
 ```
 k3s HA Cluster (3 control plane nodes, embedded etcd)
 │
 ├── Control Plane (k3s servers):
-│   ├── mothership (192.168.2.62)  — initial server, 32c/32GB, ZFS storage
-│   ├── node6      (192.168.2.192) — 8c/16GB
-│   └── node9      (192.168.2.250) — 4c/8GB
+│   ├── mothership       (192.168.2.62)  — 32c/32GB, ZFS storage, initial server
+│   ├── carrier-tc1      (192.168.2.192) — 8c/16GB ThinkCentre
+│   └── carrier-tc2      (192.168.2.250) — 4c/8GB ThinkCentre
 │
-├── Workers (k3s agents):
-│   ├── nuc    (192.168.2.102) — 4c/8GB
-│   ├── node5  (192.168.2.147) — 4c/4GB
-│   └── node12 (192.168.2.238) — 4c/6GB
-│
-└── MicroVM workers (disabled, re-enable when needed):
-    └── 10.100.0.0/24
+└── Workers (k3s agents):
+    ├── interceptor-nuc1 (192.168.2.102) — 4c/8GB Intel NUC
+    ├── interceptor-tc1  (192.168.2.238) — 4c/6GB ThinkCentre
+    └── interceptor-tc2  (192.168.2.147) — 4c/4GB ThinkCentre
 ```
 
 **Node overview:**
@@ -156,11 +122,16 @@ k3s HA Cluster (3 control plane nodes, embedded etcd)
 | Node | Role | CPUs | RAM | Size Label | IP |
 |------|------|------|-----|------------|----|
 | mothership | control-plane | 32 | 32 GB | `large` | 192.168.2.62 |
-| node6 | control-plane | 8 | 16 GB | `medium` | 192.168.2.192 |
-| node9 | control-plane | 4 | 8 GB | `medium` | 192.168.2.250 |
-| nuc | worker | 4 | 8 GB | `medium` | 192.168.2.102 |
-| node5 | worker | 4 | 4 GB | `small` | 192.168.2.147 |
-| node12 | worker | 4 | 6 GB | `small` | 192.168.2.238 |
+| carrier-tc1 | control-plane | 8 | 16 GB | `medium` | 192.168.2.192 |
+| carrier-tc2 | control-plane | 4 | 8 GB | `medium` | 192.168.2.250 |
+| interceptor-nuc1 | worker | 4 | 8 GB | `medium` | 192.168.2.102 |
+| interceptor-tc1 | worker | 4 | 6 GB | `small` | 192.168.2.238 |
+| interceptor-tc2 | worker | 4 | 4 GB | `small` | 192.168.2.147 |
+
+Fleet nodes are defined via `mkWorker` in `flake.nix` with shared config from `hosts/worker/`. Each node gets:
+- `k3sRole`: `"server"` (carrier) or `"agent"` (interceptor)
+- `nodeSize`: `"small"`, `"medium"`, or `"large"` (scheduling label)
+- `bootMode`: `"legacy"` (BIOS/GRUB) or `"uefi"` (systemd-boot)
 
 **Node labels:** All nodes get `node-id=<hostname>` and `node.kubernetes.io/size=<small|medium|large>`. Control plane nodes additionally get `node-role.kubernetes.io/control-plane=true` (set automatically by k3s).
 
@@ -175,12 +146,12 @@ nodeSelector:
   node-id: mothership
 ```
 
-**Storage:** OpenEBS ZFS CSI on mothership (fastPool/slowPool). Democratic CSI NFS from TrueNAS at 192.168.2.62.
+**Storage:** OpenEBS ZFS CSI on mothership (fastPool/slowPool). Democratic CSI NFS from mothership at 192.168.2.62.
 
-**Boot flow (manual, ZFS encrypted):**
-1. `make mount` - Import and decrypt ZFS pools
-2. `make microvm-start` - Copy k3s token, start VMs
-3. Workers auto-join cluster
+**Deployment:**
+- `make deploy HOST=<node>` — deploy config updates via deploy-rs (automatic rollback)
+- `make deploy-all` — deploy to all fleet nodes
+- `make deploy-new HOST=<node> IP=<ip>` — fresh install via nixos-anywhere
 
 ### NixVirt (modules/virtualization/vms/)
 Declarative libvirt VM management using [NixVirt](https://github.com/AshleyYakeley/NixVirt).
@@ -194,26 +165,13 @@ VMs are defined in Nix and their libvirt XML configs are version-controlled.
 | `win11-goldenImage` | Windows 11 base/template image |
 | `archlinux` | Arch Linux VM |
 
-**Key features:**
-- VMs are defined declaratively in `vms/default.nix`
-- XML configs stored in `vms/xml/` for full control
-- `active = null` means VMs don't auto-start (manual via `virsh start`)
-- Changes to VM definitions apply on `nixos-rebuild switch`
-
-**Usage:**
-```bash
-virsh list --all          # List all VMs
-virsh start win11-nvidia  # Start a VM
-virsh shutdown win11-amd  # Graceful shutdown
-```
-
 ## Home-Manager Profiles
 
 Profiles are composed based on `hostType` passed from flake.nix:
 
 | hostType | Profiles | Use Case |
 |----------|----------|----------|
-| `"server"` | base | Headless servers, Pis |
+| `"server"` | base | Headless servers |
 | `"workstation"` | base + dev | Dev machines without GUI |
 | `"desktop"` | base + dev + desktop | Full desktop |
 
@@ -238,8 +196,11 @@ Desktop applications:
 
 ## Adding Components
 
-### New Host
-See [bootstrap.md](bootstrap.md#adding-a-new-host)
+### New Fleet Node
+1. Boot the worker ISO on the target machine
+2. From mothership: `make deploy-new HOST=<name> IP=<ip>`
+3. Add to `flake.nix` via `mkWorker` and to `deploy.nodes`
+4. Future updates: `make deploy HOST=<name>`
 
 ### New Module
 1. Create `modules/category/mymodule.nix`
@@ -249,17 +210,16 @@ See [bootstrap.md](bootstrap.md#adding-a-new-host)
 1. Add to appropriate profile in `home/profiles/`
 2. Or create new profile and import in `home/joni.nix`
 
-## Platform Support
-
-| Platform | System | Type |
-|----------|--------|------|
-| NixOS x86_64 | `x86_64-linux` | Full system |
-| NixOS ARM64 | `aarch64-linux` | Full system (Pi) |
-| macOS | `aarch64-darwin` | home-manager or nix-darwin |
-
 ## Command Reference
 
 Run `make help` for full details. Key commands:
+
+### Deployment
+| Command | Description |
+|---------|-------------|
+| `make deploy HOST=...` | Deploy to a node via deploy-rs (with rollback) |
+| `make deploy-all` | Deploy to all fleet nodes |
+| `make deploy-new HOST=... IP=...` | Fresh install via nixos-anywhere |
 
 ### NixOS
 | Command | Description |
@@ -269,34 +229,20 @@ Run `make help` for full details. Key commands:
 | `make update` | Update flake inputs and rebuild |
 | `make gc` | Garbage collect old generations |
 
-### Storage & MicroVM
-| Command | Description |
-|---------|-------------|
-| `make mount` | Import and decrypt ZFS pools |
-| `make microvm-start` | Copy k3s token and start all VMs |
-| `make microvm-stop VM=...` | Stop specific or all VMs |
-| `make microvm-status` | Show VM status |
-| `make microvm-ssh VM=...` | SSH into VM via VSOCK |
-| `make microvm-init-zfs` | Create ZFS zvols for VMs |
-
 ### Kubernetes (k3s)
 | Command | Description |
 |---------|-------------|
-| `make k3s-init` | Copy kubeconfig to ~/.kube/config |
 | `make k3s-status` | Show nodes, pods, services |
 | `make k3s-wipe` | Wipe k3s state |
 | `make k3s-flux-bootstrap` | Bootstrap Flux CD |
 | `make k3s-flux-status` | Show Flux sources and kustomizations |
 
-### Libvirt VMs (NixVirt)
+### Storage & VMs
 | Command | Description |
 |---------|-------------|
-| `virsh list --all` | List all defined VMs |
-| `virsh start <vm>` | Start a VM |
-| `virsh shutdown <vm>` | Graceful shutdown |
-| `make vm-fix-efi VM=...` | Remove EFI entries from VM |
-| `make usb-attach VM=...` | Attach USB devices to VM |
-| `make vnc` | Start headless KDE with VNC |
+| `make mount` | Import and decrypt ZFS pools |
+| `make vm-start VM=...` | Start a libvirt VM |
+| `make vm-stop VM=...` | Graceful shutdown |
 
 ### Secrets & Hardware
 | Command | Description |

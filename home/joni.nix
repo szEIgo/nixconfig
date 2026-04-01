@@ -164,25 +164,25 @@ in
         hostname = "192.168.2.87";
         user = "joni";
       };
-      "nuc" = {
-        hostname = "192.168.2.102";
-        user = "joni";
-      };
-      "node5" = {
-        hostname = "192.168.2.147";
-        user = "joni";
-      };
-      "node6" = {
+      "carrier-tc1" = {
         hostname = "192.168.2.192";
-        user = "joni";
+        user = "root";
       };
-      "node9" = {
+      "carrier-tc2" = {
         hostname = "192.168.2.250";
-        user = "joni";
+        user = "root";
       };
-      "node12" = {
+      "interceptor-nuc1" = {
+        hostname = "192.168.2.102";
+        user = "root";
+      };
+      "interceptor-tc1" = {
         hostname = "192.168.2.238";
-        user = "joni";
+        user = "root";
+      };
+      "interceptor-tc2" = {
+        hostname = "192.168.2.147";
+        user = "root";
       };
       "oneplus6t" = {
         hostname = "192.168.2.187";

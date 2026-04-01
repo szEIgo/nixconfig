@@ -1,6 +1,6 @@
 # NixConfig
 
-Multi-platform Nix configuration for NixOS (mothership) and macOS (jsz-mac-01).
+Multi-platform Nix configuration for NixOS, macOS, and Android.
 
 ---
 
@@ -59,7 +59,9 @@ Efter at have brændt nallerne på alt fra Slackware til Tails, er NixOS det fø
 
 ```bash
 make help                    # Show all commands
-make switch                  # Apply NixOS configuration
+make switch                  # Apply NixOS configuration (local)
+make deploy HOST=...         # Deploy to fleet node (with rollback)
+make deploy-all              # Deploy to all fleet nodes
 make update                  # Update flake inputs and rebuild
 make gc                      # Garbage collect (default: 30 days)
 ```
@@ -69,11 +71,12 @@ make gc                      # Garbage collect (default: 30 days)
 | Doc | Description |
 |-----|-------------|
 | [Getting Started](docs/getting-started.md) | Fresh install guide |
+| [Headless Setup](docs/headless-getting-started.md) | Fleet node provisioning |
 | [Daily Usage](docs/usage.md) | Common operations |
 | [Structure](docs/structure.md) | Repository layout |
 | [Secrets](docs/secrets.md) | SOPS-nix setup |
 | [ZFS](docs/zfs.md) | Storage management |
-| [Virtualization](docs/virtualization.md) | VMs, MicroVMs, K3s |
+| [Virtualization](docs/virtualization.md) | VMs, K3s, Podman |
 | [macOS](docs/darwin.md) | nix-darwin setup |
 | [Bootstrap](docs/bootstrap.md) | New machine setup |
 
@@ -81,45 +84,47 @@ make gc                      # Garbage collect (default: 30 days)
 
 | Host | Platform | Type | Description |
 |------|----------|------|-------------|
-| `mothership` | NixOS x86_64 | Desktop | Main workstation with GPU passthrough |
+| `mothership` | NixOS x86_64 | Desktop | Main workstation, k3s control plane, GPU passthrough |
+| `carrier-tc1` | NixOS x86_64 | Server | k3s control plane (ThinkCentre 8c/16GB) |
+| `carrier-tc2` | NixOS x86_64 | Server | k3s control plane (ThinkCentre 4c/8GB) |
+| `interceptor-nuc1` | NixOS x86_64 | Server | k3s worker (Intel NUC 4c/8GB) |
+| `interceptor-tc1` | NixOS x86_64 | Server | k3s worker (ThinkCentre 4c/6GB) |
+| `interceptor-tc2` | NixOS x86_64 | Server | k3s worker (ThinkCentre 4c/4GB) |
 | `t480` | NixOS x86_64 | Laptop | ThinkPad T480 portable workstation |
-| `nuc` | NixOS x86_64 | Server | Headless k3s worker node |
+| `x250` | NixOS x86_64 | Laptop | ThinkPad X250 |
 | `android` | nix-on-droid aarch64 | Mobile | Android phone (shared shell/CLI) |
 | `jsz-mac-01` | macOS aarch64 | Workstation | MacBook with nix-darwin |
 
 ## System Overview
 
 ```
-mothership (NixOS - Desktop)
+mothership (NixOS - Desktop + Control Plane)
 ├── Desktop: Hyprland / KDE Plasma 6 (plasma-manager)
 ├── GPU: VFIO passthrough (NVIDIA + AMD)
 ├── Storage: ZFS (rpool, slowPool, fastPool)
-├── K3s: Kubernetes control plane + NFS server (democratic-csi)
-├── MicroVMs: k3s workers (10.100.0.11-13, node-type=microvm)
-├── VMs: Windows 11, Arch Linux (libvirt)
+├── K3s: HA control plane (--cluster-init, embedded etcd)
+├── NFS: Server for democratic-csi cluster storage
+├── VMs: Windows 11, Arch Linux (libvirt/NixVirt)
 ├── Shell: zsh + powerlevel10k + oh-my-zsh (system-wide)
 └── Secrets: sops-nix
+
+k3s Fleet (StarCraft Protoss naming)
+├── carrier-tc1      (192.168.2.192) — control plane, 8c/16GB
+├── carrier-tc2      (192.168.2.250) — control plane, 4c/8GB
+├── interceptor-nuc1 (192.168.2.102) — worker, 4c/8GB
+├── interceptor-tc1  (192.168.2.238) — worker, 4c/6GB
+└── interceptor-tc2  (192.168.2.147) — worker, 4c/4GB
+    All managed via mkWorker + deploy-rs (automatic rollback)
 
 t480 (NixOS - Laptop)
 ├── Desktop: KDE Plasma 6 (plasma-manager, shared config with mothership)
 ├── Power: TLP (20-80% battery thresholds), thermald, powertop
 ├── Network: NetworkManager (WiFi)
-├── Shell: zsh + powerlevel10k + oh-my-zsh (system-wide)
 └── No: ZFS, virtualization, k3s, gaming
-
-nuc (NixOS - Headless Server)
-├── Role: k3s worker (joins mothership at 192.168.2.62:6443)
-├── Labels: node-type=bare-metal, node-id=nuc, node-role=customer
-├── Storage: local ext4 (hostPath), NFS client (democratic-csi)
-├── Customer workloads: pinned here, survives mothership downtime
-├── Lid/power: all events ignored (headless)
-├── Shell: zsh + powerlevel10k + oh-my-zsh (system-wide)
-└── No: desktop, plasma, hyprland, virtualization
 
 android (nix-on-droid)
 ├── Shell: zsh + powerlevel10k + oh-my-zsh (home-manager)
 ├── CLI: Core tools (eza, bat, ripgrep, fzf, helix, git, etc.)
-├── No: desktop, heavy dev tools, systemd services
 └── Deploy: nix-on-droid switch --flake ~/nixconfig
 
 jsz-mac-01 (macOS)
@@ -130,32 +135,39 @@ jsz-mac-01 (macOS)
 
 ### Feature Matrix
 
-| Feature | mothership | t480 | nuc | android | macbook |
+| Feature | mothership | fleet nodes | t480 | android | macbook |
 |---------|:---:|:---:|:---:|:---:|:---:|
-| Plasma 6 (plasma-manager) | ✓ | ✓ | - | - | - |
-| Hyprland | ✓ | ✓* | - | - | - |
+| Plasma 6 (plasma-manager) | ✓ | - | ✓ | - | - |
+| Hyprland | ✓ | - | ✓* | - | - |
 | Home-manager | ✓ | ✓ | ✓ | ✓ | ✓ |
 | zsh/p10k/oh-my-zsh | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Core CLI tools | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Dev tools (rust, scala, k8s) | ✓ | ✓ | ✓ | - | ✓ |
-| K3s server | ✓ | - | - | - | - |
-| K3s agent | - | - | ✓ | - | - |
+| K3s control plane | ✓ | carriers | - | - | - |
+| K3s worker | - | interceptors | - | - | - |
 | ZFS | ✓ | - | - | - | - |
 | Libvirt/VFIO | ✓ | - | - | - | - |
 | Podman | ✓ | - | - | - | - |
-| MicroVMs | ✓ | - | - | - | - |
 | Gaming (Steam) | ✓ | - | - | - | - |
-| TLP power mgmt | - | ✓ | - | - | - |
-| sops-nix secrets | ✓ | - | - | - | - |
+| TLP power mgmt | - | - | ✓ | - | - |
+| sops-nix secrets | ✓ | ✓ | - | - | - |
 | SSH server | ✓ | ✓ | ✓ | - | - |
+| deploy-rs target | - | ✓ | - | - | - |
 
 \* Hyprland config imported via home-manager but Plasma is the primary DE
 
 ## Command Categories
 
+### Deployment
+```bash
+make deploy HOST=...         # Deploy to fleet node (deploy-rs, auto-rollback)
+make deploy-all              # Deploy to all fleet nodes
+make deploy-new HOST=... IP=..  # Fresh install via nixos-anywhere
+```
+
 ### NixOS Operations
 ```bash
-make switch [HOST=...]       # Build and switch
+make switch [HOST=...]       # Build and switch (local)
 make build [HOST=...]        # Build only
 make test [HOST=...]         # Test without bootloader
 make update [HOST=...]       # Update inputs + rebuild
@@ -188,44 +200,36 @@ make gpu-reset               # Reset AMD GPU
 make usb-attach VM=...       # Attach USB to VM
 ```
 
-### MicroVMs
-```bash
-make microvm-list            # List MicroVMs
-make microvm-start [VM=...]  # Start VMs
-make microvm-stop VM=...     # Stop VM
-make microvm-ssh VM=...      # SSH via VSOCK
-make microvm-init-zfs        # Create ZFS volumes
-```
-
 ### Kubernetes (K3s)
 ```bash
-make k3s-init                # Setup kubeconfig
 make k3s-status              # Cluster status
 make k3s-flux-bootstrap      # Install Flux CD
 make k3s-flux-status         # Flux status
+make k3s-flux-reconcile      # Force reconcile
 ```
 
 ## Directory Structure
 
 ```
 nixconfig/
-├── flake.nix                # Entry point
+├── flake.nix                # Entry point (mkWorker, deploy-rs, all hosts)
 ├── Makefile                 # All operations
 ├── hosts/                   # Machine configs
-│   ├── mothership/          # NixOS desktop
+│   ├── mothership/          # NixOS desktop + k3s control plane
 │   ├── t480/                # NixOS laptop
-│   ├── nuc/                 # NixOS headless k3s worker
+│   ├── worker/              # Shared fleet node config (carriers + interceptors)
 │   ├── android/             # nix-on-droid (Android)
 │   └── macbook/             # macOS
 ├── modules/                 # Reusable NixOS modules
 │   ├── core/                # Required for all hosts
-│   ├── common/              # Desktop extensions
+│   ├── common/              # Shared extensions (zsh, nfs-server)
 │   ├── desktop/             # Hyprland, Plasma
-│   └── virtualization/      # VMs, k3s, podman
+│   └── virtualization/      # k3s, libvirt, podman, VMs
 ├── home/                    # Home-manager (all platforms)
 │   ├── joni.nix             # Main user config
 │   ├── shell/               # Zsh config
 │   └── profiles/            # Composable profiles
+├── remote/                  # SSH server + ssh-agent config
 ├── secrets/                 # SOPS-encrypted secrets
 ├── scripts/                 # Management scripts
 └── docs/                    # Documentation

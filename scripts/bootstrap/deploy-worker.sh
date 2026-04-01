@@ -14,7 +14,7 @@ set -euo pipefail
 #   5. Cleans up temporary files
 #
 # Usage: deploy-worker.sh <hostname> <ip>
-# Example: deploy-worker.sh node5 192.168.2.147
+# Example: deploy-worker.sh carrier-tc1 192.168.2.192
 # =============================================================================
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -31,7 +31,7 @@ IP="${2:-}"
 
 if [[ -z "$HOST" || -z "$IP" ]]; then
     echo "Usage: $0 <hostname> <ip>"
-    echo "Example: $0 node5 192.168.2.147"
+    echo "Example: $0 carrier-tc1 192.168.2.192"
     exit 1
 fi
 

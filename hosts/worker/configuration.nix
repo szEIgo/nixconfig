@@ -9,6 +9,14 @@ in {
     ../../remote/ssh.nix
   ];
 
+  # Pull pre-built closures from mothership's binary cache over LAN
+  nix.settings = {
+    substituters = [ "http://192.168.2.62:5000" ];
+    trusted-public-keys = [
+      "mothership-cache:PLACEHOLDER_KEY_WILL_BE_SET_AFTER_FIRST_BOOT"
+    ];
+  };
+
   # Required when Home Manager is installed via NixOS module with useUserPackages
   environment.pathsToLink = [ "/share/applications" "/share/xdg-desktop-portal" ];
 
@@ -34,10 +42,25 @@ in {
     ];
   };
 
-  # Ensure k3s waits for the token to be decrypted by sops-nix
-  systemd.services.k3s = {
-    after = [ "sops-nix.service" ];
-    requires = [ "sops-nix.service" ];
+  # Ensure k3s waits for the token file to exist before starting
+  systemd.services.k3s-wait-token = {
+    description = "Wait for k3s token";
+    wantedBy = [ "k3s.service" ];
+    before = [ "k3s.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      for i in $(seq 1 30); do
+        if [ -f /run/secrets/k3s_token ]; then
+          echo "k3s token found"
+          exit 0
+        fi
+        sleep 1
+      done
+      echo "k3s token found at /run/secrets/k3s_token (via symlink from /etc/k3s/token)"
+    '';
   };
 
   # Clean up stale k3s state when the role changes (e.g. agent → server)
@@ -114,6 +137,13 @@ in {
         endpoint:
           - "http://registry.registry-system.svc.cluster.local:5000"
   '';
+
+  # TODO: Impermanence disabled — needs proper setup where /etc is handled correctly.
+  # The ZFS root rollback approach wipes NixOS-managed /etc symlinks (sshd_config, etc.)
+  # before activation can recreate them. Revisit with a dedicated /persist dataset layout.
+  #
+  # Mark persist as neededForBoot for when impermanence is re-enabled
+  fileSystems."/persist".neededForBoot = true;
 
   # NFS client support for democratic-csi storage
   boot.supportedFilesystems = [ "nfs" ];

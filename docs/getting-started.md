@@ -265,7 +265,7 @@ mkdir -p hosts/<hostname>
 
 Create `configuration.nix` and `hardware.nix` — see existing hosts as templates:
 - **Desktop laptop**: `hosts/t480/` or `hosts/x250/` (Plasma, TLP, NetworkManager)
-- **Headless server**: `hosts/nuc/` (k3s worker, no desktop)
+- **Headless server / fleet node**: `hosts/worker/` (k3s, deployed via `mkWorker` in flake.nix)
 - **Workstation**: `hosts/mothership/` (GPU passthrough, virtualization)
 
 ### 3. Get real hardware config

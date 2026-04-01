@@ -6,9 +6,29 @@ Common operations for managing NixOS and this configuration.
 
 ---
 
+## Fleet Deployment (deploy-rs)
+
+Deploy configuration changes to fleet nodes with automatic rollback:
+
+```bash
+# Deploy to a single node
+make deploy HOST=carrier-tc1
+
+# Deploy to all fleet nodes
+make deploy-all
+
+# Fresh install (nixos-anywhere, wipes disk)
+make deploy-new HOST=carrier-tc1 IP=192.168.2.192
+```
+
+If the node loses connectivity after activation, deploy-rs automatically
+reverts to the previous generation.
+
+---
+
 ## NixOS Operations
 
-### Apply Configuration
+### Apply Configuration (local)
 
 ```bash
 # Build and switch (default: current hostname)
@@ -42,22 +62,12 @@ make gc
 
 # Custom retention
 make gc DAYS=7
-
-# Manual: list generations
-nix-env --list-generations
-
-# Manual: delete specific generation
-nix-env --delete-generations 42
 ```
 
 ### Memory Control (Large Rebuilds)
 
 ```bash
-# Reduce parallel builds and cores
 NIX_JOBS=2 NIX_CORES=4 make switch
-
-# Limit evaluator heap
-GC_INITIAL_HEAP_SIZE=4294967296 make switch  # 4GB
 ```
 
 ---
@@ -71,9 +81,6 @@ darwin-rebuild switch --flake .#jsz-mac-01
 # Update and rebuild
 nix flake update
 darwin-rebuild switch --flake .#jsz-mac-01
-
-# Garbage collect
-nix-collect-garbage -d
 ```
 
 ---
@@ -90,10 +97,9 @@ make mount
 ### Status
 
 ```bash
-# Pool and dataset overview
 make zfs-status
 
-# Detailed pool info
+# Detailed
 zpool status
 zfs list -o name,used,avail,mountpoint
 ```
@@ -101,13 +107,8 @@ zfs list -o name,used,avail,mountpoint
 ### Maintenance
 
 ```bash
-# Start integrity scrub
 make zfs-scrub
-
-# Create snapshot
 make zfs-snapshot DATASET=rpool/nixos/home
-
-# List snapshots
 zfs list -t snapshot
 ```
 
@@ -118,18 +119,10 @@ zfs list -t snapshot
 ### VM Management
 
 ```bash
-# List all VMs
 make vm-list
-
-# Start/stop VM
 make vm-start VM=win11-nvidia
 make vm-stop VM=win11-nvidia
-
-# Console access
 make vm-console VM=win11-nvidia
-
-# Force stop
-virsh destroy win11-nvidia
 ```
 
 ### GPU Passthrough
@@ -145,69 +138,18 @@ make usb-attach VM=win11-nvidia
 ### EFI Issues
 
 ```bash
-# Remove stale EFI entries
 make vm-fix-efi VM=win11-nvidia
-```
-
----
-
-## MicroVMs (k3s workers)
-
-### Boot Flow
-
-After reboot with encrypted ZFS:
-
-```bash
-# 1. Import and decrypt pools
-make mount
-
-# 2. Start all MicroVMs
-make microvm-start
-```
-
-### Management
-
-```bash
-# List VMs and status
-make microvm-list
-make microvm-status
-
-# Start/stop specific VM
-make microvm-start VM=k3s-worker-1
-make microvm-stop VM=k3s-worker-1
-
-# SSH into VM
-make microvm-ssh VM=k3s-worker-1
-
-# Restart all
-make microvm-restart VM=all
-```
-
-### Storage
-
-```bash
-# Initialize ZFS volumes (first time)
-make microvm-init-zfs
-
-# Resize volume
-make microvm-resize ID=1 SIZE=20G
 ```
 
 ---
 
 ## Kubernetes (k3s)
 
-### Initial Setup
-
-```bash
-# Copy kubeconfig to ~/.kube/config
-make k3s-init
-```
-
 ### Cluster Status
 
 ```bash
 make k3s-status
+kubectl get nodes
 ```
 
 ### Flux CD
@@ -238,47 +180,29 @@ make k3s-wipe ARGS=--mask
 
 ## WireGuard VPN
 
-### Connect / Disconnect
-
-On any client host (t480, nuc, etc.) — not mothership (which is the server):
+On client hosts (t480, etc.) — not mothership (which is the server):
 
 ```bash
-# Connect to mothership VPN
 make wg-connect
-
-# Disconnect
 make wg-disconnect
-
-# Check status (works on all hosts including mothership)
 make wg-status
 ```
-
-### Network
 
 | Host | WireGuard IP | Role |
 |------|-------------|------|
 | mothership | 192.168.10.1 | Server (port 51821) |
 | t480 | 192.168.10.5 | Client |
 
-### Adding WireGuard to a New Host
-
-1. Generate a keypair: `wg genkey | tee private.key | wg pubkey > public.key`
-2. Add the private key to sops: `make secrets-edit`
-3. Add a `wireguard.nix` to the host (see `hosts/t480/wireguard.nix` as template)
-4. Add the host's secret deployment in `secrets/<host>.nix`
-5. Add the host as a peer in `hosts/mothership/devices/wireguard-server.nix`
-6. Rebuild mothership: `make switch`
-7. Delete the plaintext keys
-
 ---
 
 ## Secrets
 
-### Edit Secrets
-
 ```bash
 # Edit encrypted secrets.yaml
 make secrets-edit
+
+# Re-encrypt for all hosts
+make secrets-updatekeys
 
 # After editing, clean up temporary keys
 make cleanup
@@ -290,52 +214,40 @@ make cleanup
 ```bash
 nix-shell -p ssh-to-age --run 'cat /etc/ssh/ssh_host_ed25519_key.pub | ssh-to-age'
 ```
-
 2. Add to `.sops.yaml`
-
-3. Re-encrypt:
-```bash
-make secrets-updatekeys
-```
+3. Re-encrypt: `make secrets-updatekeys`
 
 ---
 
 ## Troubleshooting
 
 ### Build Fails with OOM
-
 ```bash
 NIX_JOBS=1 NIX_CORES=4 make switch
 ```
 
 ### Secrets Not Decrypting
-
 ```bash
-# Check sops-nix service
 systemctl status sops-nix
-
-# Verify SSH key exists
 ls -la /etc/ssh/ssh_host_ed25519_key
 ```
 
 ### ZFS Pool Won't Import
-
 ```bash
-# Force import (recovery mode)
 zpool import -f poolname
-
-# Check pool status
 zpool status -v
 ```
 
-### VM Won't Start
-
+### Deploy-rs Fails
 ```bash
-# Check libvirt logs
-journalctl -u libvirtd -f
+# Check SSH connectivity
+ssh root@<ip> echo ok
 
-# Verify VFIO bindings
-lspci -nnk | grep -A3 NVIDIA
+# Check ssh-agent
+ssh-add -l
+
+# Manual deploy with verbose output
+nix run github:serokell/deploy-rs -- .#carrier-tc1 -- --debug-logs
 ```
 
 ---

@@ -5,14 +5,14 @@ keys:
   # Machine host keys (derived from SSH host key)
   - &mothership age13m0dh0996244ktl8qq8lst7q9ektpn544rz9fh7n86qnfxu8w3sq830mwa
   - &t480 age1jxuuk95fu7jdugytulhacehukgj0meyamyv5q4zwv6cfx2yyacjquj6cax
-  - &nuc age1vz4putkv49camvurqq3v2dzffahkjqnlhu8u9k84r732fch8pawsd04xfa
 
-  # Worker nodes
-  - &node5 age1a9m5e757zwq0enz9dwfhw2ruyk8g0e8hkg2saydfmnn4z9rl9gvshlz47e
-  - &node9 age16jkdyphestwvh6uv2ulvgk3a5f60xvsmgccrmwhqyz222rpngd4spcscrq
-  - &node12 age13kxmy5ur5fvnfzdjvw3m3qrn8lg83qcqsah2nwqnksq6ju3rtqms8hy80k
-  - &node6 age1m6xe46dscuvlc5xl9cmum7x7a3wprmsywac9kekpsr7vprhmcslsn9jedl
-  
+  # k3s fleet — carriers (control plane) and interceptors (workers)
+  - &carrier-tc1 age1ukl3w8ajuquf7f0hfug3wgxcmn3xs8r02r87d0he5pf9lqn9439qj0y897
+  - &carrier-tc2 age1cwjmfd54hygcgeute8kcff62azxas5vv6ryt06jpucmcg0t7yvgqqlsmxf
+  - &interceptor-nuc1 age1vz4putkv49camvurqq3v2dzffahkjqnlhu8u9k84r732fch8pawsd04xfa
+  - &interceptor-tc1 age1tr9z24jg6zy2mqfqppcahznn9acg6xp70nnlpmeenjw0q6v2hflqrekat2
+  - &interceptor-tc2 age1v0ndd8prf9al0gj3sf269az2chzc76l53t38ngn9cu5796gtaurs7pwmht
+
 creation_rules:
   - path_regex: secrets/secrets\.yaml$
     key_groups:
@@ -20,8 +20,8 @@ creation_rules:
           - *joni
           - *mothership
           - *t480
-          - *nuc
-          - *node5
-          - *node9
-          - *node12
-          - *node6
+          - *carrier-tc1
+          - *carrier-tc2
+          - *interceptor-nuc1
+          - *interceptor-tc1
+          - *interceptor-tc2

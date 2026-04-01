@@ -42,11 +42,13 @@
       # SSH into hosts
       mothership = "ssh -X joni@192.168.2.62";
       t480 = "ssh -X joni@192.168.2.87";
-      nuc = "ssh -X joni@192.168.2.102";
-      node5 = "ssh joni@192.168.2.147";
-      node6 = "ssh joni@192.168.2.192";
-      node9 = "ssh joni@192.168.2.250";
-      node12 = "ssh joni@192.168.2.238";
+
+      # k3s fleet
+      carrier-tc1 = "ssh root@192.168.2.192";
+      carrier-tc2 = "ssh root@192.168.2.250";
+      interceptor-nuc1 = "ssh root@192.168.2.102";
+      interceptor-tc1 = "ssh root@192.168.2.238";
+      interceptor-tc2 = "ssh root@192.168.2.147";
     };
 
     # Init for all users (loaded via /etc/zshrc)

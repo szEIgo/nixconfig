@@ -22,6 +22,9 @@
 
     # NFS server for democratic-csi (serves ZFS storage to k3s worker nodes)
     ../../modules/common/nfs-server.nix
+
+    # Binary cache — fleet nodes pull from mothership instead of building
+    ../../modules/common/harmonia.nix
   ];
 
   local.ssh = {
