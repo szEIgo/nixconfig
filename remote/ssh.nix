@@ -25,25 +25,36 @@ in {
       ssh = {
         forwardX11 = true;
         setXAuthLocation = true;
+        extraConfig = ''
+          AddKeysToAgent yes
+        '';
       };
       gnupg.agent = {
         enable = true;
-        enableSSHSupport = true;
+        enableSSHSupport = false;
         settings = {
           default-cache-ttl = 28800;
           max-cache-ttl = 28800;
-          default-cache-ttl-ssh = 28800;
-          max-cache-ttl-ssh = 28800;
         };
         pinentryPackage = if cfg.desktop then pkgs.pinentry-gnome3 else pkgs.pinentry-curses;
       };
     };
 
-    # SSH askpass for desktop (prompts for SSH key passphrases via GUI)
+    systemd.user.services.ssh-agent = {
+      description = "SSH Agent";
+      wantedBy = [ "default.target" ];
+      serviceConfig = {
+        Type = "simple";
+        ExecStart = "${pkgs.openssh}/bin/ssh-agent -D -a %t/ssh-agent.socket -t 28800";
+        Restart = "on-failure";
+      };
+    };
+
+    environment.sessionVariables.SSH_AUTH_SOCK = "/run/user/%U/ssh-agent.socket";
+
     environment.systemPackages = lib.mkIf cfg.desktop [ pkgs.kdePackages.ksshaskpass ];
     environment.variables = lib.mkIf cfg.desktop {
       SSH_ASKPASS = lib.mkForce "${pkgs.kdePackages.ksshaskpass}/bin/ksshaskpass";
-      SSH_ASKPASS_REQUIRE = "prefer";
     };
 
     services.openssh = {

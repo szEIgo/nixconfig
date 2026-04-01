@@ -35,6 +35,12 @@
     ];
   };
 
+  # Ensure k3s waits for the token to be decrypted by sops-nix
+  systemd.services.k3s = {
+    after = [ "sops-nix.service" ];
+    requires = [ "sops-nix.service" ];
+  };
+
   # Firewall
   networking.firewall = {
     enable = true;

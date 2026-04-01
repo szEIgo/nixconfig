@@ -1,4 +1,4 @@
-.PHONY: help install deploy-worker worker-iso flash-worker-iso switch build test update gc bootstrap add-host-keys cleanup secrets-edit secrets-updatekeys secrets-list \
+.PHONY: help install deploy deploy-all deploy-worker worker-iso flash-worker-iso switch build test update gc bootstrap add-host-keys cleanup secrets-edit secrets-updatekeys secrets-list \
         gpu-reset usb-attach vm-list vm-start vm-stop vm-console vm-fix-efi vnc \
         zfs-status zfs-scrub zfs-snapshot mount \
         k3s-init k3s-wipe k3s-status k3s-flux-init k3s-flux-bootstrap k3s-flux-status k3s-flux-reconcile \
@@ -17,6 +17,13 @@ help:
 # =============================================================================
 install:
 	@./scripts/bootstrap/headless-install.sh
+
+deploy:
+	@if [ -z "$(HOST)" ]; then echo "Usage: make deploy HOST=<node>"; exit 1; fi
+	nix run github:serokell/deploy-rs -- .#$(HOST)
+
+deploy-all:
+	nix run github:serokell/deploy-rs -- .
 
 deploy-worker:
 	@./scripts/bootstrap/deploy-worker.sh $(HOST) $(IP)

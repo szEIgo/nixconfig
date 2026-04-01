@@ -28,9 +28,12 @@
 
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
+
+    deploy-rs.url = "github:serokell/deploy-rs";
+    deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-darwin, sops-nix, nixvirt, microvm, plasma-manager, nix-on-droid, disko, ... }:
+  outputs = { self, nixpkgs, home-manager, nix-darwin, sops-nix, nixvirt, microvm, plasma-manager, nix-on-droid, disko, deploy-rs, ... }:
   let
     # Git revision tracking — embedded in every NixOS system label
     gitRevision = self.shortRev or self.dirtyShortRev or "unknown";
@@ -130,36 +133,6 @@
         ];
       };
 
-      # --- NixOS Configuration for Intel NUC (k3s worker) ---
-      nuc = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [
-          nixosRevisionModule
-
-          # Core modules
-          ./modules/core
-
-          # Host-specific configuration
-          ./hosts/nuc/configuration.nix
-          ./hosts/nuc/hardware.nix
-
-          # Secrets
-          sops-nix.nixosModules.sops
-          ./secrets/nuc.nix
-
-          # Home Manager (shell config, no desktop)
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.useUserPackages = true;
-            home-manager.useGlobalPkgs = true;
-            home-manager.backupFileExtension = "backup";
-            home-manager.extraSpecialArgs = defaultHomeArgs // { isServer = true; };
-            home-manager.users.joni = {
-              imports = [ ./home/joni.nix ];
-            };
-          }
-        ];
-      };
 
       # --- NixOS Configuration for ThinkPad T480 (laptop) ---
       t480 = nixpkgs.lib.nixosSystem {
@@ -197,13 +170,14 @@
         ];
       };
 
-      # --- k3s control plane nodes ---
-      node6  = mkWorker "node6" { bootMode = "uefi"; k3sRole = "server"; nodeSize = "medium"; };
-      node9  = mkWorker "node9" { k3sRole = "server"; nodeSize = "medium"; };
+      # --- k3s carrier nodes (control plane) ---
+      carrier-tc1 = mkWorker "carrier-tc1" { bootMode = "uefi"; k3sRole = "server"; nodeSize = "medium"; };
+      carrier-tc2 = mkWorker "carrier-tc2" { k3sRole = "server"; nodeSize = "medium"; };
 
-      # --- k3s worker nodes ---
-      node5  = mkWorker "node5" { nodeSize = "small"; };
-      node12 = mkWorker "node12" { nodeSize = "small"; };
+      # --- k3s interceptor nodes (workers) ---
+      interceptor-nuc1 = mkWorker "interceptor-nuc1" { bootMode = "uefi"; nodeSize = "medium"; };
+      interceptor-tc1  = mkWorker "interceptor-tc1" { nodeSize = "small"; };
+      interceptor-tc2  = mkWorker "interceptor-tc2" { nodeSize = "small"; };
 
       # --- NixOS Configuration for ThinkPad X250 (laptop) ---
       x250 = nixpkgs.lib.nixosSystem {
@@ -289,5 +263,34 @@
         }
       ];
     };
+
+    # --- deploy-rs: remote deployment with automatic rollback ---
+    deploy = {
+      sshUser = "root";
+      # Magic rollback: if the node loses connectivity after activation,
+      # it reverts to the previous generation after this timeout (seconds)
+      magicRollback = true;
+
+      nodes = let
+        mkDeployNode = hostname: ip: {
+          hostname = ip;
+          profiles.system = {
+            user = "root";
+            path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.${hostname};
+          };
+        };
+      in {
+        carrier-tc1      = mkDeployNode "carrier-tc1"      "192.168.2.192";
+        carrier-tc2      = mkDeployNode "carrier-tc2"      "192.168.2.250";
+        interceptor-nuc1 = mkDeployNode "interceptor-nuc1" "192.168.2.102";
+        interceptor-tc1  = mkDeployNode "interceptor-tc1"  "192.168.2.238";
+        interceptor-tc2  = mkDeployNode "interceptor-tc2"  "192.168.2.147";
+      };
+    };
+
+    # deploy-rs validation checks
+    checks = builtins.mapAttrs
+      (system: deployLib: deployLib.deployChecks self.deploy)
+      deploy-rs.lib;
   };
 }

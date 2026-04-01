@@ -34,6 +34,47 @@ in {
     ];
   };
 
+  # Ensure k3s waits for the token to be decrypted by sops-nix
+  systemd.services.k3s = {
+    after = [ "sops-nix.service" ];
+    requires = [ "sops-nix.service" ];
+  };
+
+  # Clean up stale k3s state when the role changes (e.g. agent → server)
+  # Without this, leftover agent/server data prevents k3s from starting after a role switch.
+  systemd.services.k3s-role-guard = {
+    description = "Clean stale k3s state on role change";
+    wantedBy = [ "k3s.service" ];
+    before = [ "k3s.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = let
+      desiredRole = cfg.k3sRole;
+      markerPath = "/var/lib/rancher/k3s/.nixos-role";
+    in ''
+      MARKER="${markerPath}"
+      DESIRED="${desiredRole}"
+
+      if [ -f "$MARKER" ]; then
+        CURRENT=$(cat "$MARKER")
+        if [ "$CURRENT" != "$DESIRED" ]; then
+          echo "k3s role changed from $CURRENT to $DESIRED — cleaning stale state"
+          systemctl stop k3s.service 2>/dev/null || true
+          rm -rf /var/lib/rancher/k3s/agent
+          rm -rf /var/lib/rancher/k3s/server
+          echo "Stale k3s state removed"
+        fi
+      else
+        echo "No role marker found — first boot or fresh install"
+        mkdir -p /var/lib/rancher/k3s
+      fi
+
+      echo "$DESIRED" > "$MARKER"
+    '';
+  };
+
   # Firewall
   networking.firewall = {
     enable = true;

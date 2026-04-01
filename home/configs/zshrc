@@ -29,16 +29,9 @@ source "$(nix eval --raw nixpkgs#zsh-powerlevel10k)/share/zsh-powerlevel10k/powe
 # Optional: load Powerlevel10k config
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 
-# SSH Agent auto-load
-ssh_session() {
-  if [ -z "$SSH_AUTH_SOCK" ]; then
-    eval $(ssh-agent -s)
-  fi
-
-  if ! ssh-add -l &>/dev/null; then
-    ssh-add ~/.ssh/id_ecdsa &>/dev/null
-  fi
-}
+# SSH keys are managed by the ssh-agent systemd user service.
+# Keys auto-add on first use via AddKeysToAgent. To manually add:
+#   ssh-add ~/.ssh/id_ed25519
 
 # Aliases and functions
 alias l='eza --icons'
@@ -58,18 +51,11 @@ finder() { open -a "Finder" "${1:-.}"; }
 dolphin() { finder "$@"; }
 
 ssh() {
-  ssh_session
   command ssh -X -CY -o ServerAliveInterval=120 "$@"
 }
 
 scp() {
-  ssh_session
   command scp -C -v -r "$@"
-}
-
-git() {
-  ssh_session
-  command git "$@"
 }
 
 alias sw_debian='ssh -J bastion@51.158.121.209:61000 root@172.16.16.5'

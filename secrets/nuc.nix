@@ -17,6 +17,12 @@ in {
         group = "joni";
         mode = "0600";
       };
+      k3s_token = {
+        path = "/etc/k3s/token";
+        owner = "root";
+        group = "root";
+        mode = "0600";
+      };
     };
   };
 
