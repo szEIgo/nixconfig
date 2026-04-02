@@ -15,6 +15,9 @@
         group = "root";
         mode = "0600";
       };
+      user_password_hash = {
+        neededForUsers = true;
+      };
     };
   };
 }

@@ -63,7 +63,7 @@
     # bootMode: "legacy" (BIOS/GRUB) or "uefi" (GPT/systemd-boot)
     # k3sRole: "agent" (worker) or "server" (control plane)
     # nodeSize: "small", "medium", or "large" — used for scheduling labels
-    mkWorker = hostname: { bootMode ? "legacy", disk ? "/dev/sda", k3sRole ? "agent", nodeSize ? "small", extraModules ? [] }: nixpkgs.lib.nixosSystem {
+    mkWorker = hostname: { bootMode ? "legacy", disk ? "/dev/sda", k3sRole ? "agent", nodeSize ? "small", keepalivedPriority ? 100, keepalivedInterface ? "enp0s31f6", extraModules ? [] }: nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
         nixosRevisionModule
@@ -78,7 +78,7 @@
         ./secrets/worker.nix
         {
           networking.hostName = hostname;
-          local.worker = { inherit bootMode disk k3sRole nodeSize; };
+          local.worker = { inherit bootMode disk k3sRole nodeSize keepalivedPriority keepalivedInterface; };
         }
         home-manager.nixosModules.home-manager
         {
@@ -183,11 +183,11 @@
       };
 
       # --- k3s carrier nodes (control plane) ---
-      carrier-tc1 = mkWorker "carrier-tc1" { bootMode = "uefi"; k3sRole = "server"; nodeSize = "medium"; };
-      carrier-tc2 = mkWorker "carrier-tc2" { k3sRole = "server"; nodeSize = "medium"; };
+      carrier-tc1 = mkWorker "carrier-tc1" { bootMode = "uefi"; k3sRole = "server"; nodeSize = "medium"; keepalivedPriority = 150; keepalivedInterface = "enp2s0"; };
+      carrier-tc2 = mkWorker "carrier-tc2" { k3sRole = "server"; nodeSize = "medium"; keepalivedPriority = 140; keepalivedInterface = "enp2s0"; };
 
       # --- k3s interceptor nodes (workers) ---
-      interceptor-nuc1 = mkWorker "interceptor-nuc1" { bootMode = "uefi"; nodeSize = "medium"; extraModules = [ nixos-hardware.nixosModules.intel-nuc-5i5ryb ]; };
+      interceptor-nuc1 = mkWorker "interceptor-nuc1" { bootMode = "uefi"; disk = "/dev/nvme0n1"; nodeSize = "medium"; extraModules = [ nixos-hardware.nixosModules.intel-nuc-5i5ryb ]; };
       interceptor-tc1  = mkWorker "interceptor-tc1" { nodeSize = "small"; };
       interceptor-tc2  = mkWorker "interceptor-tc2" { nodeSize = "small"; };
 

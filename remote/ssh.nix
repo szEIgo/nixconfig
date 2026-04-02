@@ -50,7 +50,7 @@ in {
       };
     };
 
-    environment.sessionVariables.SSH_AUTH_SOCK = "/run/user/%U/ssh-agent.socket";
+    environment.sessionVariables.SSH_AUTH_SOCK = "$XDG_RUNTIME_DIR/ssh-agent.socket";
 
     environment.systemPackages = lib.mkIf cfg.desktop [ pkgs.kdePackages.ksshaskpass ];
     environment.variables = lib.mkIf cfg.desktop {

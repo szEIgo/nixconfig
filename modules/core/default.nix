@@ -28,6 +28,7 @@ in
     ./nix-settings.nix
     ./locales.nix
     ./users.nix
+    ../common/home-ca.nix
   ];
 
   # Boot splash with custom Plymouth theme

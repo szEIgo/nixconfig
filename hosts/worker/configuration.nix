@@ -6,6 +6,7 @@ let
 in {
   imports = [
     ../../modules/common/zsh.nix
+    ../../modules/common/keepalived.nix
     ../../remote/ssh.nix
   ];
 
@@ -13,7 +14,7 @@ in {
   nix.settings = {
     substituters = [ "http://192.168.2.62:5000" ];
     trusted-public-keys = [
-      "mothership-cache:PLACEHOLDER_KEY_WILL_BE_SET_AFTER_FIRST_BOOT"
+      "mothership-cache:ueAfPbTM17oSna34mKcFuebjFhORbzr0dvSuBM6vJFI="
     ];
   };
 
@@ -25,8 +26,10 @@ in {
     KUBECONFIG = "/etc/rancher/k3s/k3s.yaml";
   };
 
-  # Users
+  # Users — passwords from sops for emergency console access
   users.defaultUserShell = pkgs.zsh;
+  users.users.root.hashedPasswordFile = config.sops.secrets.user_password_hash.path;
+  users.users.joni.hashedPasswordFile = config.sops.secrets.user_password_hash.path;
 
   # k3s node joining the mothership cluster
   services.k3s = {

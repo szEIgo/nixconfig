@@ -7,9 +7,9 @@ keys:
   - &t480 age1jxuuk95fu7jdugytulhacehukgj0meyamyv5q4zwv6cfx2yyacjquj6cax
 
   # k3s fleet — carriers (control plane) and interceptors (workers)
-  - &carrier-tc1 age1ukl3w8ajuquf7f0hfug3wgxcmn3xs8r02r87d0he5pf9lqn9439qj0y897
+  - &carrier-tc1 age1kafwpfpqdgq20w9s72xeqrrtxxlgg6ny3c8e0a0eytmecaw66f0sgwvx9f
   - &carrier-tc2 age1cwjmfd54hygcgeute8kcff62azxas5vv6ryt06jpucmcg0t7yvgqqlsmxf
-  - &interceptor-nuc1 age1vz4putkv49camvurqq3v2dzffahkjqnlhu8u9k84r732fch8pawsd04xfa
+  - &interceptor-nuc1 age10u3d2gjvmchtd4fphuk7m9dysmxg99xzxh9rye7t076zqu7r5ewsjvez4h
   - &interceptor-tc1 age1tr9z24jg6zy2mqfqppcahznn9acg6xp70nnlpmeenjw0q6v2hflqrekat2
   - &interceptor-tc2 age1v0ndd8prf9al0gj3sf269az2chzc76l53t38ngn9cu5796gtaurs7pwmht
 

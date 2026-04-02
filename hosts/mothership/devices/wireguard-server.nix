@@ -10,12 +10,12 @@
         [ "wg0" "enp6s0" ]; # Keeping enp6s0 here can be a security risk
     };
 
-    # This is correct
     nat = {
       enable = true;
       externalInterface = "enp6s0";
       internalInterfaces = [ "wg0" ];
     };
+
   };
 
   systemd.network = {

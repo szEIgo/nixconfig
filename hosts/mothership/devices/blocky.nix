@@ -1,10 +1,10 @@
+# Mothership Blocky — same config as carriers (via keepalived module)
+# but also listens on the WireGuard interface for VPN clients
 { config, pkgs, lib, ... }: {
   services.blocky = {
     enable = true;
     settings = {
-      ports = {
-        dns = "192.168.10.1:53";
-      };
+      ports.dns = "0.0.0.0:53";
 
       upstreams.groups.default = [
         "https://one.one.one.one/dns-query"
@@ -26,14 +26,13 @@
             "https://v.firebog.net/hosts/Easyprivacy.txt"
           ];
         };
+        clientGroupsBlock.default = [ "ads" "trackers" ];
+        loading.refreshPeriod = "12h";
+      };
 
-        clientGroupsBlock = {
-          default = [ "ads" "trackers" ];
-        };
-
-        loading = {
-          refreshPeriod = "12h";
-        };
+      # Wildcard: all *.szigethy.lan → VIP (Traefik routes by Host header)
+      customDNS.mapping = {
+        "szigethy.lan" = "192.168.2.200";
       };
 
       caching = {
@@ -44,7 +43,7 @@
     };
   };
 
-  # Allow DNS on the WireGuard interface
-  networking.firewall.interfaces.wg0.allowedTCPPorts = [ 53 ];
-  networking.firewall.interfaces.wg0.allowedUDPPorts = [ 53 ];
+  # Allow DNS on all interfaces (LAN + WireGuard)
+  networking.firewall.allowedTCPPorts = [ 53 ];
+  networking.firewall.allowedUDPPorts = [ 53 ];
 }

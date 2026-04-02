@@ -43,7 +43,6 @@ in {
             size = "1M";
             type = "EF02";
           };
-          # Both modes get a /boot partition — ext4 for legacy, FAT32 for UEFI
           boot = {
             size = "512M";
             type = if isUefi then "EF00" else "8300";

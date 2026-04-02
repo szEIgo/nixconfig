@@ -18,11 +18,21 @@ let
         service:
           type: NodePort
 
+        deployment:
+          kind: DaemonSet
+
         ports:
           web:
             nodePort: 30080
+            hostPort: 80
           websecure:
             nodePort: 30443
+            hostPort: 443
+
+        tolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
   '';
 in
 {
@@ -76,7 +86,24 @@ in
     ];
   };
 
-  networking.firewall.allowedTCPPorts = [ 6443 2379 2380 30080 30443 ];
+  networking.firewall.allowedTCPPorts = [ 6443 2379 2380 30080 30443 80 443 ];
   networking.firewall.allowedUDPPorts = [ 8472 ];
+  networking.firewall.extraCommands = ''
+    iptables -A INPUT -p vrrp -j ACCEPT
+  '';
+
+  # Floating VIP for ingress HA — mothership has highest priority
+  services.keepalived = {
+    enable = true;
+    vrrpInstances.k3s-ingress = {
+      interface = "enp6s0";
+      state = "BACKUP";
+      virtualRouterId = 51;
+      priority = 200;
+      virtualIps = [
+        { addr = "192.168.2.200/24"; }
+      ];
+    };
+  };
 
 }
