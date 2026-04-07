@@ -9,6 +9,9 @@
 #   __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia <command>
 { config, lib, pkgs, ... }: {
 
+  # Legacy 580.xx driver requires explicit license acceptance
+  nixpkgs.config.nvidia.acceptLicense = true;
+
   # --- Thunderbolt ---
   services.hardware.bolt.enable = true;
 
@@ -24,7 +27,9 @@
   services.xserver.videoDrivers = [ "modesetting" "nvidia" ];
 
   hardware.nvidia = {
-    package = config.boot.kernelPackages.nvidiaPackages.latest;
+    # GTX 1050 (GP107/Pascal) requires the 580.xx legacy branch —
+    # the 590.xx+ driver dropped support for this GPU.
+    package = config.boot.kernelPackages.nvidiaPackages.dc_580;
     # GP107 (Pascal) is NOT supported by the open kernel module
     open = false;
     modesetting.enable = true;
@@ -40,9 +45,13 @@
       nvidiaBusId = "PCI:9:0:0";
     };
 
-    # Allow the GPU to be powered down when not in use and handle hot-unplug
+    # Basic power management for suspend/resume — finegrained (RTD3) requires
+    # Turing or newer, so not available for Pascal GP107.
     powerManagement.enable = true;
-    powerManagement.finegrained = true;
+    powerManagement.finegrained = false;
+
+    # Legacy 580.xx driver may not ship nvidia-settings
+    nvidiaSettings = false;
   };
 
   # 32-bit support for games/compatibility
