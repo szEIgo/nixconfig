@@ -12,6 +12,9 @@
 
     # VPN
     ./wireguard.nix
+
+    # Thunderbolt eGPU (NVIDIA GTX 1050)
+    ./egpu.nix
   ];
 
   local.ssh = {
