@@ -87,6 +87,10 @@ in
       # Platform-specific
     } // lib.optionalAttrs isDesktop {
       docker = "podman";
+    } // lib.optionalAttrs isDarwin {
+      wg-up = "sudo wg-quick up wg0";
+      wg-down = "sudo wg-quick down wg0";
+      wg-status = "sudo wg show";
     };
 
     envExtra = lib.optionalString isPostmarketOS ''

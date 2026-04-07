@@ -183,7 +183,11 @@
       };
 
       # --- k3s carrier nodes (control plane) ---
-      carrier-tc1 = mkWorker "carrier-tc1" { bootMode = "uefi"; k3sRole = "server"; nodeSize = "medium"; keepalivedPriority = 150; keepalivedInterface = "enp2s0"; };
+      carrier-tc1 = mkWorker "carrier-tc1" { bootMode = "uefi"; k3sRole = "server"; nodeSize = "medium"; keepalivedPriority = 150; keepalivedInterface = "enp2s0"; extraModules = [
+        ./hosts/worker/misi.nix
+        home-manager.nixosModules.home-manager
+        { home-manager.users.misi = { imports = [ ./home/misi/default.nix ]; }; }
+      ]; };
       carrier-tc2 = mkWorker "carrier-tc2" { k3sRole = "server"; nodeSize = "medium"; keepalivedPriority = 140; keepalivedInterface = "enp2s0"; };
 
       # --- k3s interceptor nodes (workers) ---

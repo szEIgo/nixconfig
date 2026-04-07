@@ -2,6 +2,7 @@
 
 let
   joniHome = config.users.users.joni.home or "/home/joni";
+  cluster = import ../cluster-config.nix;
 
   traefikGatewayApiHelmChartConfig = ''
     apiVersion: helm.cattle.io/v1
@@ -83,6 +84,7 @@ in
       "--write-kubeconfig-group=wheel"
       "--node-label=node-id=mothership"
       "--node-label=node.kubernetes.io/size=large"
+      "--node-taint=node-role=desktop:PreferNoSchedule"
     ];
   };
 
@@ -101,7 +103,7 @@ in
       virtualRouterId = 51;
       priority = 200;
       virtualIps = [
-        { addr = "192.168.2.200/24"; }
+        { addr = "${cluster.vip}/24"; }
       ];
     };
   };

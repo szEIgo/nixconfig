@@ -3,6 +3,54 @@
 
 let
   isDesktop = isLinux && !isAndroid && !isPostmarketOS && !isServer;
+  cluster = import ../modules/cluster-config.nix;
+
+  # Fetch kubeconfig from mothership and rewrite server URL to the cluster VIP.
+  # Run once after WireGuard/LAN connection is up. Re-run if certs rotate.
+  fetchKubeconfig = pkgs.writeShellScriptBin "fetch-kubeconfig" ''
+    set -euo pipefail
+    mkdir -p "$HOME/.kube"
+    echo "Fetching kubeconfig from mothership..."
+    ssh mothership "sudo cat /etc/rancher/k3s/k3s.yaml" | \
+      sed "s|https://127.0.0.1:6443|${cluster.apiEndpoint}|g" > "$HOME/.kube/config"
+    chmod 600 "$HOME/.kube/config"
+    echo "kubeconfig written to ~/.kube/config (server: ${cluster.apiEndpoint})"
+  '';
+
+  # One-time WireGuard config generator for macOS (interactive — asks for key + IP)
+  wgInit = pkgs.writeShellScriptBin "wg-init" ''
+    set -euo pipefail
+    CONF="/etc/wireguard/wg0.conf"
+
+    if [ -f "$CONF" ]; then
+      echo "WireGuard config already exists at $CONF"
+      echo "Remove it first to regenerate: sudo rm $CONF"
+      exit 1
+    fi
+
+    echo "=== WireGuard config generator ==="
+    echo ""
+    read -rp "Your WireGuard private key: " PRIVKEY
+    read -rp "Your WireGuard IP (e.g. 192.168.10.3): " WGIP
+
+    sudo mkdir -p /etc/wireguard
+    sudo tee "$CONF" > /dev/null << WGEOF
+[Interface]
+PrivateKey = $PRIVKEY
+Address = $WGIP/24
+DNS = ${cluster.wg.dns}
+
+[Peer]
+PublicKey = ${cluster.wg.serverPublicKey}
+Endpoint = ${cluster.wg.endpoint}
+AllowedIPs = 192.168.2.0/24, ${cluster.wg.subnet}
+PersistentKeepalive = 25
+WGEOF
+    sudo chmod 600 "$CONF"
+    echo ""
+    echo "Config written to $CONF"
+    echo "Connect with: wg-up (or: sudo wg-quick up wg0)"
+  '';
 in
 {
   imports = [
@@ -84,6 +132,8 @@ in
       sshpass
       zellij
     ]
+    ++ [ fetchKubeconfig ]
+    ++ lib.optionals isDarwin [ wgInit ]
     ++ lib.optionals (!isAndroid) (import ./fonts.nix { pkgs = pkgs; })
     ++ lib.optionals isDesktop [
       # Desktop apps

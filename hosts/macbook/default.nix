@@ -1,4 +1,14 @@
-{ config, lib, pkgs, ... }: {
+{ config, lib, pkgs, ... }:
+
+let
+  # Workbrew sets HOMEBREW_FORCE_BREW_WRAPPER system-wide and then refuses to
+  # run under sudo. nix-darwin's activation runs as root, so we wrap the real
+  # brew binary, unsetting the conflicting env var before calling it.
+  brewWrapper = pkgs.writeShellScriptBin "brew" ''
+    unset HOMEBREW_FORCE_BREW_WRAPPER
+    exec /opt/homebrew/bin/brew "$@"
+  '';
+in {
 
   system.primaryUser = "joni";
 
@@ -7,7 +17,13 @@
   nixpkgs.config.allowUnfree = true;
 
   # Enable zsh system-wide
-  programs.zsh.enable = true;
+  # Workbrew adds group-writable directories to fpath that trigger compinit
+  # security warnings. Disable system-level completion here — home-manager
+  # handles it with compinit -u which silences the warnings.
+  programs.zsh = {
+    enable = true;
+    enableCompletion = false;
+  };
 
   # macOS system defaults
   system.defaults = {
@@ -34,6 +50,7 @@
   # Homebrew integration for GUI apps that aren't in nixpkgs
   homebrew = {
     enable = true;
+    prefix = "${brewWrapper}";
     onActivation = {
       autoUpdate = true;
       cleanup = "zap";

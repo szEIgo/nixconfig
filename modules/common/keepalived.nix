@@ -8,7 +8,8 @@
 
 let
   cfg = config.local.worker;
-  vip = "192.168.2.200";
+  cluster = import ../cluster-config.nix;
+  vip = cluster.vip;
 in {
   options.local.worker.keepalivedPriority = lib.mkOption {
     type = lib.types.int;

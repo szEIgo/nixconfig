@@ -6,7 +6,7 @@
       matchConfig.Name = "enp6s0";
       address = [ "192.168.2.62/24" ]; 
       networkConfig = {
-        DNS = [ "192.168.2.200" "1.1.1.1" ];
+        DNS = [ "192.168.2.200" ];
       };
       routes = [{ Gateway = "192.168.2.1"; }];
       linkConfig.RequiredForOnline = "routable";
@@ -17,6 +17,7 @@
       settings = {
         Resolve = {
           DNSStubListener = "no";
+          FallbackDNS = "1.1.1.1 9.9.9.9";
         };
       };
     };
