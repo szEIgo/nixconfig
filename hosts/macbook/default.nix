@@ -1,11 +1,23 @@
 { config, lib, pkgs, ... }:
 
 let
-  # Workbrew sets HOMEBREW_FORCE_BREW_WRAPPER system-wide and then refuses to
-  # run under sudo. nix-darwin's activation runs as root, so we wrap the real
-  # brew binary, unsetting the conflicting env var before calling it.
+  # Workbrew replaces /opt/homebrew/bin/brew with a shim that refuses to run
+  # under sudo. nix-darwin's activation calls `sudo --user=joni brew bundle`,
+  # so workbrew always detects sudo in the process tree and aborts.
+  # Fix: strip workbrew env vars and call Homebrew's real entry point directly.
   brewWrapper = pkgs.writeShellScriptBin "brew" ''
     unset HOMEBREW_FORCE_BREW_WRAPPER
+    unset HOMEBREW_BREW_WRAPPER
+
+    # Try the real Homebrew entry point (bypasses workbrew shim)
+    if [ -x /opt/homebrew/Library/Homebrew/brew.sh ]; then
+      export HOMEBREW_PREFIX="/opt/homebrew"
+      export HOMEBREW_REPOSITORY="/opt/homebrew"
+      export HOMEBREW_CELLAR="/opt/homebrew/Cellar"
+      exec /opt/homebrew/Library/Homebrew/brew.sh "$@"
+    fi
+
+    # Fallback: call brew directly with cleaned env
     exec /opt/homebrew/bin/brew "$@"
   '';
 in {
