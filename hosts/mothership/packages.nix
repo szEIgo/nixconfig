@@ -1,9 +1,13 @@
 { config, lib, pkgs, ... }:
+let
+  claurst = pkgs.callPackage ../../pkgs/claurst.nix { };
+in
 {
   imports = [ ../../modules/common/packages.nix ];
 
   # Flutter/Android/JDK moved to per-project devShells via direnv
   environment.systemPackages = with pkgs; [
+    claurst
     openvscode-server
     virt-manager
     qemu
