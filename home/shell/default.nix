@@ -88,6 +88,10 @@ in
     } // lib.optionalAttrs isDesktop {
       docker = "podman";
     } // lib.optionalAttrs isDarwin {
+      # Apply nix-declared Brewfile via workbrew (after darwin-rebuild switch)
+      darwin-brew = "brew bundle --file=~/.Brewfile.nix --no-lock";
+
+      # WireGuard CLI
       wg-up = "sudo wg-quick up wg0";
       wg-down = "sudo wg-quick down wg0";
       wg-status = "sudo wg show";

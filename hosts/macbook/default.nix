@@ -1,24 +1,25 @@
 { config, lib, pkgs, ... }:
 
 let
-  # Workbrew replaces /opt/homebrew/bin/brew with a shim that refuses to run
-  # under sudo. nix-darwin's activation calls `sudo --user=joni brew bundle`,
-  # so workbrew always detects sudo in the process tree and aborts.
-  # Fix: strip workbrew env vars and call Homebrew's real entry point directly.
-  brewWrapper = pkgs.writeShellScriptBin "brew" ''
-    unset HOMEBREW_FORCE_BREW_WRAPPER
-    unset HOMEBREW_BREW_WRAPPER
-
-    # Try the real Homebrew entry point (bypasses workbrew shim)
-    if [ -x /opt/homebrew/Library/Homebrew/brew.sh ]; then
-      export HOMEBREW_PREFIX="/opt/homebrew"
-      export HOMEBREW_REPOSITORY="/opt/homebrew"
-      export HOMEBREW_CELLAR="/opt/homebrew/Cellar"
-      exec /opt/homebrew/Library/Homebrew/brew.sh "$@"
-    fi
-
-    # Fallback: call brew directly with cleaned env
-    exec /opt/homebrew/bin/brew "$@"
+  # Workbrew compliance: nix-darwin's activation runs `sudo --user=joni brew bundle`
+  # but workbrew refuses to run under sudo (it checks the process tree).
+  #
+  # Strategy: during activation, a stub "brew" intercepts the call, captures the
+  # nix-generated Brewfile path, and symlinks it to ~/.Brewfile.nix.
+  # The user then runs `darwin-brew` (no sudo) to apply changes via workbrew.
+  brewStub = pkgs.writeShellScriptBin "brew" ''
+    for arg in "$@"; do
+      case "$arg" in
+        --file=*)
+          BREWFILE="''${arg#--file=}"
+          if [ -f "$BREWFILE" ]; then
+            ln -sf "$BREWFILE" "$HOME/.Brewfile.nix"
+            echo "Brewfile updated: ~/.Brewfile.nix" >&2
+            echo "Run 'darwin-brew' to apply changes via workbrew" >&2
+          fi
+          ;;
+      esac
+    done
   '';
 in {
 
@@ -59,10 +60,12 @@ in {
     };
   };
 
-  # Homebrew integration for GUI apps that aren't in nixpkgs
+  # Homebrew — nix-darwin generates the Brewfile declaratively, but the stub
+  # captures it instead of running brew (workbrew can't run under sudo).
+  # Apply with: darwin-brew
   homebrew = {
     enable = true;
-    prefix = "${brewWrapper}";
+    prefix = "${brewStub}";
     onActivation = {
       autoUpdate = true;
       cleanup = "zap";
