@@ -342,6 +342,13 @@ lib.mkIf plasmaEnabled {
     # Direct config file settings
     #
     configFile = {
+      # Disable DPMS screen blanking (needed for dummy plug + Sunshine streaming)
+      powermanagementprofilesrc = {
+        "AC][DPMSControl"."idleTime" = 0;
+        "AC][DPMSControl"."lockBeforeTurnOff" = 0;
+        "AC][DimDisplay"."idleTime" = 0;
+      };
+
       # KWin plugins and scripts
       kwinrc = {
         "Plugins"."krohnkiteEnabled" = true;

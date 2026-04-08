@@ -85,6 +85,7 @@
           home-manager.useUserPackages = true;
           home-manager.useGlobalPkgs = true;
           home-manager.backupFileExtension = "backup";
+          home-manager.overwriteBackup = true;
           home-manager.extraSpecialArgs = defaultHomeArgs // { isServer = true; };
           home-manager.users.joni = {
             imports = [ ./home/joni.nix ];
@@ -130,6 +131,7 @@
             home-manager.useUserPackages = true;
             home-manager.useGlobalPkgs = true;
             home-manager.backupFileExtension = "backup";
+            home-manager.overwriteBackup = true;
             home-manager.extraSpecialArgs = defaultHomeArgs // {
               plasmaEnabled = true;
             };
@@ -169,6 +171,7 @@
             home-manager.useUserPackages = true;
             home-manager.useGlobalPkgs = true;
             home-manager.backupFileExtension = "backup";
+            home-manager.overwriteBackup = true;
             home-manager.extraSpecialArgs = defaultHomeArgs // {
               plasmaEnabled = true;
             };
@@ -216,6 +219,7 @@
             home-manager.useUserPackages = true;
             home-manager.useGlobalPkgs = true;
             home-manager.backupFileExtension = "backup";
+            home-manager.overwriteBackup = true;
             home-manager.extraSpecialArgs = defaultHomeArgs // {
               plasmaEnabled = true;
             };
@@ -241,6 +245,7 @@
             home-manager.useUserPackages = true;
             home-manager.useGlobalPkgs = true;
             home-manager.backupFileExtension = "backup";
+            home-manager.overwriteBackup = true;
             home-manager.extraSpecialArgs = defaultHomeArgs // {
               isLinux = false;
               isDarwin = true;
@@ -273,6 +278,7 @@
             useGlobalPkgs = true;
             useUserPackages = true;
             backupFileExtension = "backup";
+            overwriteBackup = true;
             extraSpecialArgs = defaultHomeArgs // {
               isAndroid = true;
             };
@@ -298,6 +304,7 @@
           };
         };
       in {
+        t480             = mkDeployNode "t480"             "192.168.2.87";
         carrier-tc1      = mkDeployNode "carrier-tc1"      "192.168.2.192";
         carrier-tc2      = mkDeployNode "carrier-tc2"      "192.168.2.250";
         interceptor-nuc1 = mkDeployNode "interceptor-nuc1" "192.168.2.102";
