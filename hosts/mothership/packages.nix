@@ -30,6 +30,8 @@ in
     k9s
     wayvnc
     tigervnc
+    gitui
+    claude-code
   ];
   networking.firewall.allowedTCPPorts = [ 5900 ];
 

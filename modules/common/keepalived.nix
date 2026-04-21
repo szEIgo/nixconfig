@@ -81,7 +81,7 @@ in {
       };
     };
 
-    networking.firewall.allowedTCPPorts = [ 80 443 53 ];
+    networking.firewall.allowedTCPPorts = [ 80 443 53 2222 ];
     networking.firewall.allowedUDPPorts = [ 53 ];
     networking.firewall.extraCommands = ''
       iptables -A INPUT -p vrrp -j ACCEPT

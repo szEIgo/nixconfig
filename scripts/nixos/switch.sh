@@ -89,6 +89,9 @@ NIX_OPTS="--max-jobs $NIX_JOBS --cores $NIX_CORES"
 # Limit Nix evaluator memory (in bytes, ~8GB)
 export GC_INITIAL_HEAP_SIZE="${GC_INITIAL_HEAP_SIZE:-2000000000}"
 
+# Prevent systemd-run from opening a pager on failure
+export SYSTEMD_PAGER=""
+
 # Interactive mode
 if [[ "$SPEC" == "interactive" ]]; then
     echo -e "${BLUE}NixOS Configuration Switch${NC}"

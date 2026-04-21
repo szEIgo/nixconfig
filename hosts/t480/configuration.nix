@@ -50,6 +50,8 @@
 
   environment.systemPackages = with pkgs; [
     moonlight-qt
+    gitui
+    claude-code
   ];
 
   environment.sessionVariables = {

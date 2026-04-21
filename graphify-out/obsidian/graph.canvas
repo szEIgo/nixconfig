@@ -1,0 +1,959 @@
+{
+  "nodes": [
+    {
+      "id": "g0",
+      "type": "group",
+      "label": "K3s Cluster & Networking",
+      "x": 0,
+      "y": 0,
+      "width": 880,
+      "height": 520,
+      "color": "1"
+    },
+    {
+      "id": "n_virtualization_flannel",
+      "type": "file",
+      "file": "graphify/obsidian/Flannel VXLAN Networking.md",
+      "x": 20,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_virtualization_flux_cd",
+      "type": "file",
+      "file": "graphify/obsidian/Flux CD (GitOps).md",
+      "x": 220,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_k3s_cluster",
+      "type": "file",
+      "file": "graphify/obsidian/K3s HA Cluster.md",
+      "x": 420,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_structure_nfs_server",
+      "type": "file",
+      "file": "graphify/obsidian/NFS Server Module.md",
+      "x": 20,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_carrier_tc1",
+      "type": "file",
+      "file": "graphify/obsidian/carrier-tc1 (Control Plane).md",
+      "x": 220,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_carrier_tc2",
+      "type": "file",
+      "file": "graphify/obsidian/carrier-tc2 (Control Plane).md",
+      "x": 420,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_virtualization_democratic_csi",
+      "type": "file",
+      "file": "graphify/obsidian/democratic-csi (NFS).md",
+      "x": 20,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_deploy_rs",
+      "type": "file",
+      "file": "graphify/obsidian/deploy-rs.md",
+      "x": 220,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_interceptor_nuc1",
+      "type": "file",
+      "file": "graphify/obsidian/interceptor-nuc1 (Worker).md",
+      "x": 420,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_interceptor_tc1",
+      "type": "file",
+      "file": "graphify/obsidian/interceptor-tc1 (Worker).md",
+      "x": 20,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_interceptor_tc2",
+      "type": "file",
+      "file": "graphify/obsidian/interceptor-tc2 (Worker).md",
+      "x": 220,
+      "y": 320,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g1",
+      "type": "group",
+      "label": "Bootstrap & Deployment",
+      "x": 960,
+      "y": 0,
+      "width": 660,
+      "height": 420,
+      "color": "2"
+    },
+    {
+      "id": "n_bootstrap_guide",
+      "type": "file",
+      "file": "graphify/obsidian/Bootstrap Guide.md",
+      "x": 980,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_makefile",
+      "type": "file",
+      "file": "graphify/obsidian/Makefile (Operations).md",
+      "x": 1180,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_nixconfig",
+      "type": "file",
+      "file": "graphify/obsidian/NixConfig Repository.md",
+      "x": 1380,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_headless_worker_iso",
+      "type": "file",
+      "file": "graphify/obsidian/Worker ISO.md",
+      "x": 980,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_headless_disko",
+      "type": "file",
+      "file": "graphify/obsidian/disko (Declarative Disk Layout).md",
+      "x": 1180,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_flake_nix",
+      "type": "file",
+      "file": "graphify/obsidian/flake.nix (Entry Point).md",
+      "x": 1380,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_structure_mkworker",
+      "type": "file",
+      "file": "graphify/obsidian/mkWorker (Fleet Node Builder).md",
+      "x": 980,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_headless_nixos_anywhere",
+      "type": "file",
+      "file": "graphify/obsidian/nixos-anywhere.md",
+      "x": 1180,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_sops_nix",
+      "type": "file",
+      "file": "graphify/obsidian/sops-nix Secrets.md",
+      "x": 1380,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g2",
+      "type": "group",
+      "label": "Desktop & Workstations",
+      "x": 1700,
+      "y": 0,
+      "width": 660,
+      "height": 420,
+      "color": "3"
+    },
+    {
+      "id": "n_readme_hyprland",
+      "type": "file",
+      "file": "graphify/obsidian/Hyprland WM.md",
+      "x": 1720,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_plasma6",
+      "type": "file",
+      "file": "graphify/obsidian/KDE Plasma 6.md",
+      "x": 1920,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_virtualization_microvm",
+      "type": "file",
+      "file": "graphify/obsidian/MicroVMs (Disabled).md",
+      "x": 2120,
+      "y": 80,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_mothership",
+      "type": "file",
+      "file": "graphify/obsidian/Mothership (NixOS Desktop).md",
+      "x": 1720,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_podman",
+      "type": "file",
+      "file": "graphify/obsidian/Podman Containers.md",
+      "x": 1920,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_steam",
+      "type": "file",
+      "file": "graphify/obsidian/Steam Gaming.md",
+      "x": 2120,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_wireguard",
+      "type": "file",
+      "file": "graphify/obsidian/WireGuard VPN.md",
+      "x": 1720,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_structure_profiles_desktop",
+      "type": "file",
+      "file": "graphify/obsidian/desktop.nix Profile.md",
+      "x": 1920,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_t480",
+      "type": "file",
+      "file": "graphify/obsidian/t480 (NixOS Laptop).md",
+      "x": 2120,
+      "y": 240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g3",
+      "type": "group",
+      "label": "ZFS Storage & Pools",
+      "x": 0,
+      "y": 600,
+      "width": 660,
+      "height": 420,
+      "color": "4"
+    },
+    {
+      "id": "n_games_game_storage",
+      "type": "file",
+      "file": "graphify/obsidian/Game Storage (ZFS).md",
+      "x": 20,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_getting_started_luks",
+      "type": "file",
+      "file": "graphify/obsidian/LUKS Encryption.md",
+      "x": 220,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_virtualization_openebs",
+      "type": "file",
+      "file": "graphify/obsidian/OpenEBS ZFS CSI.md",
+      "x": 420,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_zfs_maintenance",
+      "type": "file",
+      "file": "graphify/obsidian/ZFS Maintenance Guide.md",
+      "x": 20,
+      "y": 760,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_zfs",
+      "type": "file",
+      "file": "graphify/obsidian/ZFS Storage.md",
+      "x": 220,
+      "y": 760,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_getting_started_fastpool",
+      "type": "file",
+      "file": "graphify/obsidian/fastPool (NVMe ZFS Pool).md",
+      "x": 420,
+      "y": 760,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_getting_started_rpool",
+      "type": "file",
+      "file": "graphify/obsidian/rpool (System ZFS Pool).md",
+      "x": 20,
+      "y": 840,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_getting_started_slowpool",
+      "type": "file",
+      "file": "graphify/obsidian/slowPool (HDD RAIDZ Pool).md",
+      "x": 220,
+      "y": 840,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g4",
+      "type": "group",
+      "label": "Cross-Platform & Profiles",
+      "x": 960,
+      "y": 600,
+      "width": 660,
+      "height": 420,
+      "color": "5"
+    },
+    {
+      "id": "n_readme_android",
+      "type": "file",
+      "file": "graphify/obsidian/Android (nix-on-droid).md",
+      "x": 980,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_darwin_determinate_nix",
+      "type": "file",
+      "file": "graphify/obsidian/Determinate Nix Installer.md",
+      "x": 1180,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_home_manager",
+      "type": "file",
+      "file": "graphify/obsidian/Home-Manager Configuration.md",
+      "x": 1380,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_darwin_homebrew",
+      "type": "file",
+      "file": "graphify/obsidian/Homebrew (Declarative).md",
+      "x": 980,
+      "y": 760,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_structure_profiles_base",
+      "type": "file",
+      "file": "graphify/obsidian/base.nix Profile.md",
+      "x": 1180,
+      "y": 760,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_structure_profiles_dev",
+      "type": "file",
+      "file": "graphify/obsidian/dev.nix Profile.md",
+      "x": 1380,
+      "y": 760,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_jsz_mac_01",
+      "type": "file",
+      "file": "graphify/obsidian/jsz-mac-01 (macOS).md",
+      "x": 980,
+      "y": 840,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_darwin_nix_darwin",
+      "type": "file",
+      "file": "graphify/obsidian/nix-darwin.md",
+      "x": 1180,
+      "y": 840,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g5",
+      "type": "group",
+      "label": "VM & GPU Passthrough",
+      "x": 1700,
+      "y": 600,
+      "width": 660,
+      "height": 400,
+      "color": "6"
+    },
+    {
+      "id": "n_virtualization_libvirt",
+      "type": "file",
+      "file": "graphify/obsidian/Libvirt KVMQEMU.md",
+      "x": 1720,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_virtualization_nixvirt",
+      "type": "file",
+      "file": "graphify/obsidian/NixVirt.md",
+      "x": 1920,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_readme_vfio",
+      "type": "file",
+      "file": "graphify/obsidian/VFIO GPU Passthrough.md",
+      "x": 2120,
+      "y": 680,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_virtualization_archlinux_vm",
+      "type": "file",
+      "file": "graphify/obsidian/archlinux VM.md",
+      "x": 1720,
+      "y": 760,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_virtualization_win11_amd",
+      "type": "file",
+      "file": "graphify/obsidian/win11-amd VM.md",
+      "x": 1920,
+      "y": 760,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_virtualization_win11_nvidia",
+      "type": "file",
+      "file": "graphify/obsidian/win11-nvidia VM.md",
+      "x": 2120,
+      "y": 760,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g6",
+      "type": "group",
+      "label": "Plymouth Boot Theme",
+      "x": 0,
+      "y": 1100,
+      "width": 600,
+      "height": 400,
+      "color": "1"
+    },
+    {
+      "id": "n_logo_plymouth_smiley",
+      "type": "file",
+      "file": "graphify/obsidian/Plymouth Boot Theme Logo.md",
+      "x": 20,
+      "y": 1180,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_plymouth_theme_module",
+      "type": "file",
+      "file": "graphify/obsidian/Plymouth Boot Theme Module.md",
+      "x": 220,
+      "y": 1180,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_logo_design_xx_smiley",
+      "type": "file",
+      "file": "graphify/obsidian/XX-Eyes Grinning Smiley Face Icon.md",
+      "x": 420,
+      "y": 1180,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g7",
+      "type": "group",
+      "label": "Legacy Laptops",
+      "x": 960,
+      "y": 1100,
+      "width": 600,
+      "height": 400,
+      "color": "2"
+    },
+    {
+      "id": "n_readme_x250",
+      "type": "file",
+      "file": "graphify/obsidian/x250 (NixOS Laptop).md",
+      "x": 980,
+      "y": 1180,
+      "width": 180,
+      "height": 60
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_readme_nixconfig_readme_flake_nix",
+      "fromNode": "n_readme_nixconfig",
+      "toNode": "n_readme_flake_nix",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_nixconfig_readme_makefile",
+      "fromNode": "n_readme_nixconfig",
+      "toNode": "n_readme_makefile",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_mothership_readme_k3s_cluster",
+      "fromNode": "n_readme_mothership",
+      "toNode": "n_readme_k3s_cluster",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_mothership_readme_zfs",
+      "fromNode": "n_readme_mothership",
+      "toNode": "n_readme_zfs",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_mothership_readme_vfio",
+      "fromNode": "n_readme_mothership",
+      "toNode": "n_readme_vfio",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_carrier_tc1_readme_k3s_cluster",
+      "fromNode": "n_readme_carrier_tc1",
+      "toNode": "n_readme_k3s_cluster",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_carrier_tc2_readme_k3s_cluster",
+      "fromNode": "n_readme_carrier_tc2",
+      "toNode": "n_readme_k3s_cluster",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_interceptor_nuc1_readme_k3s_cluster",
+      "fromNode": "n_readme_interceptor_nuc1",
+      "toNode": "n_readme_k3s_cluster",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_interceptor_tc1_readme_k3s_cluster",
+      "fromNode": "n_readme_interceptor_tc1",
+      "toNode": "n_readme_k3s_cluster",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_interceptor_tc2_readme_k3s_cluster",
+      "fromNode": "n_readme_interceptor_tc2",
+      "toNode": "n_readme_k3s_cluster",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_jsz_mac_01_darwin_nix_darwin",
+      "fromNode": "n_readme_jsz_mac_01",
+      "toNode": "n_darwin_nix_darwin",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_k3s_cluster_readme_deploy_rs",
+      "fromNode": "n_readme_k3s_cluster",
+      "toNode": "n_readme_deploy_rs",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_k3s_cluster_structure_mkworker",
+      "fromNode": "n_readme_k3s_cluster",
+      "toNode": "n_structure_mkworker",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_flake_nix_structure_mkworker",
+      "fromNode": "n_readme_flake_nix",
+      "toNode": "n_structure_mkworker",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_home_manager_darwin_nix_darwin",
+      "fromNode": "n_readme_home_manager",
+      "toNode": "n_darwin_nix_darwin",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_home_manager_structure_profiles_base",
+      "fromNode": "n_readme_home_manager",
+      "toNode": "n_structure_profiles_base",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_home_manager_structure_profiles_dev",
+      "fromNode": "n_readme_home_manager",
+      "toNode": "n_structure_profiles_dev",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_home_manager_structure_profiles_desktop",
+      "fromNode": "n_readme_home_manager",
+      "toNode": "n_structure_profiles_desktop",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_sops_nix_bootstrap_guide",
+      "fromNode": "n_readme_sops_nix",
+      "toNode": "n_bootstrap_guide",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_zfs_getting_started_rpool",
+      "fromNode": "n_readme_zfs",
+      "toNode": "n_getting_started_rpool",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_zfs_getting_started_fastpool",
+      "fromNode": "n_readme_zfs",
+      "toNode": "n_getting_started_fastpool",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_zfs_getting_started_slowpool",
+      "fromNode": "n_readme_zfs",
+      "toNode": "n_getting_started_slowpool",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_vfio_virtualization_libvirt",
+      "fromNode": "n_readme_vfio",
+      "toNode": "n_virtualization_libvirt",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_vfio_virtualization_win11_nvidia",
+      "fromNode": "n_readme_vfio",
+      "toNode": "n_virtualization_win11_nvidia",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_vfio_virtualization_win11_amd",
+      "fromNode": "n_readme_vfio",
+      "toNode": "n_virtualization_win11_amd",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_getting_started_luks_getting_started_rpool",
+      "fromNode": "n_getting_started_luks",
+      "toNode": "n_getting_started_rpool",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_getting_started_rpool_zfs_maintenance",
+      "fromNode": "n_getting_started_rpool",
+      "toNode": "n_zfs_maintenance",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_getting_started_fastpool_virtualization_openebs",
+      "fromNode": "n_getting_started_fastpool",
+      "toNode": "n_virtualization_openebs",
+      "label": "shares_data_with [EXTRACTED]"
+    },
+    {
+      "id": "e_getting_started_slowpool_games_game_storage",
+      "fromNode": "n_getting_started_slowpool",
+      "toNode": "n_games_game_storage",
+      "label": "shares_data_with [EXTRACTED]"
+    },
+    {
+      "id": "e_getting_started_slowpool_virtualization_openebs",
+      "fromNode": "n_getting_started_slowpool",
+      "toNode": "n_virtualization_openebs",
+      "label": "shares_data_with [EXTRACTED]"
+    },
+    {
+      "id": "e_getting_started_slowpool_zfs_maintenance",
+      "fromNode": "n_getting_started_slowpool",
+      "toNode": "n_zfs_maintenance",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_virtualization_libvirt_virtualization_win11_nvidia",
+      "fromNode": "n_virtualization_libvirt",
+      "toNode": "n_virtualization_win11_nvidia",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_virtualization_libvirt_virtualization_win11_amd",
+      "fromNode": "n_virtualization_libvirt",
+      "toNode": "n_virtualization_win11_amd",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_virtualization_libvirt_virtualization_archlinux_vm",
+      "fromNode": "n_virtualization_libvirt",
+      "toNode": "n_virtualization_archlinux_vm",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_virtualization_libvirt_virtualization_nixvirt",
+      "fromNode": "n_virtualization_libvirt",
+      "toNode": "n_virtualization_nixvirt",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_darwin_nix_darwin_darwin_homebrew",
+      "fromNode": "n_darwin_nix_darwin",
+      "toNode": "n_darwin_homebrew",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_headless_nixos_anywhere_headless_disko",
+      "fromNode": "n_headless_nixos_anywhere",
+      "toNode": "n_headless_disko",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_headless_nixos_anywhere_headless_worker_iso",
+      "fromNode": "n_headless_nixos_anywhere",
+      "toNode": "n_headless_worker_iso",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_logo_plymouth_smiley_logo_design_xx_smiley",
+      "fromNode": "n_logo_plymouth_smiley",
+      "toNode": "n_logo_design_xx_smiley",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_mothership_readme_hyprland",
+      "fromNode": "n_readme_mothership",
+      "toNode": "n_readme_hyprland",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_mothership_readme_plasma6",
+      "fromNode": "n_readme_mothership",
+      "toNode": "n_readme_plasma6",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_mothership_readme_sops_nix",
+      "fromNode": "n_readme_mothership",
+      "toNode": "n_readme_sops_nix",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_mothership_structure_nfs_server",
+      "fromNode": "n_readme_mothership",
+      "toNode": "n_structure_nfs_server",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_android_readme_home_manager",
+      "fromNode": "n_readme_android",
+      "toNode": "n_readme_home_manager",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_k3s_cluster_virtualization_flannel",
+      "fromNode": "n_readme_k3s_cluster",
+      "toNode": "n_virtualization_flannel",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_k3s_cluster_virtualization_flux_cd",
+      "fromNode": "n_readme_k3s_cluster",
+      "toNode": "n_virtualization_flux_cd",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_k3s_cluster_virtualization_openebs",
+      "fromNode": "n_readme_k3s_cluster",
+      "toNode": "n_virtualization_openebs",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_k3s_cluster_virtualization_democratic_csi",
+      "fromNode": "n_readme_k3s_cluster",
+      "toNode": "n_virtualization_democratic_csi",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_hyprland_structure_profiles_desktop",
+      "fromNode": "n_readme_hyprland",
+      "toNode": "n_structure_profiles_desktop",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_plasma6_structure_profiles_desktop",
+      "fromNode": "n_readme_plasma6",
+      "toNode": "n_structure_profiles_desktop",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_virtualization_democratic_csi_structure_nfs_server",
+      "fromNode": "n_virtualization_democratic_csi",
+      "toNode": "n_structure_nfs_server",
+      "label": "shares_data_with [INFERRED]"
+    },
+    {
+      "id": "e_logo_plymouth_smiley_plymouth_theme_module",
+      "fromNode": "n_logo_plymouth_smiley",
+      "toNode": "n_plymouth_theme_module",
+      "label": "references [INFERRED]"
+    },
+    {
+      "id": "e_readme_mothership_readme_podman",
+      "fromNode": "n_readme_mothership",
+      "toNode": "n_readme_podman",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_mothership_readme_steam",
+      "fromNode": "n_readme_mothership",
+      "toNode": "n_readme_steam",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_mothership_readme_wireguard",
+      "fromNode": "n_readme_mothership",
+      "toNode": "n_readme_wireguard",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_t480_readme_plasma6",
+      "fromNode": "n_readme_t480",
+      "toNode": "n_readme_plasma6",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_t480_readme_wireguard",
+      "fromNode": "n_readme_t480",
+      "toNode": "n_readme_wireguard",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_flake_nix_bootstrap_guide",
+      "fromNode": "n_readme_flake_nix",
+      "toNode": "n_bootstrap_guide",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_sops_nix_headless_nixos_anywhere",
+      "fromNode": "n_readme_sops_nix",
+      "toNode": "n_headless_nixos_anywhere",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_deploy_rs_headless_nixos_anywhere",
+      "fromNode": "n_readme_deploy_rs",
+      "toNode": "n_headless_nixos_anywhere",
+      "label": "conceptually_related_to [EXTRACTED]"
+    },
+    {
+      "id": "e_getting_started_fastpool_games_game_storage",
+      "fromNode": "n_getting_started_fastpool",
+      "toNode": "n_games_game_storage",
+      "label": "shares_data_with [EXTRACTED]"
+    },
+    {
+      "id": "e_darwin_nix_darwin_darwin_determinate_nix",
+      "fromNode": "n_darwin_nix_darwin",
+      "toNode": "n_darwin_determinate_nix",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_readme_mothership_virtualization_microvm",
+      "fromNode": "n_readme_mothership",
+      "toNode": "n_virtualization_microvm",
+      "label": "references [EXTRACTED]"
+    }
+  ]
+}

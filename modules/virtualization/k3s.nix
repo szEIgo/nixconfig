@@ -29,6 +29,11 @@ let
           websecure:
             nodePort: 30443
             hostPort: 443
+          gitlab-ssh:
+            port: 2222
+            exposedPort: 2222
+            hostPort: 2222
+            protocol: TCP
 
         tolerations:
           - key: "node-role.kubernetes.io/control-plane"
@@ -88,7 +93,7 @@ in
     ];
   };
 
-  networking.firewall.allowedTCPPorts = [ 6443 2379 2380 30080 30443 80 443 ];
+  networking.firewall.allowedTCPPorts = [ 6443 2379 2380 30080 30443 80 443 2222 ];
   networking.firewall.allowedUDPPorts = [ 8472 ];
   networking.firewall.extraCommands = ''
     iptables -A INPUT -p vrrp -j ACCEPT
