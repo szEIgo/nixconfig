@@ -32,6 +32,7 @@ in
     tigervnc
     gitui
     claude-code
+    flameshot
   ];
   networking.firewall.allowedTCPPorts = [ 5900 ];
 

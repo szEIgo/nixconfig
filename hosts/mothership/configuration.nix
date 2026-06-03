@@ -17,6 +17,10 @@
     ../../modules/virtualization/vms      # Declarative VM definitions via NixVirt
     # ../../modules/virtualization/microvm  # MicroVM k3s workers (disabled — re-enable when needed)
 
+    # Services
+    ../../modules/common/open-webui.nix
+    ../../modules/services/voice-bridge
+
     # Remote access
     ../../remote/ssh.nix
 
@@ -87,11 +91,12 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.supportedFilesystems = [ "zfs" "ntfs" ];
   boot.zfs.requestEncryptionCredentials = true;
+  boot.zfs.forceImportRoot = false;
   boot.initrd.luks.devices."cryptroot".device =
     "/dev/disk/by-uuid/2191f348-040d-42e3-9caf-c43b86f9a6df";
 
   boot.kernelPackages = pkgs.linuxPackages_zen;
-  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
+  hardware.nvidia.package = lib.mkDefault config.boot.kernelPackages.nvidiaPackages.stable;
   boot.crashDump.enable = true;
   boot.kernel.sysctl."kernel.watchdog" = 1;
   boot.kernel.sysctl."fs.inotify.max_user_watches" = 524288;
@@ -111,6 +116,7 @@
     EDITOR = "vim";
     NIXPKGS_ALLOW_UNFREE = "1";
     LIBVIRT_DEFAULT_URI = "qemu:///system";
+    QT_QPA_PLATFORM = "wayland";
   };
 
   # Required when Home Manager is installed via NixOS module with useUserPackages

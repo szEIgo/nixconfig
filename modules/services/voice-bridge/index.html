@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Claude Voice</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0d1117; color: #c9d1d9;
+      height: 100dvh; display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+
+    #header {
+      padding: 10px 16px;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    #header h1 { font-size: 18px; font-weight: 600; }
+    #status {
+      font-size: 12px; padding: 3px 8px; border-radius: 12px;
+      background: #da3633; color: #fff;
+    }
+    #status.connected { background: #238636; }
+
+    #messages {
+      flex: 1; overflow-y: auto; padding: 16px;
+      display: flex; flex-direction: column; gap: 16px;
+      scroll-behavior: smooth;
+    }
+
+    .msg {
+      max-width: 90%; padding: 10px 14px; border-radius: 12px;
+      font-size: 15px; line-height: 1.5; word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+    .msg.user {
+      background: #1f6feb; color: #fff;
+      align-self: flex-end; border-bottom-right-radius: 4px;
+    }
+    .msg.assistant {
+      background: #161b22; border: 1px solid #30363d;
+      align-self: flex-start; border-bottom-left-radius: 4px;
+    }
+    .msg.assistant.streaming { border-color: #58a6ff; }
+
+    .msg code {
+      background: #0d1117; padding: 2px 6px; border-radius: 4px;
+      font-family: "SF Mono", "Fira Code", monospace; font-size: 13px;
+    }
+    .msg pre {
+      background: #0d1117; padding: 10px; border-radius: 6px;
+      overflow-x: auto; margin: 6px 0; font-size: 13px;
+      font-family: "SF Mono", "Fira Code", monospace;
+    }
+
+    .tool-event {
+      align-self: flex-start; max-width: 90%;
+      padding: 6px 12px; border-radius: 8px;
+      background: #1c2128; border: 1px solid #30363d;
+      font-size: 12px; color: #8b949e;
+      font-family: "SF Mono", monospace;
+    }
+    .tool-event .tool-name { color: #d2a8ff; font-weight: 600; }
+
+    .meta {
+      align-self: center; font-size: 11px; color: #484f58;
+      padding: 2px 8px;
+    }
+
+    #input-bar {
+      display: flex; gap: 8px; padding: 10px 12px;
+      background: #161b22; border-top: 1px solid #30363d;
+      align-items: flex-end;
+    }
+
+    #text-input {
+      flex: 1; padding: 10px 14px; border-radius: 20px;
+      border: 1px solid #30363d; background: #0d1117; color: #c9d1d9;
+      font-size: 16px; outline: none; resize: none;
+      max-height: 120px; min-height: 42px;
+      font-family: inherit; line-height: 1.4;
+    }
+    #text-input:focus { border-color: #58a6ff; }
+    #text-input::placeholder { color: #484f58; }
+
+    .btn {
+      width: 42px; height: 42px; border-radius: 50%;
+      border: none; cursor: pointer; font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: all 0.15s;
+    }
+    .btn:active { transform: scale(0.92); }
+
+    #mic-btn { background: #21262d; color: #c9d1d9; }
+    #mic-btn.listening {
+      background: #da3633; color: #fff;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    #send-btn { background: #238636; color: #fff; }
+    #send-btn:disabled { background: #21262d; color: #484f58; }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(218, 54, 51, 0.4); }
+      50% { box-shadow: 0 0 0 10px rgba(218, 54, 51, 0); }
+    }
+
+    .speech-interim {
+      color: #8b949e; font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+<div id="header">
+  <h1>Claude Voice</h1>
+  <span id="status">disconnected</span>
+</div>
+
+<div id="messages">
+  <div class="meta">Speak or type to start a conversation</div>
+</div>
+
+<div id="input-bar">
+  <button class="btn" id="mic-btn" onclick="toggleMic()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+      <line x1="12" y1="19" x2="12" y2="23"/>
+      <line x1="8" y1="23" x2="16" y2="23"/>
+    </svg>
+  </button>
+  <textarea id="text-input" placeholder="Type or speak..." rows="1"
+    oninput="autoResize(this)"
+    onkeydown="handleKey(event)"></textarea>
+  <button class="btn" id="send-btn" onclick="sendText()" disabled>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+    </svg>
+  </button>
+</div>
+
+<script>
+  const protocol = location.protocol === "https:" ? "wss:" : "ws:";
+  const WS_URL = `${protocol}//${location.host}/ws`;
+  const messagesEl = document.getElementById("messages");
+  const inputEl = document.getElementById("text-input");
+  const statusEl = document.getElementById("status");
+  const sendBtn = document.getElementById("send-btn");
+  const micBtn = document.getElementById("mic-btn");
+
+  let ws = null;
+  let currentAssistantEl = null;
+  let assistantFullText = "";
+  let recognition = null;
+  let isListening = false;
+  let isProcessing = false;
+
+  // --- WebSocket ---
+  function connect() {
+    ws = new WebSocket(WS_URL);
+
+    ws.onopen = () => {
+      statusEl.textContent = "connected";
+      statusEl.classList.add("connected");
+    };
+
+    ws.onclose = () => {
+      statusEl.textContent = "disconnected";
+      statusEl.classList.remove("connected");
+      setTimeout(connect, 3000);
+    };
+
+    ws.onerror = () => ws.close();
+
+    ws.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      handleEvent(data);
+    };
+  }
+
+  function handleEvent(data) {
+    switch (data.type) {
+      case "init":
+        addMeta(`Session: ${data.session_id?.slice(0, 8)}... | Model: ${data.model}`);
+        break;
+
+      case "assistant_text":
+        if (!currentAssistantEl) {
+          currentAssistantEl = addMessage("assistant", "");
+          currentAssistantEl.classList.add("streaming");
+          assistantFullText = "";
+        }
+        // For partial messages, replace full text; for final, it's the complete text
+        assistantFullText = data.text;
+        currentAssistantEl.innerHTML = renderMarkdown(assistantFullText);
+        scrollDown();
+        break;
+
+      case "tool_use":
+        addToolEvent(`${data.name}`, JSON.stringify(data.input).slice(0, 200));
+        break;
+
+      case "tool_result":
+        // Show brief tool results
+        const preview = typeof data.content === "string"
+          ? data.content.slice(0, 300)
+          : JSON.stringify(data.content).slice(0, 300);
+        addToolEvent(`${data.name} result`, preview);
+        break;
+
+      case "result":
+        if (currentAssistantEl) {
+          currentAssistantEl.classList.remove("streaming");
+          // Use final result text if we didn't get streaming content
+          if (!assistantFullText && data.text) {
+            currentAssistantEl.innerHTML = renderMarkdown(data.text);
+          }
+        }
+        if (data.cost) {
+          addMeta(`Cost: $${data.cost.toFixed(4)} | ${(data.duration_ms / 1000).toFixed(1)}s`);
+        }
+        currentAssistantEl = null;
+        assistantFullText = "";
+        isProcessing = false;
+        updateSendBtn();
+        break;
+
+      case "done":
+        if (currentAssistantEl) {
+          currentAssistantEl.classList.remove("streaming");
+        }
+        currentAssistantEl = null;
+        assistantFullText = "";
+        isProcessing = false;
+        updateSendBtn();
+        break;
+
+      case "error":
+        addMeta(`Error: ${data.message}`);
+        isProcessing = false;
+        updateSendBtn();
+        break;
+
+      case "stderr":
+        if (data.content) addMeta(`stderr: ${data.content.slice(0, 200)}`);
+        break;
+    }
+  }
+
+  // --- UI Helpers ---
+  function addMessage(role, text) {
+    const el = document.createElement("div");
+    el.className = `msg ${role}`;
+    el.innerHTML = renderMarkdown(text);
+    messagesEl.appendChild(el);
+    scrollDown();
+    return el;
+  }
+
+  function addToolEvent(name, detail) {
+    const el = document.createElement("div");
+    el.className = "tool-event";
+    el.innerHTML = `<span class="tool-name">${escapeHtml(name)}</span> ${escapeHtml(detail)}`;
+    messagesEl.appendChild(el);
+    scrollDown();
+  }
+
+  function addMeta(text) {
+    const el = document.createElement("div");
+    el.className = "meta";
+    el.textContent = text;
+    messagesEl.appendChild(el);
+    scrollDown();
+  }
+
+  function scrollDown() {
+    requestAnimationFrame(() => {
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    });
+  }
+
+  function escapeHtml(s) {
+    const div = document.createElement("div");
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  function renderMarkdown(text) {
+    if (!text) return "";
+    let html = escapeHtml(text);
+
+    // Code blocks
+    html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+    // Inline code
+    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+    // Bold
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+    return html;
+  }
+
+  // --- Send ---
+  function sendText() {
+    const text = inputEl.value.trim();
+    if (!text || !ws || ws.readyState !== 1 || isProcessing) return;
+
+    addMessage("user", text);
+    ws.send(JSON.stringify({ type: "query", text }));
+    inputEl.value = "";
+    autoResize(inputEl);
+    isProcessing = true;
+    updateSendBtn();
+  }
+
+  function handleKey(e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendText();
+    }
+  }
+
+  function autoResize(el) {
+    el.style.height = "auto";
+    el.style.height = Math.min(el.scrollHeight, 120) + "px";
+    updateSendBtn();
+  }
+
+  function updateSendBtn() {
+    sendBtn.disabled = !inputEl.value.trim() || isProcessing;
+  }
+
+  inputEl.addEventListener("input", () => updateSendBtn());
+
+  // --- Speech Recognition (Web Speech API) ---
+  function initSpeech() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      micBtn.style.display = "none";
+      return;
+    }
+
+    recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+
+    recognition.onresult = (e) => {
+      let interim = "";
+      let final = "";
+
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const transcript = e.results[i][0].transcript;
+        if (e.results[i].isFinal) {
+          final += transcript;
+        } else {
+          interim += transcript;
+        }
+      }
+
+      if (final) {
+        inputEl.value += final;
+        autoResize(inputEl);
+        updateSendBtn();
+      }
+
+      // Show interim in placeholder
+      if (interim) {
+        inputEl.placeholder = interim;
+      } else {
+        inputEl.placeholder = "Type or speak...";
+      }
+    };
+
+    recognition.onend = () => {
+      if (isListening) {
+        // Auto-send when speech stops
+        const text = inputEl.value.trim();
+        if (text) {
+          sendText();
+        }
+        isListening = false;
+        micBtn.classList.remove("listening");
+        inputEl.placeholder = "Type or speak...";
+      }
+    };
+
+    recognition.onerror = (e) => {
+      console.error("Speech error:", e.error);
+      isListening = false;
+      micBtn.classList.remove("listening");
+      inputEl.placeholder = "Type or speak...";
+    };
+  }
+
+  function toggleMic() {
+    if (!recognition) return;
+
+    if (isListening) {
+      recognition.stop();
+      isListening = false;
+      micBtn.classList.remove("listening");
+    } else {
+      inputEl.value = "";
+      recognition.start();
+      isListening = true;
+      micBtn.classList.add("listening");
+      inputEl.placeholder = "Listening...";
+    }
+  }
+
+  // --- Init ---
+  initSpeech();
+  connect();
+</script>
+
+</body>
+</html>

@@ -175,68 +175,64 @@ in
   programs.ssh = lib.mkIf (!isAndroid) {
     enable = true;
     enableDefaultConfig = false;
-    matchBlocks = {
+    settings = {
       "github.com" = {
-        hostname = "github.com";
-        user = "git";
-        identityFile = "~/.ssh/id_ed25519";
-        identitiesOnly = true;
+        HostName = "github.com";
+        User = "git";
+        IdentityFile = "~/.ssh/id_ed25519";
+        IdentitiesOnly = true;
       };
       "gitlab.com" = {
-        hostname = "gitlab.com";
-        user = "git";
-        identityFile = "~/.ssh/id_ed25519";
-        identitiesOnly = true;
+        HostName = "gitlab.com";
+        User = "git";
+        IdentityFile = "~/.ssh/id_ed25519";
+        IdentitiesOnly = true;
       };
       "git.govcloud.dk" = {
-        hostname = "git.govcloud.dk";
-        user = "git";
-        identityFile = "~/.ssh/id_ecdsa";
-        identitiesOnly = true;
+        HostName = "git.govcloud.dk";
+        User = "git";
+        IdentityFile = "~/.ssh/id_ed25519";
+        IdentitiesOnly = true;
       };
-      "mothership-wg" = {
-        match = ''host mothership exec "ping -c1 -W1 192.168.10.1 &>/dev/null"'';
-        hostname = "192.168.10.1";
-        user = "joni";
+      "Match host mothership exec \"ping -c1 -W1 192.168.10.1 &>/dev/null\"" = lib.hm.dag.entryBefore [ "mothership" ] {
+        HostName = "192.168.10.1";
+        User = "joni";
       };
-      "mothership-lan" = {
-        host = "mothership";
-        hostname = "192.168.2.62";
-        user = "joni";
+      "mothership" = {
+        HostName = "192.168.2.62";
+        User = "joni";
       };
-      "t480-wg" = {
-        match = ''host t480 exec "ping -c1 -W1 192.168.10.5 &>/dev/null"'';
-        hostname = "192.168.10.5";
-        user = "joni";
+      "Match host t480 exec \"ping -c1 -W1 192.168.10.5 &>/dev/null\"" = lib.hm.dag.entryBefore [ "t480" ] {
+        HostName = "192.168.10.5";
+        User = "joni";
       };
-      "t480-lan" = {
-        host = "t480";
-        hostname = "192.168.2.87";
-        user = "joni";
+      "t480" = {
+        HostName = "192.168.2.87";
+        User = "joni";
       };
       "carrier-tc1" = {
-        hostname = "192.168.2.192";
-        user = "root";
+        HostName = "192.168.2.192";
+        User = "root";
       };
       "carrier-tc2" = {
-        hostname = "192.168.2.250";
-        user = "root";
+        HostName = "192.168.2.250";
+        User = "root";
       };
       "interceptor-nuc1" = {
-        hostname = "192.168.2.102";
-        user = "root";
+        HostName = "192.168.2.102";
+        User = "root";
       };
       "interceptor-tc1" = {
-        hostname = "192.168.2.238";
-        user = "root";
+        HostName = "192.168.2.238";
+        User = "root";
       };
       "interceptor-tc2" = {
-        hostname = "192.168.2.147";
-        user = "root";
+        HostName = "192.168.2.147";
+        User = "root";
       };
       "oneplus6t" = {
-        hostname = "192.168.2.187";
-        user = "user";
+        HostName = "192.168.2.187";
+        User = "user";
       };
     };
   };
@@ -311,5 +307,6 @@ in
     else if isPostmarketOS then "/home/user"
     else "/home/joni"
   );
+  home.enableNixpkgsReleaseCheck = false;
   home.stateVersion = "25.11";
 }

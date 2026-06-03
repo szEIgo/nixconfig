@@ -1,5 +1,9 @@
 { config, lib, pkgs, ... }:
 {
+  # Adopt new defaults for 26.05+ Home Manager
+  gtk.gtk4.theme = null;
+  wayland.windowManager.hyprland.configType = "hyprlang";
+
   # ── GTK, icons, cursor (Catppuccin Mocha) ──
   gtk = {
     enable = true;

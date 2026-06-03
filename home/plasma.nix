@@ -327,15 +327,25 @@ lib.mkIf plasmaEnabled {
 
     #
     # Spectacle (screenshots) - disable recording shortcuts
+    # Region capture disabled (crashes on 32:9 ultrawide) - using flameshot instead
     #
     spectacle.shortcuts = {
-      captureRectangularRegion = "Meta+Shift+Print";
+      captureRectangularRegion = "none";
       captureActiveWindow = "Meta+Print";
       captureCurrentMonitor = "Print";
       captureEntireDesktop = "Shift+Print";
       recordRegion = "none";
       recordScreen = "none";
       recordWindow = "none";
+    };
+
+    #
+    # Flameshot for region screenshots (workaround for Spectacle 32:9 crash)
+    #
+    hotkeys.commands."flameshot-region" = {
+      name = "Flameshot Region Screenshot";
+      key = "Meta+Shift+Print";
+      command = "flameshot gui";
     };
 
     #
